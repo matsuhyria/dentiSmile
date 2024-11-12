@@ -1,0 +1,36 @@
+image: node:20-alpine
+
+stages:
+  - build
+  - test
+  - deploy
+
+build:
+  stage: build
+  tags: 
+    - docker
+  script:
+    - cd server
+    - npm ci
+    - npm run build
+  artifacts:
+    paths:
+      - server/node_modules # cache for future builds
+      - server/dist
+    expire_in: 1 hour
+
+test:
+  stage: test
+  tags:
+    - docker
+  script:
+    - cd server
+    - npm run test
+
+
+start:
+  stage: deploy
+  script: 
+    - npm run start
+  only:
+    - master
