@@ -28,7 +28,7 @@ test:
     - npm run test
 
 
-start:
+deploy:
   stage: deploy
   script: 
     - npm run start
