@@ -19,11 +19,11 @@ app.get('/api/v1', (req, res) => {
     res.status(200).json({ message: 'Welcome to DentiSmile+ API v1!' });
 });
 
-app.all('*', (req, res) => {
+app.use(authRouter);
+
+app.use('/api/*', (req, res) => {
     res.status(404).json({ message: 'Server error.' });
 });
-
-app.use(authRouter);
 
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 

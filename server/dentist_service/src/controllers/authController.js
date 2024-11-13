@@ -26,10 +26,11 @@ const login = async (req, res) => {
     const { username, password } = req.body;
 
     try {
-        const dentist = await Dentist.find({ username });
-        if (!dentist || !(await bcrypt.compare(password, dentist.password))) {
-            return res.status(401).json({ message: 'Invalid credentials' });
-        }
+        const dentist = await Dentist.findOne({ username });
+        if (!dentist) return res.status(404).json({ message: 'Dentist not found' });
+
+        const isMatch = await bcrypt.compare(password, dentist.password);
+        if (!isMatch) return res.status(400).json({ message: 'Invalid credentials' });
 
         // TO-DO add token generation
         res.status(200).json({ message: 'Login successful' });
