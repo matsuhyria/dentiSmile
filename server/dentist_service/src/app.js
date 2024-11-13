@@ -2,6 +2,7 @@ import express from 'express';
 import morgan from 'morgan';
 import cors from 'cors';
 import connectDB from './config/db.js';
+import authRouter from './routes/authRoutes.js';
 
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:3100/dentist_db';
 const PORT = process.env.PORT || 5000;
@@ -21,6 +22,8 @@ app.get('/api/v1', (req, res) => {
 app.all('*', (req, res) => {
     res.status(404).json({ message: 'Server error.' });
 });
+
+app.use(authRouter);
 
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 
