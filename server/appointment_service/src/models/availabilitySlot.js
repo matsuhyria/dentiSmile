@@ -5,6 +5,10 @@ const availabilitySlot = new mongoose.Schema({
         type: String,
         required: true
     },
+    patientId: {
+        type: String,
+        default: null
+    },
     startTime: {
         type: Date,
         required: true
@@ -15,8 +19,8 @@ const availabilitySlot = new mongoose.Schema({
     },
     status: {
         type: String,
-        enum: ['available', 'booked', 'canceled'],
-        default: 'available'
+        enum: ['not_available', 'available', 'booked', 'canceled'],
+        default: 'not_available'
     }
 });
 
