@@ -5,7 +5,6 @@ const compareIsoDates = (stringDate1, stringDdate2) => {
     return new Date(stringDate1).valueOf() - new Date(stringDdate2).valueOf();
 };
 
-
 const compareDates = (stringDate1, stringDdate2) => {
     return stringDate1.valueOf() - stringDdate2.valueOf();
 };

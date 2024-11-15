@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 
-const availabilitySlot = new mongoose.Schema({
+const appointmentSlot = new mongoose.Schema({
     dentistId: {
         type: String,
         required: true
@@ -24,6 +24,6 @@ const availabilitySlot = new mongoose.Schema({
     }
 });
 
-const AvailabilitySlot = mongoose.model('Dentist', availabilitySlot);
+const AppointmentSlot = mongoose.model('AppointmentSlot', appointmentSlot);
 
-export default AvailabilitySlot;
+export default AppointmentSlot;

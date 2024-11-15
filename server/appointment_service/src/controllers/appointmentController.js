@@ -1,7 +1,7 @@
-import AvailabilitySlot from '../models/availabilitySlot.js';
+import AppointmentSlot from '../models/appointmentSlot.js';
 import { compareIsoDates, generateTimeSlots } from '../utils/dateUtils.js';
 
-const createAvailability = async (req, res) => {
+const createAppointment = async (req, res) => {
     const { dentistId, startTime, endTime } = req.body;
 
     // dentistId presence is checked by the database
@@ -10,9 +10,10 @@ const createAvailability = async (req, res) => {
     if (compareIsoDates(startTime, endTime) >= 0) return res.status(400).json({ message: 'Invalid time range' });
 
     const slots = generateTimeSlots(startTime, endTime, dentistId);
+    console.log(slots);
 
     try {
-        await AvailabilitySlot.insertMany(slots);
+        await AppointmentSlot.insertMany(slots);
         return res.status(200).json({ message: 'Availability slots pubslished successfully' });
     } catch (error) {
         console.log(error);
@@ -20,8 +21,4 @@ const createAvailability = async (req, res) => {
     }
 };
 
-const getAvailableSlots = async (req, res) => {
-
-};
-
-export { createAvailability };
+export { createAppointment };
