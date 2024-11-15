@@ -54,4 +54,31 @@ const generateTimeSlots = (dentistId, startDateISO, endDateISO, minutes = 60) =>
     return slots;
 };
 
-export { compareIsoDates, generateTimeSlots };
+/**
+ * Helper function that generates repeated time slots for a dentist between the specified start and end dates.
+ * The function creates slots for the same time every day between the given date range.
+ * Params and returns definition is the same as for the function above
+ **/
+const generateRepeatedTimeSlots = (dentistId, startDateISO, endDateISO, minutes = 60) => {
+    const slots = [];
+
+    const end = moment(endDateISO);
+
+    let currStart = moment(startDateISO).clone();
+
+    const endHour = end.hours();
+    const endMinutes = end.minutes();
+    let currEnd = currStart.clone().set({ hour: endHour, minute: endMinutes, second: 0, millisecond: 0 });
+
+    while (currStart.isSameOrBefore(end, 'day')) {
+        const dailySlots = generateTimeSlots(dentistId, currStart.toISOString(), currEnd.toISOString(), minutes);
+
+        slots.push(...dailySlots);
+
+        currStart.add(1, 'days');
+        currEnd.add(1, 'days');
+    }
+    return slots;
+};
+
+export { compareIsoDates, generateTimeSlots, generateRepeatedTimeSlots };

@@ -1,27 +1,23 @@
+import moment from 'moment';
 import AppointmentSlot from '../models/appointmentSlot.js';
-import { compareIsoDates, generateTimeSlots } from '../utils/dateUtils.js';
+import { compareIsoDates, generateTimeSlots, generateRepeatedTimeSlots } from '../utils/dateUtils.js';
 
-const createAppointment = async (req, res) => {
-    const { dentistId, startDay, endDay, startHour, endHour } = req.body;
+const createAppointments = async (req, res) => {
+    const { dentistId, startTime, endTime, minutes, isRepeated } = req.body;
 
-    // dentistId presence is checked by the database
-    if (!startDay || !endDay) return res.status(400).json({ message: 'Days cannot be null' });
-
-    const currentTime = new Date().toISOString();
-    if (compareIsoDates(startDay, currentTime) < 0 || compareIsoDates(endDay, currentTime) < 0) {
-        return res.status(400).json({ message: 'Days cannot be in the past' });
+    if (compareIsoDates(startTime, new Date().toISOString()) < 0 || compareIsoDates(endTime, new Date().toISOString()) < 0) {
+        return res.status(400).json({ message: 'Dates cannot be in the past' });
     }
 
-    // endDay cannot be less or equal startDay
-    if (compareIsoDates(startDay, endDay) >= 0) return res.status(400).json({ message: 'Invalid days range' });
-
     try {
+        const start = moment(startTime).toISOString();
+        const end = moment(endTime).toISOString();
+
         const existingSlots = await AppointmentSlot.find({
             dentistId,
             $or: [
-                { startDay: { $gte: startDay, $lt: endDay } }, // example: existing: "10.00-11.00", new: "9.30-10.30"
-                { endDay: { $gt: startDay, $lte: endDay } }, // example: existing: "10.00-11.00", new: "10.30-11.30"
-                { startDay: { $lt: startDay }, endDay: { $gt: endDay } } // example: existing: "09.00-12.00", new: "10.00"
+                { startTime: { $lt: start }, endTime: { $gt: end } },
+                { startTime: { $gte: start }, endTime: { $lte: end } }
             ]
         });
 
@@ -29,8 +25,15 @@ const createAppointment = async (req, res) => {
             return res.status(400).json({ message: 'Slots for this timeframe already exist' });
         }
 
-        // no effect if startHour or endHour is undefined
-        const slots = generateTimeSlots(dentistId, startDay, endDay, startHour, endHour);
+        // no effect if minutes is undefined
+        let slots;
+        if (isRepeated) {
+            slots = generateRepeatedTimeSlots(dentistId, startTime, endTime, minutes);
+        } else {
+            slots = generateTimeSlots(dentistId, startTime, endTime, minutes);
+        }
+
+        if (slots.length < 1) return res.status(400).json({ message: 'Appointment duration invalid' });
 
         await AppointmentSlot.insertMany(slots);
         return res.status(200).json({ message: 'Appointment slots pubslished successfully' });
@@ -40,4 +43,4 @@ const createAppointment = async (req, res) => {
     }
 };
 
-export { createAppointment };
+export { createAppointments };
