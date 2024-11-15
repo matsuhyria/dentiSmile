@@ -41,7 +41,7 @@ If you encounter any issues, please submit them through the [issue tracker](http
 
 - **Final presentation**: System testing, cleanup, and preparation for demonstration
 
-## Contributing should we add this?
+## Contributing
 
 We welcome contributions! Please refer to our [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines on how to contribute, report issues, and submit pull requests.
 
