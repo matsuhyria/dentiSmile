@@ -1,53 +1,59 @@
-# Group-7
-
-## Name
-
-Choose a self-explaining name for your project.
+# DentiSmile+ (Group-7)
 
 ## Description
 
-Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
+DentiSmile+ is a distributed appointment booking system designed specifically for residents of Gothenburg, Sweden, to easily find and book dentist appointments. The system provides a responsive web interface for users to view available appointment slots on a map, book or cancel appointments, and receive real-time notifications. It also includes tools for dentists to manage their schedules.
 
-## Badges
-
-On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
+The DentiSmile+ system leverages a distributed microservices architecture combining a client-server with microservice as well as MQTT messaging to enable real-time updates.
 
 ## Visuals
 
-Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
+![System Architecture Diagram](./assets/system_architecture.png)
 
-## Installation
+![Entity Relationship Diagram](./assets/ER.png)
 
-Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
+## Requirements
+
+- Node.js (v14+)
+- Vue CLI
+- MongoDB
+- RabbitMQ broker
+
+`Add other tech stack here`
 
 ## Usage
 
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
+- As a user: view available clinics and slots for a clinic on a map of Gothenburg and book/cancel dentist appointments.
+- As a dentist: manage their own availability through the dentist interface.
+- Real-time notifications are enabled for booking status updates through MQTT.
 
-## Support
+## Issues / Support
 
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
+In order to follow a unified process, we have agreed as a team to follow the general rules in an [Issue template](Issue-template.md) that we created.
+
+If you encounter any issues, please submit them through the [issue tracker](https://git.chalmers.se/courses/dit355/2024/student_teams/dit356_2024_07/group-7/-/issues).
 
 ## Roadmap
 
-If you have ideas for releases in the future, it is a good idea to list them in the README.
+- **MS1**: Implement 20% of core functionality (Microservices,client, MQTT, documentation)
+- **MS2**: Implement remaining core features and improve client UI
+- **MS3**: Complete system design, integrate additional requirements shared in december
 
-## Contributing
+- **Final presentation**: System testing, cleanup, and preparation for demonstration
 
-State if you are open to contributions and what your requirements are for accepting them.
+## Contributing should we add this?
 
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
+We welcome contributions! Please refer to our [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines on how to contribute, report issues, and submit pull requests.
 
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
+## Authors and Acknowledgments
 
-## Authors and acknowledgment
-
-Show your appreciation to those who have contributed to the project.
+- Team Members: Maksym Matsuhyria, Ahmet Yavuz Kalkan, Yaroslav Ursul, Andre Ibrahim
+- Special thanks to the course instructors and TA’s for guidance on distributed systems and project management.
 
 ## License
 
-For open source projects, say how it is licensed.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## Project status
+## Project Status
 
-If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
+Active - Currently in development with milestone-based releases.
