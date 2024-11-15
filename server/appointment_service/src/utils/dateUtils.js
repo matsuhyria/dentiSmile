@@ -1,40 +1,55 @@
+import moment from 'moment';
+
 // negative if the first date is earlier
 // positive if the second date is earlier
 // 0 if both dates are exactly the same
-const compareIsoDates = (stringDate1, stringDdate2) => {
-    return new Date(stringDate1).valueOf() - new Date(stringDdate2).valueOf();
+const compareIsoDates = (startDateISO, endDateISO) => {
+    const date1 = moment(startDateISO);
+    const date2 = moment(endDateISO);
+
+    if (date1.isBefore(date2)) {
+        return -1;
+    } else if (date1.isAfter(date2)) {
+        return 1;
+    } else {
+        return 0;
+    }
 };
 
-const compareDates = (stringDate1, stringDdate2) => {
-    return stringDate1.valueOf() - stringDdate2.valueOf();
-};
-
-const generateTimeSlots = (startIsoDate, endIsoDate, dentistId) => {
-    const start = new Date(startIsoDate);
-    const end = new Date(endIsoDate);
+/**
+ * Generates time slots for a dentist between the specified start and end times.
+ *
+ * @param {number} dentistId - The unique identifier of the dentist for whom the slots are being generated.
+ * @param {string} startDateISO - The ISO string representing the start time for generating slots.
+ * @param {string} endDateISO - The ISO string representing the end time for generating slots.
+ * @param {number} [minutes=60] - The duration of each time slot in minutes. Defaults to 60 minutes (1 hour) if not provided.
+ *
+ * @returns {Array} - An array of time slot objects, each containing a `startTime`, `endTime`, and `dentistId`.
+ **/
+const generateTimeSlots = (dentistId, startDateISO, endDateISO, minutes = 60) => {
+    const start = moment(startDateISO);
+    const end = moment(endDateISO);
 
     const slots = [];
 
-    while (compareDates(start, end) < 0) {
-        const curr = new Date(start);
-        curr.setUTCHours(8, 0, 0, 0);
+    let currStart = start.clone();
+    let currEnd = end.clone();
 
-        for (let hour = 8; hour < 16; hour++) {
-            const startSlotTime = new Date(curr);
-            startSlotTime.setUTCHours(hour, 0, 0, 0);
+    while (currStart.isBefore(end)) {
+        // currStart.clone() to not modify the original currStart
+        currEnd = currStart.clone().add(minutes, 'minutes');
 
-            const endSlotTime = new Date(curr);
-            endSlotTime.setUTCHours(hour + 1, 0, 0, 0);
-
-            slots.push({
-                dentistId: dentistId,
-                startTime: startSlotTime.toISOString(),
-                endTime: endSlotTime.toISOString()
-            });
+        if (currEnd.isAfter(end)) {
+            return slots;
         }
 
-        // Increment day
-        start.setUTCDate(start.getUTCDate() + 1);
+        slots.push({
+            dentistId: dentistId,
+            startTime: currStart.toISOString(),
+            endTime: currEnd.toISOString()
+        });
+
+        currStart.add(minutes, 'minutes');
     }
     return slots;
 };

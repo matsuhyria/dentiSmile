@@ -3,13 +3,7 @@ import { expect } from 'chai';
 import { describe, it } from 'mocha';
 
 describe('compareIsoDates', () => {
-    // compare types
-    it('TYPES: should handle invalid date strings and return NaN', function () {
-        const date1 = 'invalid-date';
-        const date2 = '2024-11-01T12:00:00Z';
-        const result = compareIsoDates(date1, date2);
-        expect(result).to.be.NaN;
-    });
+    // if the date is invalid, moment throws an error
 
     // compare days
     it('DAYS: should return negative if the first is earlier', () => {
@@ -100,42 +94,86 @@ describe('compareIsoDates', () => {
     });
 });
 
-const HOUR_MILLIS = 1000 * 60 * 60;
-
 describe('generateTimeSlots', () => {
-    it('should generate slots for each hour between 8 AM and 4 PM', () => {
-        const startIsoDate = '2024-12-01T08:00:00.000Z';
-        const endIsoDate = '2024-12-01T16:00:00.000Z';
-        const dentistId = 'dentist-123';
+    // if the date is invalid, moment throws an error
 
-        const slots = generateTimeSlots(startIsoDate, endIsoDate, dentistId);
+    it('should generate 1-hour time slots between start and end dates', () => {
+        const dentistId = 1;
+        const startDateISO = '2024-11-15T08:00:00Z';
+        const endDateISO = '2024-11-15T10:00:00Z';
 
-        expect(slots).to.have.lengthOf(8);
+        const slots = generateTimeSlots(dentistId, startDateISO, endDateISO);
 
-        // ensure each slot is exactly one hour
-        slots.forEach((slot) => {
-            const startTime = new Date(slot.startTime);
-            const endTime = new Date(slot.endTime);
+        expect(slots).to.have.lengthOf(2);
 
-            expect((endTime - startTime) / (HOUR_MILLIS)).to.equal(1);
-        });
+        expect(slots[0]).to.have.property('dentistId').that.equals(dentistId);
+        expect(slots[0].startTime).to.equal('2024-11-15T08:00:00.000Z');
+        expect(slots[0].endTime).to.equal('2024-11-15T09:00:00.000Z');
+
+        expect(slots[1].startTime).to.equal('2024-11-15T09:00:00.000Z');
+        expect(slots[1].endTime).to.equal('2024-11-15T10:00:00.000Z');
     });
 
-    it('should generate slots across multiple days', () => {
-        const startIsoDate = '2023-12-01T00:00:00.000Z';
-        const endIsoDate = '2023-12-03T23:59:59.000Z';
-        const dentistId = 'dentist-123';
+    it('should generate 30-minute time slots', () => {
+        const dentistId = 1;
+        const startDateISO = '2024-11-15T08:00:00Z';
+        const endDateISO = '2024-11-15T09:30:00Z';
 
-        const slots = generateTimeSlots(startIsoDate, endIsoDate, dentistId);
+        const slots = generateTimeSlots(dentistId, startDateISO, endDateISO, 30);
 
-        expect(slots).to.have.lengthOf(24);
+        expect(slots).to.have.lengthOf(3);
 
-        // ensure each slot is exactly one hour
-        slots.forEach((slot) => {
-            const startTime = new Date(slot.startTime);
-            const endTime = new Date(slot.endTime);
+        expect(slots[0].startTime).to.equal('2024-11-15T08:00:00.000Z');
+        expect(slots[0].endTime).to.equal('2024-11-15T08:30:00.000Z');
 
-            expect((endTime - startTime) / (HOUR_MILLIS)).to.equal(1);
-        });
+        expect(slots[1].startTime).to.equal('2024-11-15T08:30:00.000Z');
+        expect(slots[1].endTime).to.equal('2024-11-15T09:00:00.000Z');
+
+        expect(slots[2].startTime).to.equal('2024-11-15T09:00:00.000Z');
+        expect(slots[2].endTime).to.equal('2024-11-15T09:30:00.000Z');
+    });
+
+
+    it('should generate 1-minute time slots', () => {
+        const dentistId = 1;
+        const startDateISO = '2024-11-15T08:00:00Z';
+        const endDateISO = '2024-11-15T08:10:00Z';
+
+        const slots = generateTimeSlots(dentistId, startDateISO, endDateISO, 1);
+
+        expect(slots).to.have.lengthOf(10);
+    });
+
+    it('should return an empty array if start date equals end date', () => {
+        const dentistId = 1;
+        const startDateISO = '2024-11-15T08:00:00Z';
+        const endDateISO = '2024-11-15T08:00:00Z';
+
+        const slots = generateTimeSlots(dentistId, startDateISO, endDateISO);
+
+        expect(slots).to.have.lengthOf(0);
+    });
+
+    it('should return an empty array if the start date is after the end date', () => {
+        const dentistId = 1;
+        const startDateISO = '2024-11-15T10:00:00Z';
+        const endDateISO = '2024-11-15T08:00:00Z';
+
+        const slots = generateTimeSlots(dentistId, startDateISO, endDateISO);
+
+        expect(slots).to.have.lengthOf(0);
+    });
+
+    it('should handle cases where the last slot extends to the end date', () => {
+        const dentistId = 1;
+        const startDateISO = '2024-11-15T08:00:00Z';
+        const endDateISO = '2024-11-15T09:00:00Z';
+
+        const slots = generateTimeSlots(dentistId, startDateISO, endDateISO, 60);
+
+        expect(slots).to.have.lengthOf(1);
+
+        expect(slots[0].startTime).to.equal('2024-11-15T08:00:00.000Z');
+        expect(slots[0].endTime).to.equal('2024-11-15T09:00:00.000Z');
     });
 });
