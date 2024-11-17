@@ -1,6 +1,8 @@
 <template>
   <div :class="slotClass" @click="handleClick">
-    {{ this.slotStartingHour }}:00 - {{ this.slotStartingHour + 1 }}:00
+    <div id="slotTime">
+      {{ this.slotStartingHour }}:00 - {{ this.slotStartingHour + 1 }}:00
+    </div>
   </div>
 </template>
 
@@ -48,5 +50,18 @@ export default {
 
 .unavailable {
   background-color: gray;
+}
+
+#slotTime {
+  font-size: 0.9rem;
+}
+
+div {
+  border: 1px solid black;
+  height: 5rem;
+  width: 18rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 </style>

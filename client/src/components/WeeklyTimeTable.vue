@@ -1,9 +1,10 @@
 <template>
-    <b-row class="weekly-timetable">
-        <b-col class="day justify-content-center align-items-center flex-direction-column" v-for="day in daysInWeek"
-            :key="day.date">
+    <b-row class="weekly-timetable" no-gutters>
+        <b-col class="day justify-content-space-around align-items-center flex-direction-column"
+            v-for="day in daysInWeek" :key="day.date">
             <div class="day-header"> {{ day.dayName }} - {{ formatDate(day.date) }}</div>
-            <TimeSlot v-for="hour in hours" :key="hour" :slotStartingHour="hour" :appointment="findAppointment(day.date, hour)">
+            <TimeSlot v-for="hour in hours" :key="hour" :slotStartingHour="hour"
+                :appointment="findAppointment(day.date, hour)">
             </TimeSlot>
         </b-col>
     </b-row>
@@ -36,8 +37,8 @@ export default {
 
             //! REMOVE
             console.log("DATE:" + this.selectedWeek);
-            console.log( "GETDATE" + this.selectedWeek.getDate());
-            
+            console.log("GETDATE" + this.selectedWeek.getDate());
+
             mondayDate.setDate(this.selectedWeek.getDate() - ((this.selectedWeek.getDay() + 6) % 7));
 
             const days = [];
