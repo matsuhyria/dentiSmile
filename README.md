@@ -1,16 +1,31 @@
 # DentiSmile+ (Group-7)
 
-## Description
+### Description
 
 DentiSmile+ is a distributed appointment booking system designed specifically for residents of Gothenburg, Sweden, to easily find and book dentist appointments. The system provides a responsive web interface for users to view available appointment slots on a map, book or cancel appointments, and receive real-time notifications. It also includes tools for dentists to manage their schedules.
 
 The DentiSmile+ system leverages a distributed microservices architecture combining a client-server with microservice as well as MQTT messaging to enable real-time updates.
 
-## Visuals
+## System Architecture
 
 ![System Architecture Diagram](./assets/system_architecture.png)
 
+## ER Diagram
+
 ![Entity Relationship Diagram](./assets/ER.png)
+
+## Figma Prototype
+
+<table>
+  <tr>
+    <td><img src="./assets/Figma/Screenshot1.png" width="800"></td>
+    <td><img src="./assets/Figma/Screenshot2.png" width="800"></td>
+  </tr>
+  <tr>
+    <td><img src="./assets/Figma/Screenshot3.png" width="800"></td>
+    <td><img src="./assets/Figma/Screenshot4.png" width="800"></td>
+  </tr>
+</table>
 
 ## Requirements
 
