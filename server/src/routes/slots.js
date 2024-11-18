@@ -12,4 +12,9 @@ router.get('/slots/available', async (req, res) => {
     }
 });
 
+router.get('/v1', (req, res) => {
+    res.status(200).json({ message: 'Welcome to DentiSmile+ API v1!' });
+});
+
+
 export default router;
