@@ -1,36 +1,48 @@
-#!/usr/bin/env node
-
 import chalk from 'chalk';
 import axios from 'axios';
 import readlineSync from 'readline-sync';
 
-// Function to get user input for start and end times
-const getTimeRange = () => {
-  console.log(chalk.blue('Please provide the available time range:'));
-  const startDate = readlineSync.question(
-    chalk.yellow('Start date (YYYY-MM-DD HH:mm): ')
-  );
-  const endDate = readlineSync.question(
-    chalk.yellow('End date (YYYY-MM-DD HH:mm): ')
-  );
+const BASE_API = 'http://localhost:5000/api/v1';
 
-  // Validate dates (basic validation)
-  if (isNaN(new Date(startDate)) || isNaN(new Date(endDate))) {
+
+const validateDates = (startDate, endDate) => {
+  if (isValidIsoDate(startDate) || isValidIsoDate(endDate)) {
     console.log(chalk.red('Invalid date format. Please try again.'));
-    return null;
+    return false;
   }
 
   if (new Date(startDate) >= new Date(endDate)) {
-    console.log(
-      chalk.red('Start date must be before the end date. Please try again.')
-    );
-    return null;
+    console.log(chalk.red('Start date must be earlier than end date.'));
+    return false;
   }
 
-  return { startDate, endDate };
+  return true;
+}
+
+const isValidIsoDate = (date) => {
+  return /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(:\d{2}\.\d+Z)?$/.test(date);
+}
+
+const getTimeRange = () => {
+  console.log(chalk.blue('Please provide the available time range:'));
+
+  while (true) {
+    const startDate = readlineSync.question(
+      chalk.yellow('Start date (YYYY-MM-DDTHH:mm): ')
+    );
+
+    const endDate = readlineSync.question(
+      chalk.yellow('End date (YYYY-MM-DDTHH:mm): ')
+    );
+
+    if (validateDates(startDate, endDate)) {
+      return { startDate, endDate };
+    }
+
+    console.log(chalk.red('Invalid input. Please try again.\n'));
+  }
 };
 
-// Function to publish available times
 const publishTime = async (startDate, endDate) => {
   const apiEndpoint = 'http://localhost5000/api/v1/appointments';
   try {
@@ -54,7 +66,6 @@ const publishTime = async (startDate, endDate) => {
   }
 };
 
-// Main CLI logic
 (async () => {
   console.log(chalk.green('Welcome to the Dentist CLI Tool!'));
 
