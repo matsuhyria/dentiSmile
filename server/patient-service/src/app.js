@@ -5,7 +5,7 @@ import connectDB from './config/db.js';
 import authRouter from './routes/authRoutes.js';
 
 const MONGODB_URI = /*process.env.MONGODB_URI ||*/ 'mongodb://localhost:27017';
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 5001;
 
 connectDB(MONGODB_URI);
 

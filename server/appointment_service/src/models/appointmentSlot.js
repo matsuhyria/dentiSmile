@@ -24,6 +24,6 @@ const appointmentSlot = new mongoose.Schema({
     }
 });
 
-const AppointmentSlot = mongoose.model('AppointmentSlot', appointmentSlot);
+const AppointmentSlot = mongoose.model('slots', appointmentSlot);
 
 export default AppointmentSlot;
