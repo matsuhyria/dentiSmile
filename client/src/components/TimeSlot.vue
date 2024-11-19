@@ -1,5 +1,9 @@
 <template>
-    <button class="time-slot" :disabled="slot.status !== 'available'" @click="bookSlot">
+    <button
+      class="time-slot"
+      :disabled="slot.status !== 'available'"
+      @click="bookSlot"
+    >
       {{ slot.startTime }} - {{ slot.endTime }}
       <span v-if="slot.status !== 'available'">({{ slot.status }})</span>
     </button>
@@ -10,7 +14,7 @@
     props: ['slot'],
     methods: {
       bookSlot() {
-        this.$emit('book', this.slot._id);
+        this.$emit('book', this.slot._id); // Emit the slot ID to the parent
       },
     },
   };
@@ -23,10 +27,9 @@
     border-radius: 5px;
     background-color: #f9f9f9;
     cursor: pointer;
-    background-color: black;
   }
   .time-slot:disabled {
-    background-color: black;
+    background-color: #ddd;
     cursor: not-allowed;
   }
   </style>

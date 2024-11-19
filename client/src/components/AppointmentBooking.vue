@@ -4,7 +4,7 @@
       <vue-cal
         class="calendar"
         :time="true"
-        :events="events"
+        :events="events" 
         @cell-click="fetchSlots"
         events-color="blue"
       ></vue-cal>
@@ -16,7 +16,7 @@
             v-for="slot in slots"
             :key="slot._id"
             :slot="slot"
-            @book="bookSlot"
+            @book="bookSlot" 
           />
         </div>
       </div>
@@ -35,25 +35,23 @@
       return {
         selectedDate: null,
         slots: [],
-        events: [] // To store the calendar events
+        events: []
       };
     },
     mounted() {
-      this.fetchAllSlots(); // Fetch all slots when the component is mounted
+      this.fetchAllSlots(); 
     },
     methods: {
-      // Fetch all slots from the backend
       async fetchAllSlots() {
         try {
-          const response = await axios.get('http://localhost:5000/api/v1/appointments'); // Update the endpoint if needed
+          const response = await axios.get('http://localhost:5000/api/v1/appointments');
           this.slots = response.data.slots;
   
-          // Convert slots to calendar events format
           this.events = this.slots.map(slot => ({
-            start: slot.startTime, // Assuming 'startTime' is in a valid format
-            end: slot.endTime, // Assuming 'endTime' is in a valid format
-            title: `Available Slot`, // Title to display on the calendar
-            id: slot._id // The slot's ID for reference
+            start: slot.startTime, 
+            end: slot.endTime,
+            title: slot.status === 'available' ? 'Available Slot' : 'Booked',
+            id: slot._id
           }));
         } catch (error) {
           console.error('Error fetching slots:', error);
@@ -74,34 +72,18 @@
   
       async bookSlot(slotId) {
         try {
-          const response = await axios.post(`/api/v1/slots/${slotId}/book`, {
-            patientId: 'some-patient-id', // Replace with actual ID
+          const response = await axios.post(`http://localhost:5000/api/v1/appointments/${slotId}/bookings`, {
+            patientId: 'patient-id-123', 
           });
           alert(response.data.message);
-          this.fetchSlots({ date: this.selectedDate });
+  
+          // Refresh slots and events after booking
+          this.fetchAllSlots();
         } catch (error) {
-          alert('Error booking slot: ' + error.response.data.message);
+          alert('Error booking slot: ' + (error.response?.data?.message || error.message));
         }
       },
     },
   };
   </script>
-  
-  <style scoped>
-  .appointment-booking {
-    font-family: Arial, sans-serif;
-  }
-  .calendar {
-    margin: 20px auto;
-    max-width: 800px;
-  }
-  .slots-container {
-    margin-top: 20px;
-  }
-  .time-slots {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-  }
-  </style>
   
