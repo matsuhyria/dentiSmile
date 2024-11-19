@@ -4,12 +4,9 @@ import moment from 'moment';
 // positive if the second date is earlier
 // 0 if both dates are exactly the same
 const compareIsoDates = (startDateISO, endDateISO) => {
-    const date1 = moment(startDateISO);
-    const date2 = moment(endDateISO);
-
-    if (date1.isBefore(date2)) {
+    if (startDateISO.isBefore(date2)) {
         return -1;
-    } else if (date1.isAfter(date2)) {
+    } else if (endDateISO.isAfter(date2)) {
         return 1;
     } else {
         return 0;
@@ -81,4 +78,8 @@ const generateRepeatedTimeSlots = (dentistId, startDateISO, endDateISO, minutes 
     return slots;
 };
 
-export { compareIsoDates, generateTimeSlots, generateRepeatedTimeSlots };
+const isValidIsoDate = (date) => {
+    return /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(:\d{2}\.\d+Z)?$/.test(date);
+}
+
+export { compareIsoDates, generateTimeSlots, generateRepeatedTimeSlots, isValidIsoDate };

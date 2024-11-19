@@ -1,18 +1,23 @@
 import moment from 'moment';
 import AppointmentSlot from '../models/appointmentSlot.js';
-import { compareIsoDates, generateTimeSlots, generateRepeatedTimeSlots } from '../utils/dateUtils.js';
+import { compareIsoDates, generateTimeSlots, generateRepeatedTimeSlots, isValidIsoDate } from '../utils/dateUtils.js';
 
 const createAppointments = async (req, res) => {
     const { dentistId, startTime, endTime, minutes, isRepeated } = req.body;
+
+    if (isValidIsoDateTime(startTime) || isValidIsoDateTime(endTime)) {
+        return res.status(400).json({ message: 'Invalid date format. Use ISO 8601 (YYYY-MM-DDTHH:mm:ssZ) or (YYYY-MM-DDTHH:mm)' });
+    }
+
+    // ensure timezone when the date does not include it
+    const start = moment(startTime).toISOString();
+    const end = moment(endTime).toISOString();
 
     if (compareIsoDates(startTime, new Date().toISOString()) < 0 || compareIsoDates(endTime, new Date().toISOString()) < 0) {
         return res.status(400).json({ message: 'Dates cannot be in the past' });
     }
 
     try {
-        const start = moment(startTime).toISOString();
-        const end = moment(endTime).toISOString();
-
         const existingSlots = await AppointmentSlot.find({
             dentistId,
             $or: [
