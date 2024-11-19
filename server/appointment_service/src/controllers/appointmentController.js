@@ -46,6 +46,4 @@ const getAllSlots = async (req, res) => {
     }
 }
 
-
-
 export { bookAppointment, getSlotDetails, getAllSlots };
