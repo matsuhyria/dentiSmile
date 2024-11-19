@@ -24,7 +24,7 @@ const bookAppointment = async (req, res) => {
     }
 };
 
-const getSlotDetailt = async (req, res) => {
+const getSlotDetails = async (req, res) => {
     try {
         const slot = await AppointmentSlot.findById(req.params.id);
         if (!slot) {
@@ -36,4 +36,16 @@ const getSlotDetailt = async (req, res) => {
     }
 };
 
-export { bookAppointment, getSlotDetailt };
+const getAllSlots = async (req, res) => {
+    try {
+        const slots = await AppointmentSlot.find();
+        res.status(200).json({ slots });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server error', error });
+    }
+}
+
+
+
+export { bookAppointment, getSlotDetails, getAllSlots };
