@@ -15,8 +15,9 @@ app.use(morgan('dev'));
 app.options('*', cors());
 app.use(cors());
 
-app.use('/api', slotRoutes);
-
+app.get('/api/v1', (req, res) => {
+    res.status(200).json({ message: 'Welcome to DentiSmile+ API v1!' });
+});
 
 app.all('*', (req, res) => {
     res.status(404).json({ message: 'Server error.' });
