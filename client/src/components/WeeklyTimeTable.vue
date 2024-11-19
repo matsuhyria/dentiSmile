@@ -18,6 +18,7 @@ export default {
     components: { TimeSlot },
     data() {
         return {
+            //refreshKey: 0, // Goblins way to reactivity
             startingHours: 7,
             endingHours: 18,
         };
@@ -28,7 +29,6 @@ export default {
             type: Date,
             required: true
         },
-        dentist: String,
     },
     computed: {
         daysInWeek() {
@@ -64,17 +64,15 @@ export default {
             return slotTime;
         },
         findAppointment(date, hour) {
-            const slotTime = this.getSlotTime(date, hour).getTime();
-            return this.appointments.find(appointment => {
-                return (
-                    appointment.startTime.getTime() === slotTime
-                );
-            });
+            // How could milisecond representation of ISO cause so much annoyance
+            // TODO: This method needs to be optimized
+            const slotTime = this.getSlotTime(date, hour).toISOString().split('.')[0] + "Z";
+            return this.appointments.find(appointment => appointment.startTime === slotTime);
         },
         formatDate(date) {
             return date.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
         }
-    }
+    },
 };
 </script>
 

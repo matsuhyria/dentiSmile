@@ -6,7 +6,7 @@
     <div>
         <b-row>
             <b-col cols="12" md="8" class="clinicHeader">
-                {{ dentist.clinic_location?.street }} {{ dentist.clinic_location?.zip }} {{ dentist.clinic_location?.city }} / {{ dentist.full_name }}
+                {{ dentist.clinic_location?.street }} {{ dentist.clinic_location?.zip }} {{ dentist.clinic_location?.city }} / {{ dentist.first_name }} {{ dentist.surname }}
             </b-col>
             <b-col cols="12" md="4" class="weekSelector">
                 <button @click="decrementWeek">-</button>
