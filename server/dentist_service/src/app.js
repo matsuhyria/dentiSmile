@@ -13,8 +13,10 @@ connectDB(MONGODB_URI);
 const app = express();
 app.use(express.json());
 app.use(morgan('dev'));
-app.options('*', cors());
-app.use(cors());
+app.use(cors({
+    origin: ['http://localhost:5173', 'http://localhost:4173'],
+    credentials: true
+}));
 
 app.get('/api/v1', (req, res) => {
     res.status(200).json({ message: 'Welcome to DentiSmile+ API v1!' });
