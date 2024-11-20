@@ -2,15 +2,22 @@ import bcrypt from 'bcrypt';
 import Dentist from '../models/dentist.js';
 
 const register = async (req, res) => {
-    const { username, password, phone, location, email } = req.body;
+    const { username, password, first_name, surname, phone, location, latitude, longitude, street, city, zip, email } = req.body;
 
     try {
         const hashedPassword = await bcrypt.hash(password, 10);
         const newDentist = new Dentist({
             username,
             password: hashedPassword,
+            first_name,
+            surname,
             phone,
             location,
+            latitude,
+            longitude,
+            street,
+            city,
+            zip,
             email
         });
 

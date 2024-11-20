@@ -3,8 +3,9 @@ import morgan from 'morgan';
 import cors from 'cors';
 import connectDB from './config/db.js';
 import authRouter from './routes/authRoutes.js';
+import retrievalRouter from './routes/retrievalRoutes.js';
 
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:3100/dentist_db';
+const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/dentist_db';
 const PORT = process.env.PORT || 5000;
 
 connectDB(MONGODB_URI);
@@ -20,6 +21,7 @@ app.get('/api/v1', (req, res) => {
 });
 
 app.use(authRouter);
+app.use(retrievalRouter);
 
 app.use('/api/*', (req, res) => {
     res.status(404).json({ message: 'Server error.' });
