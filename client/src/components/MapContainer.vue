@@ -72,7 +72,7 @@ function createMarkers() {
 
 function createMarkerPopup(dentist, clinicMarker) {
     clinicMarker.bindPopup(`<a
-      href="/dentists/${dentist.username}/appointments"><b>${dentist.first_name} ${dentist.surname} </b><br>${dentist.street} ${dentist.zip}</a>`).openPopup();
+      href="/dentists/${dentist._id}/appointments"><b>${dentist.first_name} ${dentist.surname} </b><br>${dentist.street} ${dentist.zip}</a>`).openPopup();
 }
 </script>
 

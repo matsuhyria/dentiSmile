@@ -48,4 +48,43 @@ const createAppointments = async (req, res) => {
     }
 };
 
-export { createAppointments };
+const getAppointments = async (req, res) => {
+    try {
+        // Finds appointments for a specific dentist within the given timeframe
+        // Dentist, starting date and ending date will be passed in as query parameters
+        const { dentistId, startingDate, endingDate } = req.query;
+
+        if (!dentistId || !startingDate || !endingDate) {
+            return res.status(400).json({ message: 'Missing required fields. Expected query format: ?dentistId=abcd&startingDate=YYYY-MM-DD&endingDate=YYYY-MM-DD'});
+        }
+
+        const appointments = await AppointmentSlot.find({
+            dentistId: dentistId,
+            startTime: {
+                $gte: new Date(startingDate),
+                $lte: new Date(endingDate)
+            }
+        });
+        return res.status(200).json(appointments);
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({ message: 'Error fetching appointments' });
+    }
+}
+
+const getAppointment = async (req, res) => {
+    try {
+        const { appointmentId } = req.params;
+        const appointment = await AppointmentSlot.findById(appointmentId);
+        if (!appointment) {
+            return res.status(404).json({ message: 'Appointment not found' });
+        }
+        return res.status(200).json(appointment);
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({ message: 'Error fetching appointment' });
+    }
+}
+
+
+export { createAppointments, getAppointments, getAppointment };
