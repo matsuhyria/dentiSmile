@@ -4,9 +4,11 @@ import moment from 'moment';
 // positive if the second date is earlier
 // 0 if both dates are exactly the same
 const compareIsoDates = (startDateISO, endDateISO) => {
-    if (startDateISO.isBefore(date2)) {
+    const start = moment(startDateISO);
+    const end = moment(endDateISO);
+    if (start.isBefore(end)) {
         return -1;
-    } else if (endDateISO.isAfter(date2)) {
+    } else if (end.isAfter(start)) {
         return 1;
     } else {
         return 0;
@@ -79,7 +81,44 @@ const generateRepeatedTimeSlots = (dentistId, startDateISO, endDateISO, minutes 
 };
 
 const isValidIsoDate = (date) => {
-    return /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(:\d{2}\.\d+Z)?$/.test(date);
+    const regex = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(:\d{2}.\d{3}Z)?$/;
+    if (!regex.test(date)) {
+        return false;
+    }
+
+    const inputDate = date.endsWith('Z') ? date : date + 'Z';
+    const parsedDate = new Date(inputDate);
+
+    if (isNaN(parsedDate.getTime())) {
+        return false;
+    }
+
+    const [datePart, timePart] = date.split('T');
+
+    const [year, month, day] = datePart.split('-').map(Number);
+
+    if (parsedDate.getUTCFullYear() !== year ||
+        parsedDate.getUTCMonth() + 1 !== month || // getUTCMonth() returns a number 0 - 11
+        parsedDate.getUTCDate() !== day) {
+        return false;
+    }
+
+    const [time, ms] = timePart.replace('Z', '').split('.');
+
+    const [hour, minute, second = 0] = time.split(':').map(Number);
+
+    if (parsedDate.getUTCHours() !== hour ||
+        parsedDate.getUTCMinutes() !== minute ||
+        parsedDate.getUTCSeconds() !== second) {
+        return false;
+    }
+
+    if (ms && parsedDate.getUTCMilliseconds() !== Number(ms)) {
+        return false;
+    }
+
+    return true;
 }
+
 
 export { compareIsoDates, generateTimeSlots, generateRepeatedTimeSlots, isValidIsoDate };
