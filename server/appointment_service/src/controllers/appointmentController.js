@@ -1,19 +1,18 @@
-import moment from 'moment';
 import AppointmentSlot from '../models/appointmentSlot.js';
-import { compareIsoDates, generateTimeSlots, generateRepeatedTimeSlots, isValidIsoDate } from '../utils/dateUtils.js';
+import { generateSingleDaySlots, generateMultiDaySlots, isValidIsoDate } from '../utils/dateUtils.js';
 
 const createAppointments = async (req, res) => {
-    const { dentistId, startTime, endTime, minutes, isRepeated } = req.body;
+    const { dentistId, startTime, endTime, rangeMinutes, isSingleDay } = req.body;
 
-    if (isValidIsoDateTime(startTime) || isValidIsoDateTime(endTime)) {
+    if (!isValidIsoDate(startTime) || !isValidIsoDate(endTime)) {
         return res.status(400).json({ message: 'Invalid date format. Use ISO 8601 (YYYY-MM-DDTHH:mm:ssZ) or (YYYY-MM-DDTHH:mm)' });
     }
 
     // ensure timezone when the date does not include it
-    const start = moment(startTime).toISOString();
-    const end = moment(endTime).toISOString();
+    const start = new Date(startTime).toISOString();
+    const end = new Date(endTime).toISOString();
 
-    if (compareIsoDates(startTime, new Date().toISOString()) < 0 || compareIsoDates(endTime, new Date().toISOString()) < 0) {
+    if (start < new Date() || end < new Date()) {
         return res.status(400).json({ message: 'Dates cannot be in the past' });
     }
 
@@ -30,13 +29,9 @@ const createAppointments = async (req, res) => {
             return res.status(400).json({ message: 'Slots for this timeframe already exist' });
         }
 
-        // no effect if minutes is undefined
-        let slots;
-        if (isRepeated) {
-            slots = generateRepeatedTimeSlots(dentistId, startTime, endTime, minutes);
-        } else {
-            slots = generateTimeSlots(dentistId, startTime, endTime, minutes);
-        }
+        const slots = isSingleDay
+            ? generateSingleDaySlots(dentistId, start, end, rangeMinutes)
+            : generateMultiDaySlots(dentistId, start, end, rangeMinutes);
 
         if (slots.length < 1) return res.status(400).json({ message: 'Appointment duration invalid' });
 

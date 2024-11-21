@@ -1,13 +1,13 @@
-import { generateSlots, generateRepeatedTimeSlots, isValidIsoDate } from '../../../src/utils/dateUtils.js';
+import { generateSingleDaySlots, generateMultiDaySlots, isValidIsoDate } from '../../../src/utils/dateUtils.js';
 import { expect, assert } from 'chai';
 import { describe, it } from 'mocha';
 
-describe('generateSlots', () => {
+describe('generateSingleDaySlots', () => {
     it('should generate hourly slots within the given range', function () {
         const dentistId = '123';
         const startDateISO = '2024-11-21T08:00:00Z';
         const endDateISO = '2024-11-21T12:00:00Z';
-        const slots = generateSlots(dentistId, startDateISO, endDateISO, 60);
+        const slots = generateSingleDaySlots(dentistId, startDateISO, endDateISO, 60);
 
         const expectedSlots = [
             { dentistId: '123', startTime: '2024-11-21T08:00:00.000Z', endTime: '2024-11-21T09:00:00.000Z' },
@@ -24,7 +24,7 @@ describe('generateSlots', () => {
         const startDateISO = '2024-11-15T08:00:00Z';
         const endDateISO = '2024-11-15T10:00:00Z';
 
-        const slots = generateSlots(dentistId, startDateISO, endDateISO);
+        const slots = generateSingleDaySlots(dentistId, startDateISO, endDateISO);
 
         expect(slots).to.have.lengthOf(2);
 
@@ -42,7 +42,7 @@ describe('generateSlots', () => {
         const startDateISO = '2024-11-15T08:00:00Z';
         const endDateISO = '2024-11-15T09:30:00Z';
 
-        const slots = generateSlots(dentistId, startDateISO, endDateISO, 30);
+        const slots = generateSingleDaySlots(dentistId, startDateISO, endDateISO, 30);
 
         expect(slots).to.have.lengthOf(3);
 
@@ -62,7 +62,7 @@ describe('generateSlots', () => {
         const startDateISO = '2024-11-15T08:00:00Z';
         const endDateISO = '2024-11-15T08:10:00Z';
 
-        const slots = generateSlots(dentistId, startDateISO, endDateISO, 1);
+        const slots = generateSingleDaySlots(dentistId, startDateISO, endDateISO, 1);
 
 
         const expectedSlots = [
@@ -88,7 +88,7 @@ describe('generateSlots', () => {
         const startDateISO = '2024-11-15T08:00:00Z';
         const endDateISO = '2024-11-15T08:00:00Z';
 
-        const slots = generateSlots(dentistId, startDateISO, endDateISO);
+        const slots = generateSingleDaySlots(dentistId, startDateISO, endDateISO);
 
         expect(slots).to.have.lengthOf(0);
     });
@@ -97,7 +97,7 @@ describe('generateSlots', () => {
         const dentistId = '101';
         const startDateISO = '2024-11-21T08:00:00Z';
         const endDateISO = '2024-11-21T09:00:00Z';
-        const slots = generateSlots(dentistId, startDateISO, endDateISO, 120);
+        const slots = generateSingleDaySlots(dentistId, startDateISO, endDateISO, 120);
 
         expect(slots).to.have.lengthOf(0);
     });
@@ -107,7 +107,7 @@ describe('generateSlots', () => {
         const startDateISO = '2024-11-15T10:00:00Z';
         const endDateISO = '2024-11-15T08:00:00Z';
 
-        const slots = generateSlots(dentistId, startDateISO, endDateISO);
+        const slots = generateSingleDaySlots(dentistId, startDateISO, endDateISO);
 
         expect(slots).to.have.lengthOf(0);
     });
@@ -117,7 +117,7 @@ describe('generateSlots', () => {
         const startDateISO = '2024-11-15T08:00:00Z';
         const endDateISO = '2024-11-15T09:00:00Z';
 
-        const slots = generateSlots(dentistId, startDateISO, endDateISO, 60);
+        const slots = generateSingleDaySlots(dentistId, startDateISO, endDateISO, 60);
 
         expect(slots).to.have.lengthOf(1);
 
@@ -129,7 +129,7 @@ describe('generateSlots', () => {
         const dentistId = '202';
         const startDateISO = '2024-11-21T08:00:00Z';
         const endDateISO = '2024-11-21T10:00:00Z';
-        const slots = generateSlots(dentistId, startDateISO, endDateISO, 120);
+        const slots = generateSingleDaySlots(dentistId, startDateISO, endDateISO, 120);
 
         const expectedSlots = [
             { dentistId: '202', startTime: '2024-11-21T08:00:00.000Z', endTime: '2024-11-21T10:00:00.000Z' },
@@ -139,12 +139,12 @@ describe('generateSlots', () => {
     });
 });
 
-describe('generateRepeatedTimeSlots', () => {
+describe('generateMultiDaySlots', () => {
     it('should generate slots for a single day', () => {
         const dentistId = '202';
         const startDateISO = '2024-11-21T08:00:00.000Z';
         const endDateISO = '2024-11-21T10:00:00.000Z';
-        const slots = generateRepeatedTimeSlots(dentistId, startDateISO, endDateISO, 120);
+        const slots = generateMultiDaySlots(dentistId, startDateISO, endDateISO, 120);
 
         const expectedSlots = [
             { dentistId: '202', startTime: '2024-11-21T08:00:00.000Z', endTime: '2024-11-21T10:00:00.000Z' },
@@ -157,7 +157,7 @@ describe('generateRepeatedTimeSlots', () => {
         const dentistId = '303';
         const startDateISO = '2024-11-21T08:00:00.000Z';
         const endDateISO = '2024-11-23T10:00:00.000Z';
-        const slots = generateRepeatedTimeSlots(dentistId, startDateISO, endDateISO, 120);
+        const slots = generateMultiDaySlots(dentistId, startDateISO, endDateISO, 120);
 
         const expectedSlots = [
             { dentistId: '303', startTime: '2024-11-21T08:00:00.000Z', endTime: '2024-11-21T10:00:00.000Z' },
@@ -172,7 +172,7 @@ describe('generateRepeatedTimeSlots', () => {
         const dentistId = '303';
         const startDateISO = '2024-11-30T08:00:00.000Z';
         const endDateISO = '2024-12-02T10:00:00.000Z';
-        const slots = generateRepeatedTimeSlots(dentistId, startDateISO, endDateISO, 120);
+        const slots = generateMultiDaySlots(dentistId, startDateISO, endDateISO, 120);
 
         const expectedSlots = [
             { dentistId: '303', startTime: '2024-11-30T08:00:00.000Z', endTime: '2024-11-30T10:00:00.000Z' },
@@ -187,7 +187,7 @@ describe('generateRepeatedTimeSlots', () => {
         const dentistId = 'dentist123';
         const startDateISO = '2024-11-24T08:00:00.000Z';
         const endDateISO = '2024-11-21T12:00:00.000Z';
-        const slots = generateRepeatedTimeSlots(dentistId, startDateISO, endDateISO, 60);
+        const slots = generateMultiDaySlots(dentistId, startDateISO, endDateISO, 60);
 
         expect(slots).to.be.empty;
     });
@@ -196,7 +196,7 @@ describe('generateRepeatedTimeSlots', () => {
         const dentistId = '303';
         const startDateISO = '2024-11-21T10:00:00.000Z';
         const endDateISO = '2024-11-21T14:00:00.000Z';
-        const slots = generateRepeatedTimeSlots(dentistId, startDateISO, endDateISO, 60);
+        const slots = generateMultiDaySlots(dentistId, startDateISO, endDateISO, 60);
 
         const expectedSlots = [
             { dentistId: '303', startTime: '2024-11-21T10:00:00.000Z', endTime: '2024-11-21T11:00:00.000Z' },
@@ -212,7 +212,7 @@ describe('generateRepeatedTimeSlots', () => {
         const dentistId = '303';
         const startDateISO = '2024-11-21T22:00:00.000Z';
         const endDateISO = '2024-12-21T23:00:00.000Z';
-        const slots = generateRepeatedTimeSlots(dentistId, startDateISO, endDateISO, 60);
+        const slots = generateMultiDaySlots(dentistId, startDateISO, endDateISO, 60);
 
         const expectedSlots = [
             { dentistId: '303', startTime: '2024-11-21T22:00:00.000Z', endTime: '2024-11-21T23:00:00.000Z' },

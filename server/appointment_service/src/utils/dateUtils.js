@@ -1,9 +1,3 @@
-const addUTCMinutes = (date, minutes) => {
-    const newDate = new Date(date);
-    newDate.setUTCMinutes(newDate.getUTCMinutes() + minutes);
-    return newDate;
-};
-
 /**
  * Generates time slots for a dentist between the specified start and end times.
  *
@@ -14,7 +8,7 @@ const addUTCMinutes = (date, minutes) => {
  *
  * @returns {Array} - An array of time slot objects, each containing a `startTime`, `endTime`, and `dentistId`.
  **/
-const generateSlots = (dentistId, startDateISO, endDateISO, minutes = 60) => {
+const generateSingleDaySlots = (dentistId, startDateISO, endDateISO, rangeMinutes = 60) => {
     const slots = [];
 
     const end = new Date(endDateISO);
@@ -23,7 +17,7 @@ const generateSlots = (dentistId, startDateISO, endDateISO, minutes = 60) => {
     let currEnd = new Date(endDateISO);
 
     while (currStart < end) {
-        currEnd = addUTCMinutes(currStart, minutes);
+        currEnd = addUTCMinutes(currStart, rangeMinutes);
 
         if (currEnd > end) {
             return slots;
@@ -35,7 +29,7 @@ const generateSlots = (dentistId, startDateISO, endDateISO, minutes = 60) => {
             endTime: currEnd.toISOString()
         });
 
-        currStart = addUTCMinutes(currStart, minutes);
+        currStart = addUTCMinutes(currStart, rangeMinutes);
     }
     return slots;
 };
@@ -54,7 +48,7 @@ const generateSlots = (dentistId, startDateISO, endDateISO, minutes = 60) => {
  * 
  * To handle such cases use generateSlots() 
  **/
-const generateRepeatedTimeSlots = (dentistId, startDateISO, endDateISO, minutes = 60) => {
+const generateMultiDaySlots = (dentistId, startDateISO, endDateISO, rangeMinutes = 60) => {
     const slots = [];
 
     const end = new Date(endDateISO);
@@ -67,7 +61,7 @@ const generateRepeatedTimeSlots = (dentistId, startDateISO, endDateISO, minutes 
     currEnd.setUTCHours(endHour, endMinutes, 0, 0);
 
     while (currStart <= end) {
-        const dailySlots = generateSlots(dentistId, currStart.toISOString(), currEnd.toISOString(), minutes);
+        const dailySlots = generateSingleDaySlots(dentistId, currStart.toISOString(), currEnd.toISOString(), rangeMinutes);
 
         slots.push(...dailySlots);
 
@@ -77,13 +71,6 @@ const generateRepeatedTimeSlots = (dentistId, startDateISO, endDateISO, minutes 
 
     return slots;
 };
-
-
-const dentistId = '303';
-const startDateISO = '2024-11-21T22:00:00.000Z';
-const endDateISO = '2024-11-22T02:00:00.000Z';
-const slots = generateRepeatedTimeSlots(dentistId, startDateISO, endDateISO, 60);
-console.log(slots);
 
 const isValidIsoDate = (date) => {
     const regex = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(:\d{2}.\d{3}Z)?$/;
@@ -125,4 +112,10 @@ const isValidIsoDate = (date) => {
     return true;
 }
 
-export { generateSlots, generateRepeatedTimeSlots, isValidIsoDate };
+const addUTCMinutes = (date, minutes) => {
+    const newDate = new Date(date);
+    newDate.setUTCMinutes(newDate.getUTCMinutes() + minutes);
+    return newDate;
+};
+
+export { generateSingleDaySlots, generateMultiDaySlots, isValidIsoDate };
