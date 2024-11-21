@@ -1,5 +1,36 @@
 import AppointmentSlot from '../models/appointmentSlot.js';
+import mqtt from 'mqtt';
 
+const client = mqtt.connect('mqtt://localhost:1883');
+
+client.on('connect', () => {
+    console.log('Connected to MQTT broker');
+
+    //Subscribe to topics from client
+    client.subscribe('appointment/book', { qos: 1 },(err) => {
+        if (err) {
+            console.error('Subscription failed:', err);
+        } else {
+            console.log('Successfully subscribed to appointments/booked');
+        }
+    });
+    client.subscribe('appointments/details', { qos: 1 },(err) => {
+        if (err) {
+            console.error('Subscription failed:', err);
+        } else {
+            console.log('Successfully subscribed to appointments/booked');
+        }
+    });
+    client.subscribe('appointments/all', { qos: 1 },(err) => {
+        if (err) {
+            console.error('Subscription failed:', err);
+        } else {
+            console.log('Successfully subscribed to appointments/booked');
+        }
+    });
+});
+
+//appointment/book
 const bookAppointment = async (req, res) => {
     const { patientId } = req.body;
 
@@ -24,6 +55,7 @@ const bookAppointment = async (req, res) => {
     }
 };
 
+//appointments/details/{slotId}
 const getSlotDetails = async (req, res) => {
     try {
         const slot = await AppointmentSlot.findById(req.params.id);
@@ -36,6 +68,7 @@ const getSlotDetails = async (req, res) => {
     }
 };
 
+//appointments/all
 const getAllSlots = async (req, res) => {
     try {
         const slots = await AppointmentSlot.find();
