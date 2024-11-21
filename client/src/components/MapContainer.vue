@@ -12,9 +12,16 @@ const dentists = ref([])
 const clinicMarkers = ref(new Map())
 
 onMounted(() => {
-    map.value = L.map(mapContainer.value, { zoomAnimation: false }).setView([57.7, 12], 14);
+    map.value = L.map(mapContainer.value, {
+        zoomAnimation: false,
+        wheelPxPerZoomLevel: 15000,
+        inertiaDeceleration: 28000,
+        minZoom: 13,
+        maxBounds: [[57.0, 11.4], [58.5, 12.5]], 
+        maxBoundsViscosity: 0.6,
+    }).setView([57.7, 12], 14);
     L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        maxZoom: 19,
+        maxZoom: 16,
     }).addTo(map.value);
 
     // Custom control for the "Get my Location" button
@@ -71,8 +78,14 @@ function createMarkers() {
 }
 
 function createMarkerPopup(dentist, clinicMarker) {
-    clinicMarker.bindPopup(`<a
-      href="/dentists/${dentist._id}/appointments"><b>${dentist.first_name} ${dentist.surname} </b><br>${dentist.street} ${dentist.zip}</a>`).openPopup();
+    const popupContent = `
+        <div class="popup-content">
+            <h3>${dentist.first_name} ${dentist.surname}</h3>
+            <p>${dentist.street}, ${dentist.zip}</p>
+            <a href="/dentists/${dentist._id}/appointments" class="popup-link">Book an appointment!</a>
+        </div>
+    `;
+    clinicMarker.bindPopup(popupContent).openPopup();
 }
 </script>
 
@@ -92,5 +105,36 @@ export default {
 #map {
     height: 100vh;
     width: 100vw;
+}
+
+.popup-content {
+    padding: 10px;
+    font-family: Arial, sans-serif;
+    color: #333;
+}
+
+.popup-content h3 {
+    margin: 0;
+    font-size: 18px;
+    color: #007BFF;
+}
+
+.popup-content p {
+    margin: 5px 0;
+    font-size: 14px;
+}
+
+.popup-content .popup-link {
+    display: inline-block;
+    margin-top: 10px;
+    padding: 5px 10px;
+    background-color: #007BFF;
+    color: white;
+    text-decoration: none;
+    border-radius: 4px;
+}
+
+.popup-content .popup-link:hover {
+    background-color: #0056b3;
 }
 </style>
