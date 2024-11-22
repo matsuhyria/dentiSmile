@@ -37,7 +37,7 @@ const generateSingleDaySlots = (dentistId, startDateISO, endDateISO, rangeMinute
 /**
  * Helper function that generates repeated time slots for a dentist between the specified start and end dates.
  * The function creates slots for the same time every day between the given date range.
- * Params and returns definition is the same as for the function above (generateSlots())
+ * Params and returns definition is the same as for the function above (generateSingleDaySlots())
  * 
  * The function does not handle cases where the specified times (startDateISO and endDateISO) cannot fit into
  * the same time range across multiple days.
@@ -46,7 +46,7 @@ const generateSingleDaySlots = (dentistId, startDateISO, endDateISO, rangeMinute
  *  endDateISO is '2024-11-22T02:00:00.000Z',
  *  the function will return an empty array.
  * 
- * To handle such cases use generateSlots() 
+ * To handle such cases use generateSingleDaySlots() 
  **/
 const generateMultiDaySlots = (dentistId, startDateISO, endDateISO, rangeMinutes = 60) => {
     const slots = [];
@@ -72,6 +72,13 @@ const generateMultiDaySlots = (dentistId, startDateISO, endDateISO, rangeMinutes
     return slots;
 };
 
+/**
+ * Validates whether a given date string conforms to the ISO 8601 format and represents a valid date.
+ *
+ * @param {string} date - The date string to validate. Expected format: 'YYYY-MM-DDTHH:mm:ss.sssZ' or 'YYYY-MM-DDTHH:mm:ssZ'. If Z is missing, it is added.
+ *
+ * @returns {boolean} - Returns `true` if the date string is a valid ISO 8601 format and represents a valid date; otherwise, `false`.
+ **/
 const isValidIsoDate = (date) => {
     const regex = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(:\d{2}.\d{3}Z)?$/;
     if (!regex.test(date)) {
