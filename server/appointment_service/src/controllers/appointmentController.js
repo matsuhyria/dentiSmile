@@ -105,4 +105,4 @@ const getAppointments = async (req, res) => {
     }
 };
 
-export { createAppointments, getAppointments, getAppointment, bookAppointment, getSlotDetails };
+export { createAppointments, getAppointments, bookAppointment, getSlotDetails };
