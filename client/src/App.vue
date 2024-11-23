@@ -1,12 +1,19 @@
 <script setup>
-import AppointmentBooking from './components/AppointmentBooking.vue';
+import NavigationBar from './components/NavigationBar.vue';
 </script>
 
 <template>
   <div>
-    <AppointmentBooking />
+    <NavigationBar></NavigationBar>
+    <b-col align-self="center">
+      <router-view />
+    </b-col>
   </div>
 </template>
+
+<script>
+
+</script>
 
 <style scoped>
 .logo {
@@ -15,9 +22,11 @@ import AppointmentBooking from './components/AppointmentBooking.vue';
   will-change: filter;
   transition: filter 300ms;
 }
+
 .logo:hover {
   filter: drop-shadow(0 0 2em #646cffaa);
 }
+
 .logo.vue:hover {
   filter: drop-shadow(0 0 2em #42b883aa);
 }

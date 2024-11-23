@@ -37,7 +37,6 @@ server/.env
 
 # Docker files
 docker-compose.override.yml
-.dockerignore
 docker-compose.yml
 
 # Other

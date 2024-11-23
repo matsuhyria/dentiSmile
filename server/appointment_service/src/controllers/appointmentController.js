@@ -33,7 +33,7 @@ const getSlotDetails = async (req, res) => {
         if (!slot) {
             return res.status(404).json({ message: 'Slot not found' });
         }
-        res.json(slot);
+        res.status(200).json(slot);
     } catch (error) {
         res.status(500).json({ message: 'Server error', error });
     }
@@ -81,4 +81,28 @@ const createAppointments = async (req, res) => {
     }
 };
 
-export { createAppointments, bookAppointment, getSlotDetails };
+const getAppointments = async (req, res) => {
+    try {
+        // Finds appointments for a specific dentist within the given timeframe
+        // Dentist, starting date and ending date will be passed in as query parameters
+        const { dentistId, startingDate, endingDate } = req.query;
+
+        if (!dentistId || !startingDate || !endingDate) {
+            return res.status(400).json({ message: 'Missing required fields. Expected query format: ?dentistId=abcd&startingDate=YYYY-MM-DD&endingDate=YYYY-MM-DD'});
+        }
+
+        const appointments = await AppointmentSlot.find({
+            dentistId: dentistId,
+            startTime: {
+                $gte: new Date(startingDate),
+                $lte: new Date(endingDate)
+            }
+        });
+        return res.status(200).json(appointments);
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({ message: 'Error fetching appointments' });
+    }
+};
+
+export { createAppointments, getAppointments, bookAppointment, getSlotDetails };
