@@ -8,28 +8,28 @@ The DentiSmile+ system leverages a distributed microservices architecture combin
 
 ## System Architecture
 
-![System Architecture Diagram](./assets/system_architecture.png)
+![System Architecture Diagram](docs/architecture/diagrams/system-architecture-diagram.png)
 
 ## ER Diagram
 
-![Entity Relationship Diagram](./assets/ER.png)
+![Entity Relationship Diagram](docs/architecture/diagrams/ER.png)
 
 ## Figma Prototype
 
 <table>
   <tr>
-    <td><img src="./assets/Figma/Screenshot1.png" width="800"></td>
-    <td><img src="./assets/Figma/Screenshot2.png" width="800"></td>
+    <td><img src="docs/ui_design/Screenshot1.png" width="800"></td>
+    <td><img src="docs/ui_design/Screenshot2.png" width="800"></td>
   </tr>
   <tr>
-    <td><img src="./assets/Figma/Screenshot3.png" width="800"></td>
-    <td><img src="./assets/Figma/Screenshot4.png" width="800"></td>
+    <td><img src="docs/ui_design/Screenshot3.png" width="800"></td>
+    <td><img src="docs/ui_design/Screenshot4.png" width="800"></td>
   </tr>
 </table>
 
 ## Requirements
 
-- Node.js (v14+)
+- Node.js (v20+)
 - Vue CLI
 - MongoDB
 - RabbitMQ broker
@@ -62,7 +62,7 @@ We welcome contributions! Please refer to our [CONTRIBUTING.md](CONTRIBUTING.md)
 
 ## Authors and Acknowledgments
 
-- Team Members: Maksym Matsuhyria, Ahmet Yavuz Kalkan, Yaroslav Ursul, Andre Ibrahim
+- Team Members: Maksym Matsuhyria, Ahmet Yavuz Kalkan, Yaroslav Ursul, Andre Ibrahim, Mahmoud Khalafallah
 - Special thanks to the course instructors and TA’s for guidance on distributed systems and project management.
 
 ## License

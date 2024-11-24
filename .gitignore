@@ -1,5 +1,5 @@
 # Node modules
-node_modules/
+node_modules
 
 # Logs
 logs/
@@ -23,22 +23,12 @@ yarn-error.log*
 .DS_Store
 Thumbs.db
 
-# Vue-specific
-client/.env.local
-client/.env.development.local
-client/.env.test.local
-client/.env.production.local
-client/node_modules/
-client/dist/
-
-# Backend-specific
-server/node_modules/
-server/.env
-
 # Docker files
 docker-compose.override.yml
 docker-compose.yml
+Dockerfile
 
 # Other
 *.swp
 *.swo
+infrastructure
