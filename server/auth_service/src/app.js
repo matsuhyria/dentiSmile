@@ -1,6 +1,16 @@
-require('dotenv').config();
+import express from 'express';
+import connectDB from './auth_db.js';
 
-console.log('PORT:', process.env.PORT);
-console.log('MONGO_URI:', process.env.MONGO_URI);
-console.log('JWT_SECRET:', process.env.JWT_SECRET);
-console.log('MQTT', process.env.MQTT_BROKER_URL);
+const app = express();
+const PORT = process.env.PORT || 3001;
+const MONGO_URI = process.env.MONGO_URI;
+
+connectDB(MONGO_URI);
+
+app.get('/', (req, res) => {
+  res.send('Authentication Microservice is running.');
+});
+
+app.listen(PORT, () => {
+  console.log(`Server is running on http://localhost:${PORT}`);
+});
