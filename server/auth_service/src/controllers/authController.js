@@ -1,5 +1,5 @@
-import jwt from 'jsonwebtoken';
 import User from '../models/user';
+import { generateTokenAndSetCookie } from '../middleware/authMiddleware';
 
 const registerUser = async (req, res) => {
   const { email, password } = req.body;
@@ -17,7 +17,14 @@ const registerUser = async (req, res) => {
     });
 
     await newUser.save();
-    res.status(201).json({ message: 'User registered successfully' });
+
+    const token = generateTokenAndSetCookie(res, newUser);
+
+    res.status(201).json({
+      message: 'User registered successfully',
+      token,
+      user: { id: newUser._id, email: newUser.email },
+    });
   } catch (error) {
     console.log(error);
     res.status(500).json({ error: 'Error registering User' });
@@ -26,6 +33,10 @@ const registerUser = async (req, res) => {
 
 const loginUser = async (req, res) => {
   const { email, password } = req.body;
+
+  if (!email || !password) {
+    return res.status(400).json({ message: 'Email and password are required' });
+  }
 
   try {
     const user = await User.findOne({ email });
@@ -40,10 +51,12 @@ const loginUser = async (req, res) => {
       return res.status(400).json({ message: 'Invalid credentials' });
     }
 
-    //To-Do: logic for generating jwt token / saving session
+    const token = generateTokenAndSetCookie(res, user);
 
-    //await user.save();
-    res.status(201).json({ message: 'User log in successful' });
+    res.json({
+      token,
+      user: { id: user._id, email: user.email },
+    });
   } catch (error) {
     console.log(error);
     res.status(500).json({ error: 'Error logging User' });
