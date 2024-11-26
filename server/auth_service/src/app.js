@@ -1,6 +1,6 @@
-const express = require('express');
-const connectDB = require('./auth_db.js');
-const authRoutes = require('./routes/authRoutes.js');
+import express from 'express';
+import connectDB from './config/db.js';
+import authRoutes from './routes/authRoutes.js';
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -13,5 +13,5 @@ app.use(express.json());
 app.use('/api/auth', authRoutes);
 
 app.listen(PORT, () => {
-  console.log(`Server is running on http://localhost:${PORT}`);
+    console.log(`Server is running on http://localhost:${PORT}`);
 });
