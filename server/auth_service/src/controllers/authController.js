@@ -50,36 +50,60 @@ const registerUserMQTT = async (
   }
 };
 
-const loginUser = async (req, res) => {
-  const { email, password } = req.body;
-
-  if (!email || !password) {
-    return res.status(400).json({ message: 'Email and password are required' });
-  }
-
+const loginUserMQTT = async (message, client, responseTopicForLoggingIn) => {
   try {
-    const user = await User.findOne({ email });
+    const { email, password } = JSON.parse(message);
 
+    if (!email || !password) {
+      client.publish(
+        responseTopicForLoggingIn,
+        JSON.stringify({
+          success: false,
+          message: 'Email and password are required',
+        })
+      );
+      return;
+    }
+
+    const user = await User.findOne({ email });
     if (!user) {
-      return res.status(400).json({ message: 'Invalid credentials' });
+      client.publish(
+        responseTopicForLoggingIn,
+        JSON.stringify({ success: false, message: 'Invalid credentials' })
+      );
+      return;
     }
 
     const isMatch = await user.matchPassword(password);
-
     if (!isMatch) {
-      return res.status(400).json({ message: 'Invalid credentials' });
+      client.publish(
+        responseTopicForLoggingIn,
+        JSON.stringify({ success: false, message: 'Invalid credentials' })
+      );
+      return;
     }
 
-    const token = generateTokenAndSetCookie(res, user);
+    const token = jwt.sign(
+      { id: user._id, role: user.role },
+      process.env.JWT_SECRET,
+      { expiresIn: '1h' }
+    );
 
-    res.json({
-      token,
-      user: { id: user._id, email: user.email },
-    });
+    client.publish(
+      responseTopicForLoggingIn,
+      JSON.stringify({
+        success: true,
+        message: 'Login successful',
+        token,
+      })
+    );
   } catch (error) {
-    console.log(error);
-    res.status(500).json({ error: 'Error logging User' });
+    console.error('Error logging in user:', error);
+    client.publish(
+      responseTopicForLoggingIn,
+      JSON.stringify({ success: false, message: 'Error logging in user' })
+    );
   }
 };
 
-module.exports = { registerUserMQTT };
+module.exports = { registerUserMQTT, loginUserMQTT };

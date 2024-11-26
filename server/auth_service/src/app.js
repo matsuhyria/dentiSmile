@@ -13,6 +13,7 @@ connectDB(MONGO_URI);
 (async () => {
   const client = await mqtt.connectMQTT(MQTT_URI);
 
+  // Subscribe for user registration
   await mqtt.subscribe(client, 'Sys/Auth/Register', async (message) => {
     const responseTopicForRegisteringANewUser = 'Sys/Auth/Register/Response';
     await registerUserMQTT(
@@ -20,6 +21,12 @@ connectDB(MONGO_URI);
       client,
       responseTopicForRegisteringANewUser
     );
+  });
+
+  // Subscribe for user login
+  await mqtt.subscribe(client, 'Sys/Auth/Login', async (message) => {
+    const responseTopicForLoggingIn = 'Sys/Auth/Login/Response';
+    await loginUserMQTT(message, client, responseTopicForLoggingIn);
   });
 })();
 
