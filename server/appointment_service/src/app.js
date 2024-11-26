@@ -10,7 +10,6 @@ const PORT = process.env.PORT || 5000;
 const MQTT_URI = process.env.MQTT_URI || 'mqtt://localhost:1883';
 const MQTT_OPTIONS = { clientId: 'appointmentService' };
 
-let mqttClient;
 
 connectDB(MONGODB_URI);
 
@@ -34,8 +33,8 @@ app.get('/api/v1/publish', async (req, res) => {
     const message = 'Hello World';
 
     try {
-        await publish(mqttClient, topic, message);
-        disconnectMQTT(mqttClient);
+        await publish(topic, message);
+        disconnectMQTT();
         res.status(200).json({ message: 'Message published sucessfully' });
     } catch (error) {
         console.error('Error publishing message', error);
@@ -52,9 +51,9 @@ app.use('/api/*', (req, res) => {
 const setupMQTT = async () => {
     try {
         console.log('Starting MQTT connection...');
-        mqttClient = await connectMQTT(MQTT_URI, MQTT_OPTIONS);
+        await connectMQTT(MQTT_URI, MQTT_OPTIONS);
 
-        await subscribe(mqttClient, 'test', (message) => {
+        await subscribe('test', (message) => {
             console.log('Message received on /test', message);
         });
     } catch (error) {
