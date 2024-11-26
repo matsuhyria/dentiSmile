@@ -1,13 +1,12 @@
 <script setup>
 import NavigationBar from './components/NavigationBar.vue';
+
 </script>
 
 <template>
   <div>
-    <NavigationBar></NavigationBar>
-    <b-col align-self="center">
-      <router-view />
-    </b-col>
+    <NavigationBar />
+    <router-view />
   </div>
 </template>
 

@@ -3,7 +3,7 @@ import morgan from 'morgan';
 import cors from 'cors';
 import connectDB from './config/db.js';
 import appointmentRouter from './routes/appointmentRouter.js';
-import { connectMQTT, publish, subscribe, disconnectMQTT } from '../../mqtt/mqtt.js';
+import { connectMQTT, publish, subscribe, disconnectMQTT } from '../../../mqtt/mqtt.js';
 import { publishAllSlots } from './controllers/appointmentMqttController.js';
 
 

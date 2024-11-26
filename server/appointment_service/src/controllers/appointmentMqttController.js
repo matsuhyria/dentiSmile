@@ -1,5 +1,5 @@
 import AppointmentSlot from '../models/appointmentSlot.js';
-import { publish, subscribe } from '../../../mqtt/mqtt.js';
+import { publish, subscribe } from '../../../../mqtt/mqtt.js';
 
 const SLOT_TOPIC = 'appointment/slots';
 
@@ -7,7 +7,7 @@ const SLOT_TOPIC = 'appointment/slots';
 export const publishAllSlots = async (mqttClient) => {
     try {
 
-        await subscribe(mqttClient, 'appointment/slots', (message) => {
+        await subscribe(mqttClient, SLOT_TOPIC, (message) => {
             console.log('Message received on /appointment/slots', message);
         });
         // Fetch all available appointment slots

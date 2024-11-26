@@ -18,9 +18,10 @@
     "bootstrap": "^5.3.3",
     "bootstrap-vue-next": "^0.25.14",
     "leaflet": "^1.9.4",
+    "mqtt": "^5.10.3",
     "vue": "^3.5.12",
-    "vue-router": "^4.4.5",
-    "vue-cal": "^4.10.0"
+    "vue-cal": "^4.10.0",
+    "vue-router": "^4.4.5"
   },
   "devDependencies": {
     "@eslint/js": "^9.14.0",

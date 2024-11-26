@@ -15,13 +15,12 @@ declare module 'vue' {
     BNavbarNav: typeof import('bootstrap-vue-next/components/BNavbar')['BNavbarNav']
     BNavItem: typeof import('bootstrap-vue-next/components/BNav')['BNavItem']
     BNavItemDropdown: typeof import('bootstrap-vue-next/components/BNav')['BNavItemDropdown']
-    BRow: typeof import('bootstrap-vue-next/components/BContainer')['BRow']
-    IBi0Circle: typeof import('~icons/bi/0-circle')['default']
+    Calendar: typeof import('./src/components/Calendar.vue')['default']
     MapContainer: typeof import('./src/components/MapContainer.vue')['default']
+    MqttTest: typeof import('./src/components/MqttTest.vue')['default']
     NavigationBar: typeof import('./src/components/NavigationBar.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
-    TimeSlot: typeof import('./src/components/TimeSlot.vue')['default']
-    WeeklyTimeTable: typeof import('./src/components/WeeklyTimeTable.vue')['default']
+    SlotSubscriber: typeof import('./src/components/SlotSubscriber.vue')['default']
   }
 }

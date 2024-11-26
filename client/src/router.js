@@ -1,9 +1,15 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomePage from './views/HomePage.vue'
 import AppointmentPage from './views/AppointmentPage.vue'
+import Calendar from './components/Calendar.vue'
+import SlotSubscriber from './components/SlotSubscriber.vue'
+
+
 const routes = [
   { path: '/', name: 'home', component: HomePage },
   { path: '/dentists/:dentistId/appointments/', name: 'appointments', component: AppointmentPage, props: true },
+  { path: '/calendar', name: 'calendar', component: Calendar },
+  { path: '/subscribe', name: 'subscribe', component: SlotSubscriber }
 ]
 
 const scrollBehavior = async function (to, from, savedPosition) {
