@@ -1,33 +1,52 @@
 import User from '../models/user';
 import { generateTokenAndSetCookie } from '../middleware/authMiddleware';
+import {
+  connectMQTT,
+  publish,
+  subscribe,
+  disconnectMQTT,
+} from '../../../mqtt/mqtt';
 
-const registerUser = async (req, res) => {
-  const { email, password } = req.body;
-
+const registerUserMQTT = async (
+  message,
+  client,
+  responseTopicForRegisteringANewUser
+) => {
   try {
-    const userExists = await User.findOne({ email });
+    const { email, password } = JSON.parse(message);
 
+    const userExists = await User.findOne({ email });
     if (userExists) {
-      return res.status(400).json({ message: 'User already exists' });
+      client.publish(
+        responseTopicForRegisteringANewUser,
+        JSON.stringify({ success: false, message: 'User already exists' })
+      );
+      return;
     }
 
-    const newUser = new User({
-      email,
-      password,
-    });
-
+    const newUser = new User({ email, password });
     await newUser.save();
 
-    const token = generateTokenAndSetCookie(res, newUser);
+    const token = jwt.sign(
+      { id: newUser._id, role: newUser.role },
+      process.env.JWT_SECRET,
+      { expiresIn: '1h' }
+    );
 
-    res.status(201).json({
-      message: 'User registered successfully',
-      token,
-      user: { id: newUser._id, email: newUser.email },
-    });
+    client.publish(
+      responseTopicForRegisteringANewUser,
+      JSON.stringify({
+        success: true,
+        message: 'User registered successfully',
+        token,
+      })
+    );
   } catch (error) {
-    console.log(error);
-    res.status(500).json({ error: 'Error registering User' });
+    console.error('Error registering user:', error);
+    client.publish(
+      responseTopicForRegisteringANewUser,
+      JSON.stringify({ success: false, message: 'Error registering user' })
+    );
   }
 };
 
@@ -62,3 +81,5 @@ const loginUser = async (req, res) => {
     res.status(500).json({ error: 'Error logging User' });
   }
 };
+
+module.exports = { registerUserMQTT };
