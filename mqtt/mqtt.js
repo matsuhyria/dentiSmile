@@ -64,6 +64,19 @@ export const subscribe = async (topic, callback, options = {}) => {
     }
 };
 
+export const unsubscribe = async (topic) => {
+    if (!client) {
+        throw new Error("MQTT client not connected");
+    }
+    try {
+        await client.unsubscribeAsync(topic);
+        console.log(`Unsubscribed from topic "${topic}"`);
+    } catch (error) {
+        console.error(`Error unsubscribing from topic "${topic}":`, error);
+        throw error;
+    }
+};
+
 export const disconnectMQTT = async (options = {}) => {
     try {
         await client.endAsync(options);
