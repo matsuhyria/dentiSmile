@@ -90,12 +90,12 @@ We follow a structured naming convention for MQTT topics to maintain clarity and
 
 ### **Dentist Service**
 
-* **Register Availability Request**
-  * Topic: `service/dentist/registerAvailability`
+* **View Appointments Request**
+  * Topic: `service/dentist/viewAppointments`
   * Publisher: Client
   * Subscriber: Dentist Service
-* **Register Availability Response**
-  * Topic: `client/{clientId}/dentist/registerAvailability`
+* **View Appointments Response**
+  * Topic: `client/{clientId}/dentist/viewAppointments`
   * Publisher: Dentist Service
   * Subscriber: Specific Client
 
@@ -156,7 +156,7 @@ All MQTT messages follow a standard JSON structure:
 
 ### **Dentist Service**
 
-#### **Register Availability**
+#### **View Appointments**
 
 * **Request Topic** : `service/dentist/viewAppointments`
 * **Response Topic** : `client/{clientId}/dentist/viewAppointments`
@@ -256,7 +256,7 @@ We have a shared MQTT client module (`mqttClient.js`) that:
 
 * **Connecting** : Use `connectMQTT(options)` to establish a connection.
 * **Publishing** : Use `publishMessage(topic, message)` to publish messages.
-* **Subscribing** : Use `subscribe(topic)` and `registerHandler(topic, handler)` to handle incoming messages.
+* **Subscribing** : Use `subscribe(topic, handler)` to handle incoming messages.
 
 ---
 
