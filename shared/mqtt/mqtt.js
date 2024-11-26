@@ -10,7 +10,7 @@ export const connectMQTT = async (MQTT_URI, options = {}) => {
         client = await connectAsync(MQTT_URI, options);
 
         client.on("connect", () => {
-            console.log(`Connected to MQTT Broker at ${connectUrl}`);
+            console.log(`Connected to MQTT Broker at ${MQTT_URI}`);
         });
 
         client.on("error", (err) => {
