@@ -1,6 +1,6 @@
-import { connectAsync } from 'mqtt';
+const { connectAsync } = require('mqtt');
 
-export const connectMQTT = async (MQTT_URI, options = {}) => {
+const connectMQTT = async (MQTT_URI, options = {}) => {
     try {
         const client = await connectAsync(MQTT_URI, options);
         console.log('MQTT connected successfully');
@@ -11,7 +11,7 @@ export const connectMQTT = async (MQTT_URI, options = {}) => {
     }
 };
 
-export const publish = async (client, topic, message, options = {}) => {
+const publish = async (client, topic, message, options = {}) => {
     try {
         await client.publishAsync(topic, message, options);
         console.log(`Message published to topic "${topic}": ${message}`);
@@ -21,7 +21,7 @@ export const publish = async (client, topic, message, options = {}) => {
     }
 };
 
-export const subscribe = async (client, topic, callback, options = {}) => {
+const subscribe = async (client, topic, callback, options = {}) => {
     try {
         await client.subscribeAsync(topic, options);
         console.log(`Subscribed to topic "${topic}"`);
@@ -37,7 +37,7 @@ export const subscribe = async (client, topic, callback, options = {}) => {
     }
 };
 
-export const disconnectMQTT = async (client, options = {}) => {
+const disconnectMQTT = async (client, options = {}) => {
     try {
         await client.endAsync(options);
         console.log('MQTT client disconnected');
@@ -46,3 +46,5 @@ export const disconnectMQTT = async (client, options = {}) => {
         throw error;
     }
 };
+
+module.exports = { connectMQTT, publish, subscribe, disconnectMQTT };
