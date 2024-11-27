@@ -22,9 +22,19 @@ export const MQTT_TOPICS = {
             RESPONSE: (clientId) =>
                 `client/${clientId}/dentist/viewAppointments`,
         },
+        CANCEL_APPOINTMENT: {
+            REQUEST: 'service/dentist/cancelAppointment',
+            RESPONSE: 'service/appointment/cancelAppointment',
+        },
+        REMOVE_APPOINTMENT: {
+            REQUEST: 'service/dentist/removeAppointment',
+            RESPONSE: 'service/appointment/removeAppointment',
+        },
     },
     EVENTS: {
         USER_REGISTERED: 'events/user/registered',
         APPOINTMENT_BOOKED: 'events/appointment/booked',
+        APPOINTMENT_CANCELED: 'events/appointment/canceled',
+        APPOINTMENT_REMOVED: 'events/appointment/removed',
     },
 }
