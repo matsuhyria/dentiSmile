@@ -27,7 +27,7 @@ export default {
   methods: {
     connectToBroker() {
       // Precise connection using container IP
-      const brokerUrl = 'mqtt://172.17.0.2:1883';
+      const brokerUrl = 'ws://localhost:9001';
       
       const options = {
         clientId: `vue_client_${Math.random().toString(16).slice(3)}`,
