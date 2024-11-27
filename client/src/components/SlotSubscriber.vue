@@ -2,7 +2,16 @@
   <div>
     <h1>MQTT Connection</h1>
     <p>Connection Status: {{ connectionStatus }}</p>
-    <p>Received Message: {{ message }}</p>
+    <div v-if="slots.length">
+      <h2>Available Slots:</h2>
+      <ul>
+        <li v-for="slot in slots" :key="slot._id">
+          Dentist: {{ slot.dentistId }} | 
+          Status: {{ slot.status }} | 
+          Time: {{ formatTime(slot.startTime) }}
+        </li>
+      </ul>
+    </div>
     <pre v-if="debugMode">{{ debugInfo }}</pre>
   </div>
 </template>
@@ -14,27 +23,28 @@ export default {
   data() {
     return {
       client: null,
-      message: '',
+      slots: [],
       connectionStatus: 'Connecting...',
       debugMode: true,
       debugInfo: '',
-      topic: 'test'
+      topic: 'appointment/slots'
     };
   },
   mounted() {
     this.connectToBroker();
   },
   methods: {
+    formatTime(time) {
+      return new Date(time).toLocaleString();
+    },
     connectToBroker() {
-      // Precise connection using container IP
       const brokerUrl = 'ws://localhost:9001';
+      // const brokerUrl = 'mqtt://localhost:1883';
       
       const options = {
         clientId: `vue_client_${Math.random().toString(16).slice(3)}`,
         clean: true,
         connectTimeout: 4000,
-        username: 'guest',
-        password: 'guest'
       };
 
       this.debugInfo += `Connecting to: ${brokerUrl}\n`;
@@ -52,23 +62,18 @@ export default {
           } else {
             this.debugInfo += `Subscribed to topic: ${this.topic}\n`;
             this.connectionStatus = 'Subscribed';
-
-            // Optional: Publish a test message
-            this.client.publish(this.topic, 'Hello from Vue!', (publishErr) => {
-              if (publishErr) {
-                this.debugInfo += `Publish error: ${publishErr.message}\n`;
-              } else {
-                this.debugInfo += 'Test message published\n';
-              }
-            });
           }
         });
       });
 
       this.client.on('message', (topic, payload) => {
-        const message = payload.toString();
-        this.debugInfo += `Received message on ${topic}: ${message}\n`;
-        this.message = message;
+        try {
+          const slots = JSON.parse(payload.toString());
+          this.slots = slots;
+          this.debugInfo += `Received ${slots.length} slots\n`;
+        } catch (error) {
+          this.debugInfo += `Error parsing message: ${error.message}\n`;
+        }
       });
 
       this.client.on('error', (error) => {
@@ -85,9 +90,3 @@ export default {
   }
 };
 </script>
-
-<style scoped>
-h1 {
-  color: #333;
-}
-</style>
