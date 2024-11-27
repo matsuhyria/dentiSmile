@@ -105,12 +105,37 @@ const getAppointments = async (req, res) => {
     }
 };
 
-const cancelAppointment = async (messsage) => {
-    console.log('Cancelling appointment:', messsage);
+const cancelAppointment = async (message) => {
+    try {
+        const document = await AppointmentSlot.findById(message.appointmentId);
+        if (!document) {
+            return { status: 400, message: 'Appointment does not exist' };
+        }
+        if (document.status === 'canceled' && document.patientId !== null) {
+            return { status: 400, message: 'Appointment is already cancelled' };
+        }
+        document.status = 'canceled';
+        document.patientId = null;
+        await document.save();
+
+        return { status: 200, message: 'Appointment cancelled successfully', document };
+    } catch (error) {
+        console.error(error);
+        return { status: 500, message: 'Error cancelling appointment' };
+    }
 };
 
 const removeAppointment = async (message) => {
-    console.log('Removing appointment:', message);
+    try {
+        const appointment = await AppointmentSlot.findByIdAndDelete(message.appointmentId);
+        if (!appointment) {
+            return { status: 404, message: 'Appointment not found' };
+        }
+        return { status: 200, message: 'Appointment removed successfully', appointment };
+    } catch (error) {
+        console.log(error);
+        return { status: 500, message: 'Error removing appointment' };
+    }
 };
 
 export { createAppointments, getAppointments, bookAppointment, getSlotDetails, cancelAppointment, removeAppointment };

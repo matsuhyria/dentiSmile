@@ -2,11 +2,11 @@ import mongoose from 'mongoose';
 
 const appointmentSlot = new mongoose.Schema({
     dentistId: {
-        type: String,
+        type: mongoose.Schema.Types.ObjectId,
         required: true
     },
     patientId: {
-        type: String,
+        type: mongoose.Schema.Types.ObjectId,
         default: null
     },
     startTime: {
