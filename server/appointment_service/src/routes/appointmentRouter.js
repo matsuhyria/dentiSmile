@@ -1,12 +1,20 @@
-import express from 'express';
-import { createAppointments, getAppointments, bookAppointment, getSlotDetails } from '../controllers/appointmentController.js';
+import { createAppointments, getAppointments, bookAppointment, getSlotDetails, cancelAppointment, removeAppointment } from '../controllers/appointmentController.js';
+import { subscribe, publish } from '../../../../shared/mqtt/mqtt.js';
+import { MQTT_TOPICS } from '../../../../shared/mqtt/mqttTopics.js';
 
-const router = express.Router();
-const BASE_PATH = '/api/v1';
+const mqttRouter = async () => {
+    /* await subscribe(MQTT_TOPICS.DENTIST.REGISTER_AVAILABILITY.REQUEST, (message) => {
+        console.log(`Received message on topic ${message}`)
+        publish(MQTT_TOPICS.DENTIST.REGISTER_AVAILABILITY.RESPONSE, createAppointments(message))
+    }) */
+    await subscribe(MQTT_TOPICS.DENTIST.CANCEL_APPOINTMENT.REQUEST, (message) => {
+        console.log(`Received message on topic ${message}`)
+        // publish(MQTT_TOPICS.DENTIST.CANCEL_APPOINTMENT.RESPONSE, cancelAppointment(message))
+    })
+    await subscribe(MQTT_TOPICS.DENTIST.REMOVE_APPOINTMENT.REQUEST, (message) => {
+        console.log(`Received message on topic ${message}`)
+        // publish(MQTT_TOPICS.DENTIST.REMOVE_APPOINTMENT.RESPONSE, removeAppointment(message))
+    })
+}
 
-router.get(`${BASE_PATH}/appointments`, getAppointments);
-router.post(`${BASE_PATH}/appointments/:id/bookings`, bookAppointment);
-router.get(`${BASE_PATH}/appointments/:id`, getSlotDetails);
-router.post(`${BASE_PATH}/appointments`, createAppointments);
-
-export default router;
+export default mqttRouter;

@@ -105,4 +105,12 @@ const getAppointments = async (req, res) => {
     }
 };
 
-export { createAppointments, getAppointments, bookAppointment, getSlotDetails };
+const cancelAppointment = async (messsage) => {
+    console.log('Cancelling appointment:', messsage);
+};
+
+const removeAppointment = async (message) => {
+    console.log('Removing appointment:', message);
+};
+
+export { createAppointments, getAppointments, bookAppointment, getSlotDetails, cancelAppointment, removeAppointment };
