@@ -15,6 +15,14 @@ export const MQTT_TOPICS = {
             REQUEST: 'service/patient/updateProfile',
             RESPONSE: (clientId) => `client/${clientId}/patient/updateProfile`,
         },
+        BOOK_APPOINTMENT: {
+            REQUEST: 'service/patient/bookAppointment',
+            RESPONSE: (clientId) => `client/${clientId}/patient/bookAppointment`,
+        },
+        GET_APPOINTMENTS: {
+            REQUEST: 'service/patient/getAppointments',
+            RESPONSE: (clientId) => `client/${clientId}/patient/getAppointments`,
+        },
     },
     DENTIST: {
         REGISTER_AVAILABILITY: {

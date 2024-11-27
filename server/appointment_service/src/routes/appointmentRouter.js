@@ -14,17 +14,19 @@ const mqttRouter = async () => {
         publish(MQTT_TOPICS.DENTIST.REMOVE_APPOINTMENT.RESPONSE, await removeAppointment(message))
     })
 
-    /* await subscribe(MQTT_TOPICS.DENTIST.REGISTER_AVAILABILITY.REQUEST, (message) => {
-        console.log(`Received message on topic ${message}`)
-        publish(MQTT_TOPICS.DENTIST.REGISTER_AVAILABILITY.RESPONSE, createAppointments(message))
-    }) */
-    await subscribe(MQTT_TOPICS.DENTIST.CANCEL_APPOINTMENT.REQUEST, (message) => {
-        console.log(`Received message on topic ${message}`)
-        // publish(MQTT_TOPICS.DENTIST.CANCEL_APPOINTMENT.RESPONSE, cancelAppointment(message))
+    // Create Appointments
+    await subscribe(MQTT_TOPICS.DENTIST.REGISTER_AVAILABILITY.REQUEST, async (message) => {
+        publish(MQTT_TOPICS.DENTIST.REGISTER_AVAILABILITY.RESPONSE(message.clientId), await createAppointments(message))
     })
-    await subscribe(MQTT_TOPICS.DENTIST.REMOVE_APPOINTMENT.REQUEST, (message) => {
-        console.log(`Received message on topic ${message}`)
-        // publish(MQTT_TOPICS.DENTIST.REMOVE_APPOINTMENT.RESPONSE, removeAppointment(message))
+
+    // Get Appointments
+    await subscribe(MQTT_TOPICS.PATIENT.GET_APPOINTMENTS.REQUEST, async (message) => {
+        publish(MQTT_TOPICS.PATIENT.GET_APPOINTMENTS.RESPONSE(message.clientId), await getAppointments(message))
+    })
+
+    // Book Appointment
+    await subscribe(MQTT_TOPICS.PATIENT.BOOK_APPOINTMENT.REQUEST, async (message) => {
+        publish(MQTT_TOPICS.PATIENT.BOOK_APPOINTMENT.RESPONSE(message.clientId), await bookAppointment(message))
     })
 }
 
