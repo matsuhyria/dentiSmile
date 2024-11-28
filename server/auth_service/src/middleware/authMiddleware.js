@@ -1,6 +1,6 @@
-const jwt = require('jsonwebtoken');
+import jwt from 'jsonwebtoken';
 
-const generateTokenAndSetCookie = (res, user) => {
+export const generateTokenAndSetCookie = (res, user) => {
     const token = jwt.sign(
         {
             id: user._id,
@@ -21,7 +21,7 @@ const generateTokenAndSetCookie = (res, user) => {
 };
 
 // Middleware to validate token and role
-const authenticateRole = (requiredRoles) => {
+export const authenticateRole = (requiredRoles) => {
     return (req, res, next) => {
         const authHeader = req.headers['authorization'];
         if (!authHeader) {
@@ -71,5 +71,3 @@ const authenticateRole = (requiredRoles) => {
         });
     };
 };
-
-module.exports = { generateTokenAndSetCookie, authenticateRole };

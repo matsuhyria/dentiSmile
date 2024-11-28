@@ -1,14 +1,7 @@
-const User = require('../models/user');
-const jwt = require('jsonwebtoken');
-const { generateTokenAndSetCookie } = require('../middleware/authMiddleware');
-const {
-    connectMQTT,
-    publish,
-    subscribe,
-    disconnectMQTT,
-} = require('../../../mqtt/mqtt');
+import User from '../models/user.js';
+import jwt from 'jsonwebtoken';
 
-const registerUserMQTT = async (
+export const register = async (
     message,
     client,
     responseTopicForRegisteringANewUser
@@ -51,7 +44,7 @@ const registerUserMQTT = async (
     }
 };
 
-const loginUserMQTT = async (message, client, responseTopicForLoggingIn) => {
+export const login = async (message, client, responseTopicForLoggingIn) => {
     try {
         const { email, password } = JSON.parse(message);
 
@@ -106,5 +99,3 @@ const loginUserMQTT = async (message, client, responseTopicForLoggingIn) => {
         );
     }
 };
-
-module.exports = { registerUserMQTT, loginUserMQTT };

@@ -1,11 +1,11 @@
-const connectDB = require('./config/db.js');
-const {
+import connectDB from './config/db.js';
+import {
     connectMQTT,
     publish,
     subscribe,
     disconnectMQTT
-} = require('../../mqtt/mqtt.js');
-const { registerUserMQTT, loginUserMQTT } = require('./controllers/authController.js');
+} from '../../mqtt/mqtt.js';
+import { register, login } from './controllers/authController.js';
 
 const PORT = process.env.PORT || 3001;
 const MONGO_URI = process.env.MONGODB_URI;
@@ -44,7 +44,7 @@ function publishDelay(client) {
     // Subscribe for user registration
     await subscribe(client, 'Sys/Auth/Register', async (message) => {
         const responseTopicForRegisteringANewUser = 'Sys/Auth/Register/Response';
-        await registerUserMQTT(
+        await register(
             message,
             client,
             responseTopicForRegisteringANewUser
@@ -54,12 +54,11 @@ function publishDelay(client) {
     // Subscribe for user login
     await subscribe(client, 'Sys/Auth/Login', async (message) => {
         const responseTopicForLoggingIn = 'Sys/Auth/Login/Response';
-        await loginUserMQTT(message, client, responseTopicForLoggingIn);
+        await login(message, client, responseTopicForLoggingIn);
     });
 
     await publishDelay(client);
 })();
-
 
 
 console.log(`Server is running on http://localhost:${PORT}`);
