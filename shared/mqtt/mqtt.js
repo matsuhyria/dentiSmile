@@ -1,6 +1,7 @@
-import { connectAsync } from "mqtt";
+import { connectAsync } from 'mqtt';
 
 let client = null;
+let topics = {};
 
 export const connectMQTT = async (MQTT_URI, options = {}) => {
     if (client) {
@@ -9,12 +10,10 @@ export const connectMQTT = async (MQTT_URI, options = {}) => {
     try {
         client = await connectAsync(MQTT_URI, options);
 
-        client.on("connect", () => {
-            console.log(`Connected to MQTT Broker at ${MQTT_URI}`);
-        });
+        console.log(`Connected to MQTT Broker at ${MQTT_URI}`);
 
         client.on("error", (err) => {
-            console.error("MQTT connection error:", err);
+            console.error("MQTT execution error:", err);
             client.end();
         });
 
