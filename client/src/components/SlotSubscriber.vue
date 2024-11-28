@@ -39,7 +39,6 @@ export default {
     },
     connectToBroker() {
       const brokerUrl = 'ws://localhost:9001';
-      // const brokerUrl = 'mqtt://localhost:1883';
       
       const options = {
         clientId: `vue_client_${Math.random().toString(16).slice(3)}`,
