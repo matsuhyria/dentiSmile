@@ -2,11 +2,11 @@ import AppointmentSlot from '../models/appointmentSlot.js';
 import { generateSingleDaySlots, generateMultiDaySlots, isValidIsoDate } from '../utils/dateUtils.js';
 
 //appointment/book
-const bookAppointment = async (req, res) => {
-    const { patientId } = req.body;
+const bookAppointment = async (message) => {
+    const { patientId, appointmentId } = message;
 
     try {
-        const slot = await AppointmentSlot.findById(req.params.id);
+        const slot = await AppointmentSlot.findById(appointmentId);
         if (!slot) {
             return { status: { code: 404, message: 'Appointment slot not found' } };
         }
@@ -27,9 +27,10 @@ const bookAppointment = async (req, res) => {
 };
 
 //appointments/details/{slotId}
-const getSlotDetails = async (req, res) => {
+const getSlotDetails = async (message) => {
     try {
-        const slot = await AppointmentSlot.findById(req.params.id);
+        const { appointmentId } = message;
+        const slot = await AppointmentSlot.findById(appointmentId);
         if (!slot) {
             return { status: { code: 404, message: 'Slot not found' } };
         }
@@ -39,8 +40,8 @@ const getSlotDetails = async (req, res) => {
     }
 };
 
-const createAppointments = async (req, res) => {
-    const { dentistId, startTime, endTime, rangeMinutes, isSingleDay } = req.body;
+const createAppointments = async (message) => {
+    const { dentistId, startTime, endTime, rangeMinutes, isSingleDay } = message;
 
     if (!isValidIsoDate(startTime) || !isValidIsoDate(endTime)) {
         return { status: { code: 400, message: 'Invalid date format. Use ISO 8601 (YYYY-MM-DDTHH:mm:ssZ) or (YYYY-MM-DDTHH:mm)' } };
@@ -71,7 +72,7 @@ const createAppointments = async (req, res) => {
             ? generateSingleDaySlots(dentistId, start, end, rangeMinutes)
             : generateMultiDaySlots(dentistId, start, end, rangeMinutes);
 
-        if (slots.length < 1) return res.status(400).json({ message: 'Appointment duration invalid' });
+        if (slots.length < 1) return { status: { code: 400, message: 'Appointment duration invalid' } };
 
         await AppointmentSlot.insertMany(slots);
         return { status: { code: 200, message: 'Appointment slots created successfully' } };
