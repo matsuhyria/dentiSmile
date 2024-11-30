@@ -1,5 +1,5 @@
 {
-  "name": "mqtt",
+  "name": "shared-mqtt",
   "version": "1.0.0",
   "main": "index.js",
   "type": "module",
@@ -9,7 +9,7 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "description": "",
+  "description": "Shared MQTT utilities",
   "dependencies": {
     "mqtt": "^5.10.2"
   }
