@@ -1,1 +1,8 @@
-import { subscribe } from '../../../../shared/mqtt/mqtt';
+import { handleEndpoint } from '../../../../shared/mqtt/mqtt.js';
+import { MQTT_TOPICS } from '../../../../shared/mqtt/mqttTopics.js';
+import { register, login } from '../controllers/authController.js';
+
+export const initializeRoutes = async () => {
+    await handleEndpoint(MQTT_TOPICS.AUTHENTICATION.REGISTER.REQUEST, register, MQTT_TOPICS.AUTHENTICATION.REGISTER.RESPONSE);
+    await handleEndpoint(MQTT_TOPICS.AUTHENTICATION.LOGIN.REQUEST, login, MQTT_TOPICS.AUTHENTICATION.LOGIN.RESPONSE);
+};
