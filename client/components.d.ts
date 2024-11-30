@@ -16,11 +16,14 @@ declare module 'vue' {
     BNavItem: typeof import('bootstrap-vue-next/components/BNav')['BNavItem']
     BNavItemDropdown: typeof import('bootstrap-vue-next/components/BNav')['BNavItemDropdown']
     Calendar: typeof import('./src/components/Calendar.vue')['default']
+    ConnectionStatus: typeof import('./src/components/ConnectionStatus.vue')['default']
+    DebugInfo: typeof import('./src/components/DebugInfo.vue')['default']
     MapContainer: typeof import('./src/components/MapContainer.vue')['default']
     MqttTest: typeof import('./src/components/MqttTest.vue')['default']
     NavigationBar: typeof import('./src/components/NavigationBar.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
+    SlotDetails: typeof import('./src/components/SlotDetails.vue')['default']
     SlotSubscriber: typeof import('./src/components/SlotSubscriber.vue')['default']
   }
 }

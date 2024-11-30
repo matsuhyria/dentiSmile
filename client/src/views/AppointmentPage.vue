@@ -2,14 +2,14 @@
 import { ref, watch, computed, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
 import { Api } from '../Api';
-import { ScheduleXCalendar } from '@schedule-x/vue'
+import { ScheduleXCalendar } from '@schedule-x/vue';
 import {
     createCalendar,
     createViewDay,
     createViewWeek,
-} from '@schedule-x/calendar'
-import { createEventsServicePlugin } from '@schedule-x/events-service'
-import '@schedule-x/theme-default/dist/index.css'
+} from '@schedule-x/calendar';
+import { createEventsServicePlugin } from '@schedule-x/events-service';
+import '@schedule-x/theme-default/dist/index.css';
 
 const route = useRoute();
 
@@ -32,19 +32,19 @@ const config = {
         onRangeUpdate(range) {
             calendarStart.value = range.start;
             calendarEnd.value = range.end;
+            fetchAppointments();
         },
         beforeRender($app) {
-            const range = $app.calendarState.range.value
+            const range = $app.calendarState.range.value;
             calendarStart.value = range.start;
             calendarEnd.value = range.end;
         },
         onEventClick(calendarEvent) {
             if (calendarEvent.appointment.status === 'available') {
                 // TODO: Show appointment booking
-                console.log("Bookable")
-            }
-            else {
-                console.log("Not bookable")
+                console.log("Bookable");
+            } else {
+                console.log("Not bookable");
                 // Show appointment details
             }
         },
@@ -78,6 +78,7 @@ async function fetchAppointments() {
     })
         .then((response) => {
             appointments.value = response.data;
+            manageCalendarEvents();
         })
         .catch((error) => {
             console.log("Error fetching appointments: " + error);
@@ -93,24 +94,11 @@ function addCalendarEvent(appointment) {
     });
 }
 
-function replaceCalendarEvent(appointment) {
-    eventsServicePlugin.update({
-        id: appointment._id,
-        appointment: appointment,
-        start: new Date(appointment.startTime).toISOString().slice(0, 16).replace('T', ' '),
-        end: new Date(appointment.endTime).toISOString().slice(0, 16).replace('T', ' '),
-    });
-}
 
 function manageCalendarEvents() {
+    eventsServicePlugin.clear();
     appointments.value.forEach((appointment) => {
-        // Deleting events if the client holds more than x logic could be implemented here
-        if (eventsServicePlugin.get(appointment._id)) {
-            replaceCalendarEvent(appointment);
-        }
-        else {
-            addCalendarEvent(appointment);
-        }
+        addCalendarEvent(appointment);
     });
 }
 
@@ -122,29 +110,20 @@ watch(dateRange, () => {
     fetchAppointments();
 }, { immediate: true });
 
-watch(appointments, () => {
-    manageCalendarEvents();
-});
-
 onMounted(() => {
     fetchDentist();
 });
-
 </script>
 
 <template>
     <div style="width: 100vw;">
         <ScheduleXCalendar :calendar-app="calendarApp">
-
-            <!-- Clinic and Dentist header stuffed into the calendar -->
             <template #headerContentRightPrepend>
-                <div class=" clinicHeader">
-                    {{ dentist.street }} {{ dentist.zip }} {{
-                        dentist.city }} / {{ dentist.first_name }} {{ dentist.surname }}
+                <div class="clinicHeader">
+                    {{ dentist.street }} {{ dentist.zip }} {{ dentist.city }} / {{ dentist.first_name }} {{ dentist.surname }}
                 </div>
             </template>
 
-            <!-- Custom event  -->
             <template #timeGridEvent="{ calendarEvent }">
                 <div :class="['event', calendarEvent.appointment.status]">
                     {{ calendarEvent.title }}

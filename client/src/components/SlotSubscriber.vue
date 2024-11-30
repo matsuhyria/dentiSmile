@@ -186,10 +186,8 @@ export default {
              date1.getDate() === date2.getDate();
     },
     bookAppointment(slot) {
-      // Placeholder for booking logic
+      // TODO booking logic
       this.debugInfo += `Attempting to book slot: ${this.formatTime(slot.startTime)}\n`;
-      // You would typically emit an event or call a method to handle booking
-      // For example: this.$emit('book-slot', slot);
     }
   },
   mounted() {
@@ -205,8 +203,6 @@ export default {
 
 <style scoped>
 .appointment-booking-container {
-  max-width: 800px;
-  margin: 0 auto;
   font-family: Arial, sans-serif;
 }
 
@@ -219,11 +215,6 @@ export default {
 .status-connecting { background-color: #f0ad4e; }
 .status-connected { background-color: #5cb85c; color: white; }
 .status-error { background-color: #d9534f; color: white; }
-
-.calendar-container {
-  border: 1px solid #ddd;
-  padding: 15px;
-}
 
 .calendar-header {
   display: flex;
