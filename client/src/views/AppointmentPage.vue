@@ -25,8 +25,8 @@ const config = {
     ],
     isDark: true,
     dayBoundaries: {
-        start: '06:00',
-        end: '19:00',
+        start: '07:00',
+        end: '17:00',
     },
     callbacks: {
         onRangeUpdate(range) {
@@ -116,7 +116,7 @@ onMounted(() => {
 </script>
 
 <template>
-    <div style="width: 100vw;">
+    <div style="width: 90vw;">
         <ScheduleXCalendar :calendar-app="calendarApp">
             <template #headerContentRightPrepend>
                 <div class="clinicHeader">
@@ -126,7 +126,7 @@ onMounted(() => {
 
             <template #timeGridEvent="{ calendarEvent }">
                 <div :class="['event', calendarEvent.appointment.status]">
-                    {{ calendarEvent.title }}
+                    {{ "calendarEvent.title" }}
                 </div>
             </template>
         </ScheduleXCalendar>

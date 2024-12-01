@@ -18,7 +18,7 @@ import NavigationBar from './components/NavigationBar.vue';
 }
 
 .content-container {
-  margin-top: 85px;
+  margin-top: 50px;
   padding: 5px 1px 0 1px;
   width: 100%;
   }

@@ -1,9 +1,5 @@
 <template>
   <div class="appointment-booking-container">
-    <div class="connection-status" :class="connectionStatusClass">
-      MQTT Connection: {{ connectionStatus }}
-    </div>
-
     <div class="calendar-container">
       <div class="calendar-header">
         <button @click="changeMonth(-1)">&lt;</button>
@@ -21,14 +17,17 @@
           class="calendar-day"
           :class="{
             'current-month': day.isCurrentMonth,
-            'has-slots': day.hasSlots,
+            'has-available-slots': day.availableSlots > 0,
             'selected': selectedDate === day.date
           }"
           @click="selectDate(day)"
         >
           {{ day.dayNumber }}
-          <div v-if="day.hasSlots" class="slot-indicator">
-            {{ day.slotCount }} slots
+          <div v-if="day.availableSlots > 0" class="slot-indicator">
+            {{ day.availableSlots }} available
+          </div>
+          <div v-if="day.bookedSlots > 0" class="slot-indicator booked">
+            {{ day.bookedSlots }} booked
           </div>
         </div>
       </div>
@@ -40,20 +39,19 @@
             v-for="slot in selectedDateSlots" 
             :key="slot._id" 
             class="slot-item"
-            @click="bookAppointment(slot)"
+            :class="{ 'booked-slot': slot.status === 'booked' }"
+            @click="slot.status === 'available' && bookAppointment(slot)"
           >
-            <span>{{ formatTime(slot.startTime) }}</span>
-            <span>Dentist: {{ slot.dentistId }}</span>
+            <span>{{ formatTime(slot.startTime) }} - {{ formatTime(slot.endTime) }}</span>
+            <span> Dentist: {{ slot.dentistId }}</span>
+            <span v-if="slot.status === 'booked'" class="slot-status">Booked</span>
           </div>
         </div>
       </div>
     </div>
-
-    <div v-if="debugMode" class="debug-info">
-      <pre>{{ debugInfo }}</pre>
-    </div>
   </div>
 </template>
+
 
 <script>
 import mqtt from 'mqtt';
@@ -69,7 +67,7 @@ export default {
       topic: 'appointment/slots',
       currentMonth: new Date(),
       selectedDate: null,
-      weekdays: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
+      weekdays: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
     };
   },
   computed: {
@@ -86,29 +84,32 @@ export default {
     calendarDays() {
       const firstDayOfMonth = new Date(this.currentMonth.getFullYear(), this.currentMonth.getMonth(), 1);
       const lastDayOfMonth = new Date(this.currentMonth.getFullYear(), this.currentMonth.getMonth() + 1, 0);
-      
+
       const days = [];
       const startingDay = firstDayOfMonth.getDay();
-      
+
       // Previous month's days
       for (let i = 0; i < startingDay; i++) {
         days.push({ dayNumber: '', isCurrentMonth: false });
       }
-      
+
       // Current month's days
       for (let i = 1; i <= lastDayOfMonth.getDate(); i++) {
         const currentDate = new Date(this.currentMonth.getFullYear(), this.currentMonth.getMonth(), i);
         const slotsForDay = this.slots.filter(slot => this.isSameDay(new Date(slot.startTime), currentDate));
-        
+        const availableSlots = slotsForDay.filter(slot => slot.status === 'available').length;
+        const bookedSlots = slotsForDay.filter(slot => slot.status === 'booked').length;
+
         days.push({
           dayNumber: i,
           isCurrentMonth: true,
           date: currentDate,
           hasSlots: slotsForDay.length > 0,
-          slotCount: slotsForDay.length
+          availableSlots,
+          bookedSlots,
         });
       }
-      
+
       return days;
     },
     formatSelectedDate() {
@@ -186,7 +187,6 @@ export default {
              date1.getDate() === date2.getDate();
     },
     bookAppointment(slot) {
-      // TODO booking logic
       this.debugInfo += `Attempting to book slot: ${this.formatTime(slot.startTime)}\n`;
     }
   },
@@ -201,20 +201,11 @@ export default {
 };
 </script>
 
+
 <style scoped>
 .appointment-booking-container {
   font-family: Arial, sans-serif;
 }
-
-.connection-status {
-  padding: 10px;
-  text-align: center;
-  font-weight: bold;
-}
-
-.status-connecting { background-color: #f0ad4e; }
-.status-connected { background-color: #5cb85c; color: white; }
-.status-error { background-color: #d9534f; color: white; }
 
 .calendar-header {
   display: flex;
@@ -252,7 +243,7 @@ export default {
   color: #999;
 }
 
-.calendar-day.has-slots {
+.calendar-day.has-available-slots {
   cursor: pointer;
   background-color: #e6f3ff;
 }
@@ -264,8 +255,11 @@ export default {
 
 .slot-indicator {
   font-size: 0.8em;
-  color: #007bff;
   margin-top: 5px;
+}
+
+.slot-indicator.booked {
+  color: #d9534f;
 }
 
 .slots-details {
@@ -288,14 +282,12 @@ export default {
   transition: background-color 0.3s;
 }
 
-.slot-item:hover {
-  background-color: #f0f0f0;
+.slot-item.booked-slot {
+  background-color: #f8d7da;
+  cursor: not-allowed;
 }
 
-.debug-info {
-  margin-top: 15px;
-  background-color: #f4f4f4;
-  padding: 10px;
-  overflow-x: auto;
+.slot-item:hover {
+  background-color: #f0f0f0;
 }
 </style>

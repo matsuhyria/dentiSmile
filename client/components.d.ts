@@ -15,6 +15,7 @@ declare module 'vue' {
     BNavbarNav: typeof import('bootstrap-vue-next/components/BNavbar')['BNavbarNav']
     BNavItem: typeof import('bootstrap-vue-next/components/BNav')['BNavItem']
     BNavItemDropdown: typeof import('bootstrap-vue-next/components/BNav')['BNavItemDropdown']
+    BookingPage: typeof import('./src/components/BookingPage.vue')['default']
     Calendar: typeof import('./src/components/Calendar.vue')['default']
     ConnectionStatus: typeof import('./src/components/ConnectionStatus.vue')['default']
     DebugInfo: typeof import('./src/components/DebugInfo.vue')['default']
