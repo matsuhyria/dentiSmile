@@ -187,8 +187,27 @@ export default {
              date1.getDate() === date2.getDate();
     },
     bookAppointment(slot) {
-      this.debugInfo += `Attempting to book slot: ${this.formatTime(slot.startTime)}\n`;
-    }
+        if (!this.client || this.connectionStatus !== 'Subscribed') {
+            this.debugInfo += 'MQTT client is not ready to publish\n';
+            console.error('MQTT client is not ready to publish');
+            return;
+        }
+
+        const bookingMessage = {
+            slotId: slot._id,
+            patientId: '12345', // Replace with actual patient ID
+        };
+
+        this.client.publish('appointment/book', JSON.stringify(bookingMessage), (error) => {
+            if (error) {
+                this.debugInfo += `Failed to publish booking message: ${error.message}\n`;
+                console.error('Publish error:', error);
+            } else {
+                this.debugInfo += `Published booking message for slot: ${slot._id}\n`;
+                console.log(`Booking message published:`, bookingMessage);
+            }
+        });
+    },
   },
   mounted() {
     this.connectToBroker();
