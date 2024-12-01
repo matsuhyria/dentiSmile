@@ -2,9 +2,8 @@ import express from 'express';
 import morgan from 'morgan';
 import cors from 'cors';
 import connectDB from './config/db.js';
-import appointmentRouter from './routes/appointmentRouter.js';
 import { connectMQTT, publish, subscribe, disconnectMQTT } from '../../../mqtt/mqtt.js';
-import { publishAllSlots } from './controllers/appointmentMqttController.js';
+import { publishAllSlots, handleBookingRequests } from './controllers/appointmentMqttController.js';
 
 
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017';
@@ -38,6 +37,9 @@ const setupMQTT = async () => {
         console.log('Starting MQTT connection...');
         mqttClient = await connectMQTT(MQTT_URI, MQTT_OPTIONS);
 
+        // Subscribe to booking requests and set up the handler
+        await handleBookingRequests(mqttClient);
+        
         // Initial publish
         await publishAllSlots(mqttClient);
 
