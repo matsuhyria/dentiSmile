@@ -1,8 +1,8 @@
 import connectDB from './config/db.js';
-import { connectMQTT, publish, subscribe } from '../../../shared/mqtt/mqtt.js';
-import { MQTT_TOPICS } from '../../../shared/mqtt/mqttTopics.js';
+import mqttUtils from 'shared-mqtt';
 import { initializeRoutes } from './routes/authRoutes.js';
 
+const { connectMQTT, subscribe, publish, MQTT_TOPICS } = mqttUtils;
 const PORT = process.env.PORT || 3001;
 const MONGODB_URI = process.env.MONGODB_URI;
 const MQTT_URI = process.env.MQTT_URI;

@@ -3,12 +3,9 @@ import morgan from 'morgan'
 import cors from 'cors'
 import connectDB from './config/db.js'
 import appointmentRouter from './routes/appointmentRouter.js'
-import {
-    connectMQTT,
-    publish,
-    subscribe,
-    disconnectMQTT,
-} from '../../../shared/mqtt/mqtt.js'
+import mqttUtils from 'shared-mqtt'
+
+const { connectMQTT, disconnectMQTT, subscribe, publish } = mqttUtils
 
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017'
 const PORT = process.env.PORT || 5000
