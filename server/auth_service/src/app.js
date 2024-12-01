@@ -25,5 +25,4 @@ const startService = async () => {
     }
 };
 
-
 await startService();
