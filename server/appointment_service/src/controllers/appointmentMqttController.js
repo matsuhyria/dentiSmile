@@ -1,14 +1,16 @@
 import AppointmentSlot from '../models/appointmentSlot.js';
-import { publish, subscribe } from '../../../../mqtt/mqtt.js';
+import mqttUtils from 'shared-mqtt'
+
+const { subscribe, publish } = mqttUtils;
 
 const SLOT_TOPIC = 'appointment/slots';
 const BOOKING_TOPIC = 'appointment/book';
 
 // Publish all available appointment slots
-export const publishAllSlots = async (mqttClient) => {
+export const publishAllSlots = async () => {
     try {
 
-        await subscribe(mqttClient, SLOT_TOPIC, (message) => {
+        await subscribe(SLOT_TOPIC, (message) => {
             console.log('Message received on', SLOT_TOPIC, message);
         });
         // Fetch all available appointment slots
@@ -20,7 +22,7 @@ export const publishAllSlots = async (mqttClient) => {
         }
 
         // Publish slots to the MQTT topic
-        await publish(mqttClient, SLOT_TOPIC, JSON.stringify(slots));
+        await publish(SLOT_TOPIC, JSON.stringify(slots));
         console.log(`Published ${slots.length} available appointment slots`);
     } catch (error) {
         console.error('Error publishing slots:', error);
@@ -28,9 +30,9 @@ export const publishAllSlots = async (mqttClient) => {
 };
 
 // Listen for booking requests and update the slot
-export const handleBookingRequests = async (mqttClient) => {
+export const handleBookingRequests = async () => {
     try {
-        await subscribe(mqttClient, BOOKING_TOPIC, async (message) => {
+        await subscribe(BOOKING_TOPIC, async (message) => {
             console.log('Booking message received:', message);
 
             const bookingRequest = JSON.parse(message);
@@ -61,7 +63,7 @@ export const handleBookingRequests = async (mqttClient) => {
 
             // Re-publish all updated slots
             const updatedSlots = await AppointmentSlot.find();
-            await publish(mqttClient, SLOT_TOPIC, JSON.stringify(updatedSlots));
+            await publish(SLOT_TOPIC, JSON.stringify(updatedSlots));
             console.log('Updated slots published to /appointment/slots');
         });
 

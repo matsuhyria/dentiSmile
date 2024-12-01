@@ -1,13 +1,13 @@
 import { publishAllSlots, handleBookingRequests } from './controllers/appointmentMqttController.js';
 import connectDB from './config/db.js'
-import appointmentRouter from './routes/appointmentRouter.js'
+//import appointmentRouter from './routes/appointmentRouter.js'
 import mqttUtils from 'shared-mqtt'
 
 const { connectMQTT, disconnectMQTT, subscribe, publish } = mqttUtils
 
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017'
 const PORT = process.env.PORT || 5000
-const MQTT_URI = process.env.MQTT_URI || 'ws://localhost:9001'
+const MQTT_URI = process.env.MQTT_URI || 'ws://localhost:8080'
 const MQTT_OPTIONS = {
     clientId: 'appointmentService',
     reconnectPeriod: 2000,
@@ -15,19 +15,13 @@ const MQTT_OPTIONS = {
     clean: true
 }
 
-connectDB(MONGODB_URI)
+await connectDB(MONGODB_URI);
 
-const app = express()
-app.use(express.json())
-app.use(morgan('dev'))
-app.options('*', cors())
-app.use(cors())
-
-const pollDatabaseAndPublish = async (mqttClient, interval = 5000) => {
+const pollDatabaseAndPublish = async (interval = 5000) => {
     try {
         setInterval(async () => {
             console.log('Polling database for changes...');
-            await publishAllSlots(mqttClient);
+            await publishAllSlots();
         }, interval); // Check database every 5 seconds
     } catch (error) {
         console.error('Error polling database:', error);
@@ -40,13 +34,10 @@ const setupMQTT = async () => {
         await connectMQTT(MQTT_URI, MQTT_OPTIONS)
 
         // Subscribe to booking requests and set up the handler
-        await handleBookingRequests(mqttClient);
-
-        // Initial publish
-        await publishAllSlots(mqttClient);
+        await handleBookingRequests();
 
         // Start polling for updates
-        pollDatabaseAndPublish(mqttClient);
+        pollDatabaseAndPublish();
 
     } catch (error) {
         console.error('Error initializing MQTT:', error);
@@ -56,8 +47,6 @@ const setupMQTT = async () => {
     }
 }
 
-setupMQTT()
+await setupMQTT()
 
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`))
-
-export default app
+console.log(`Server running on port ${PORT}`);
