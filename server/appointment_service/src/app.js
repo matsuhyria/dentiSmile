@@ -1,25 +1,27 @@
-import express from 'express';
-import morgan from 'morgan';
-import cors from 'cors';
-import connectDB from './config/db.js';
-import { connectMQTT, publish, subscribe, disconnectMQTT } from '../../../mqtt/mqtt.js';
 import { publishAllSlots, handleBookingRequests } from './controllers/appointmentMqttController.js';
+import connectDB from './config/db.js'
+import appointmentRouter from './routes/appointmentRouter.js'
+import mqttUtils from 'shared-mqtt'
 
+const { connectMQTT, disconnectMQTT, subscribe, publish } = mqttUtils
 
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017';
-const PORT = process.env.PORT || 5000;
-const MQTT_URI = process.env.MQTT_URI || 'ws://localhost:9001';
-const MQTT_OPTIONS = { clientId: 'appointmentService' };
+const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017'
+const PORT = process.env.PORT || 5000
+const MQTT_URI = process.env.MQTT_URI || 'ws://localhost:9001'
+const MQTT_OPTIONS = {
+    clientId: 'appointmentService',
+    reconnectPeriod: 2000,
+    connectTimeout: 30 * 1000,
+    clean: true
+}
 
-let mqttClient;
+connectDB(MONGODB_URI)
 
-connectDB(MONGODB_URI);
-
-const app = express();
-app.use(express.json());
-app.use(morgan('dev'));
-app.options('*', cors());
-app.use(cors());
+const app = express()
+app.use(express.json())
+app.use(morgan('dev'))
+app.options('*', cors())
+app.use(cors())
 
 const pollDatabaseAndPublish = async (mqttClient, interval = 5000) => {
     try {
@@ -34,12 +36,12 @@ const pollDatabaseAndPublish = async (mqttClient, interval = 5000) => {
 
 const setupMQTT = async () => {
     try {
-        console.log('Starting MQTT connection...');
-        mqttClient = await connectMQTT(MQTT_URI, MQTT_OPTIONS);
+        console.log('Starting MQTT connection...')
+        await connectMQTT(MQTT_URI, MQTT_OPTIONS)
 
         // Subscribe to booking requests and set up the handler
         await handleBookingRequests(mqttClient);
-        
+
         // Initial publish
         await publishAllSlots(mqttClient);
 
@@ -48,11 +50,14 @@ const setupMQTT = async () => {
 
     } catch (error) {
         console.error('Error initializing MQTT:', error);
+        await subscribe('test', (message) => {
+            console.log('Message received on /test', message)
+        })
     }
-};
+}
 
-setupMQTT();
+setupMQTT()
 
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`))
 
-export default app;
+export default app
