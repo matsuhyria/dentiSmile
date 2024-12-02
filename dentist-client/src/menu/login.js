@@ -1,7 +1,8 @@
 import inquirer from 'inquirer';
 import { mainMenu } from './mainMenu.js';
-import { loginSequence } from '../util/authenticateUser.js';
+import { mqttRequestResponse } from '../util/mqttRequest.js';
 import { startupScreen } from './startup.js';
+import { MQTT_TOPICS } from '../../../shared/mqtt/mqttTopics.js';
 
 // Login functionality
 export const login = async () => {
@@ -18,7 +19,7 @@ export const login = async () => {
       mask: '*', // Masks the password with '*'
     },
   ]);
-  const loginResult = await loginSequence(credentials.username, credentials.password);
+  const loginResult = await mqttRequestResponse({ username: credentials.username, password: credentials.password }, MQTT_TOPICS.AUTHENTICATION.LOGIN);
   console.log(loginResult);
   if (loginResult.status === true) {
     console.log('\nLogin successful!\n');
