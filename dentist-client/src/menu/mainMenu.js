@@ -1,5 +1,6 @@
 import inquirer from "inquirer";
 import { startupScreen } from "./startup.js";
+import { viewAppointments } from "./viewAppointments.js";
 
 // Main menu after login
 export const mainMenu = async () => {
@@ -8,13 +9,13 @@ export const mainMenu = async () => {
       type: 'list',
       name: 'action',
       message: 'Choose an option:',
-      choices: ['Create Appointment', 'View Appointments', 'Cancel Appointment', 'Remove Appointment', 'Logout'],
+      choices: ['View Appointments', 'Create Appointment', 'Cancel Appointment', 'Remove Appointment', 'Logout'],
     },
   ]);
 
   switch (action) {
     case 'View Appointments':
-      console.log('Feature coming soon: Viewing appointments...');
+      await viewAppointments();
       break;
 
     case 'Create Appointment':
