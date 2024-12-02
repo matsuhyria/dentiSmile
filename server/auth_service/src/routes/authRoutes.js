@@ -1,8 +1,11 @@
 import mqttUtils from 'shared-mqtt';
-import { register } from '../controllers/authController.js';
+import { register, login } from '../controllers/authController.js';
 
 const { handleEndpoint, MQTT_TOPICS } = mqttUtils;
 
 export const initializeRoutes = async () => {
-    await handleEndpoint(MQTT_TOPICS.AUTHENTICATION.REGISTER.REQUEST, register, MQTT_TOPICS.AUTHENTICATION.REGISTER.RESPONSE);
+    const { REGISTER, LOGIN } = MQTT_TOPICS.AUTHENTICATION;
+
+    await handleEndpoint(REGISTER.REQUEST, register, REGISTER.RESPONSE);
+    await handleEndpoint(LOGIN.REQUEST, login, LOGIN.RESPONSE);
 };
