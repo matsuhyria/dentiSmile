@@ -69,9 +69,9 @@ export const viewAppointments = async () => {
             });
             console.log(table.toString());
         }
-            await mainMenu();
-        } catch (error) {
-            console.error('Error loading appointments page:', error);
-            await mainMenu();
-        }
-    };
+        await mainMenu();
+    } catch (error) {
+        console.error('Error loading appointments page:', error);
+        await mainMenu();
+    }
+};

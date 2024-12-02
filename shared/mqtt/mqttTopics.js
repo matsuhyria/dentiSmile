@@ -30,6 +30,11 @@ export const MQTT_TOPICS = {
             RESPONSE: (clientId) =>
                 `client/${clientId}/dentist/getAppointments`,
         },
+        GET_APPOINTMENT: {
+            REQUEST: 'service/dentist/getAppointment',
+            RESPONSE: (clientId) =>
+                `client/${clientId}/dentist/getAppointment`,
+        },
         REGISTER_AVAILABILITY: {
             REQUEST: 'service/dentist/viewAppointments',
             RESPONSE: (clientId) =>

@@ -34,7 +34,7 @@ const getSlotDetails = async (message) => {
         if (!slot) {
             return { status: { code: 404, message: 'Slot not found' } };
         }
-        return { status: { code: 200, message: 'Slot details retrieved successfully' }, slot };
+        return { status: { code: 200, message: 'Slot details retrieved successfully' }, data: slot };
     } catch (error) {
         return { status: { code: 500, message: 'Error fetching slot details' } };
     }

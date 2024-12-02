@@ -1,6 +1,7 @@
 import inquirer from "inquirer";
 import { startupScreen } from "./startup.js";
 import { viewAppointments } from "./viewAppointments.js";
+import { removeAppointment } from "./removeAppointment.js";
 
 // Main menu after login
 export const mainMenu = async () => {
@@ -25,9 +26,9 @@ export const mainMenu = async () => {
     case 'Cancel Appointment':
       console.log('Feature coming soon: Cancelling an appointment...');
       break;
-    
+
     case 'Remove Appointment':
-      console.log('Feature coming soon: Cancelling an appointment...');
+      await removeAppointment();
       break;
 
     case 'Logout':
@@ -35,7 +36,7 @@ export const mainMenu = async () => {
       await startupScreen(); // Return to login screen
       break;
   }
-  
+
   // Return to the main menu
-  if (action !== 'Logout') await mainMenu();  
+  if (action !== 'Logout') await mainMenu();
 };
