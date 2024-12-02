@@ -25,6 +25,11 @@ export const MQTT_TOPICS = {
         },
     },
     DENTIST: {
+        GET_APPOINTMENTS: {
+            REQUEST: 'service/dentist/getAppointments',
+            RESPONSE: (clientId) =>
+                `client/${clientId}/dentist/getAppointments`,
+        },
         REGISTER_AVAILABILITY: {
             REQUEST: 'service/dentist/viewAppointments',
             RESPONSE: (clientId) =>
@@ -32,11 +37,13 @@ export const MQTT_TOPICS = {
         },
         CANCEL_APPOINTMENT: {
             REQUEST: 'service/dentist/cancelAppointment',
-            RESPONSE: 'service/appointment/cancelAppointment',
+            RESPONSE: (clientId) =>
+                `client/${clientId}/dentist/cancelAppointment`,
         },
         REMOVE_APPOINTMENT: {
             REQUEST: 'service/dentist/removeAppointment',
-            RESPONSE: 'service/appointment/removeAppointment',
+            RESPONSE: (clientId) =>
+                `client/${clientId}/dentist/removeAppointment`,
         },
     },
     EVENTS: {
