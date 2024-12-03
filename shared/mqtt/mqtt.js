@@ -1,6 +1,7 @@
-import { connectAsync } from "mqtt";
+import { connectAsync } from 'mqtt';
 
 let client = null;
+let topics = {};
 
 export const connectMQTT = async (MQTT_URI, options = {}) => {
     if (client) {
@@ -9,12 +10,10 @@ export const connectMQTT = async (MQTT_URI, options = {}) => {
     try {
         client = await connectAsync(MQTT_URI, options);
 
-        client.on("connect", () => {
-            console.log(`Connected to MQTT Broker at ${MQTT_URI}`);
-        });
+        console.log(`Connected to MQTT Broker at ${MQTT_URI}`);
 
         client.on("error", (err) => {
-            console.error("MQTT connection error:", err);
+            console.error("MQTT execution error:", err);
             client.end();
         });
 
@@ -86,3 +85,27 @@ export const disconnectMQTT = async (options = {}) => {
         throw error;
     }
 };
+
+// options used in both sub and pub methods
+export const handleEndpoint = async (requestTopic, callback, responseTopic, options = {}) => {
+    if (!client) {
+        throw new Error("MQTT client not connected");
+    }
+    try {
+        await client.subscribeAsync(requestTopic, options);
+        console.log(`Subscribed to topic "${requestTopic}"`);
+
+        client.on("message", async (receivedTopic, message) => {
+            if (receivedTopic === requestTopic) {
+                const { clientId } = JSON.parse(message.toString());
+                const dynamicResponseTopic = responseTopic(clientId);
+                const response = await callback(message.toString());
+                await publish(dynamicResponseTopic, response, options);
+            }
+        });
+
+    } catch (error) {
+        console.error(`Error subscribing to topic "${requestTopic}":`, error);
+        throw error;
+    }
+}

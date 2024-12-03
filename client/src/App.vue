@@ -1,33 +1,25 @@
+<template>
+  <div>
+    <NavigationBar class="fixed-navbar" />
+    <router-view class="content-container"></router-view>
+  </div>
+</template>
+
 <script setup>
 import NavigationBar from './components/NavigationBar.vue';
 </script>
 
-<template>
-  <div>
-    <NavigationBar></NavigationBar>
-    <b-col align-self="center">
-      <router-view />
-    </b-col>
-  </div>
-</template>
-
-<script>
-
-</script>
-
 <style scoped>
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
+
+.fixed-navbar {
+  position: fixed;
+  left: 0;
+  width: 100%;
 }
 
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-
-.logo.vue:hover {
-  filter: drop-shadow(0 0 2em #42b883aa);
-}
+.content-container {
+  margin-top: 50px;
+  padding: 5px 1px 0 1px;
+  width: 100%;
+  }
 </style>
