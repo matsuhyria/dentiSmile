@@ -1,5 +1,6 @@
 import { createAppointments, getAppointments, bookAppointment, getSlotDetails, cancelAppointment, removeAppointment } from '../controllers/appointmentController.js';
-import { subscribe, publish } from '../../../../shared/mqtt/mqtt.js';
+import mqttUtils from 'shared-mqtt'
+const { subscribe, publish } = mqttUtils;
 import { MQTT_TOPICS } from '../../../../shared/mqtt/mqttTopics.js';
 
 const mqttRouter = async () => {
