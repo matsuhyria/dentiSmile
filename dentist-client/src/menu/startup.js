@@ -1,6 +1,7 @@
 import inquirer from 'inquirer'
 import { exitSequence } from '../util/disconnect.js';
 import { login } from './login.js';
+import { mainMenu } from './mainMenu.js';
 
 // Startup screen, requests login
 export const startupScreen = async () => {
@@ -14,7 +15,8 @@ export const startupScreen = async () => {
   ]);
 
   if (action === 'Login') {
-    await login();
+    //await login();
+    await mainMenu();
   } else if (action === 'Exit') {
       exitSequence();
   }

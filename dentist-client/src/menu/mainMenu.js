@@ -32,4 +32,8 @@ export const mainMenu = async () => {
       await startupScreen(); // Return to login screen
       break;
   }
+
+  if (action !== 'Logout') {
+    await mainMenu();
+  }
 };

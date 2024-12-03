@@ -52,7 +52,7 @@ const displayAppointments = async () => {
     try {
         await retrieveAppointments(today, sevenDaysLater);
         mapAppointmentsByDay();
-        console.log(appointmentTable());
+        appointmentTable();
     } catch (error) {
         console.error('Error loading appointments page:', error);
     }
@@ -76,9 +76,9 @@ const retrieveAppointments = async (startingDate, endingDate) => {
 const appointmentTable = () => {
     for (const date in appointmentsByDay) {
         console.log(chalk.yellow(`\nAppointments for ${date}:`));
-        const table = new Table({
-            head: ['Patient ID', 'Start Time', 'End Time', 'Status'],
-            colWidths: [20, 10, 10, 15]
+        let table = new Table({
+            head: ['Patient ID', 'Start Time', 'End Time', 'Status', 'Appointment ID'],
+            colWidths: [20, 10, 10, 15, 26]
         });
 
         appointmentsByDay[date].forEach(appointment => {
@@ -99,14 +99,15 @@ const appointmentTable = () => {
             const startTime = statusColor(new Date(appointment.startTime).toLocaleTimeString());
             const endTime = statusColor(new Date(appointment.endTime).toLocaleTimeString());
             const status = statusColor(appointment.status);
-
-            table.push([patientId, startTime, endTime, status]);
+            const appointmentId = statusColor(appointment._id)
+            table.push([patientId, startTime, endTime, status, appointmentId]);
         });
         console.log(table.toString());
     }
 }
 
 const mapAppointmentsByDay = () => {
+    appointmentsByDay = {};
     appointments.forEach(appointment => {
         const dateKey = new Date(appointment.startTime).toDateString();
         if (!appointmentsByDay[dateKey]) {
