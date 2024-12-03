@@ -105,18 +105,19 @@ const getAppointments = async (message) => {
 const cancelAppointment = async (message) => {
     try {
         const { appointmentId } = message.data;
-        const document = await AppointmentSlot.findById(appointmentId);
-        if (!document) {
+        const appointment = await AppointmentSlot.findById(appointmentId);
+        if (!appointment) {
             return { status: {code: 400, message: 'Appointment does not exist'} };
         }
-        if (document.status === 'canceled' && document.patientId !== null) {
+        console.log(appointment);
+        if (appointment.status === 'canceled' && appointment.patientId === null) {
             return { status: {code: 400, message: 'Appointment is already cancelled'} };
         }
-        document.status = 'canceled';
-        document.patientId = null;
-        await document.save();
+        appointment.status = 'canceled';
+        appointment.patientId = null;
+        await appointment.save();
 
-        return { status: {code: 200, message: 'Appointment cancelled successfully'}, data: document };
+        return { status: {code: 200, message: 'Appointment cancelled successfully'}, data: appointment };
     } catch (error) {
         console.error(error);
         return { status: {code: 500, message: 'Error cancelling appointment'} };
