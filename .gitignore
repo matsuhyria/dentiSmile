@@ -16,7 +16,7 @@ yarn-error.log*
 **/dist/
 **/build/
 **/.cache/
-**/.nuxt/
+**/.next/
 **/out/
 
 # OS-specific files
@@ -32,3 +32,10 @@ Dockerfile
 *.swp
 *.swo
 infrastructure
+
+# vercel
+.vercel
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts
