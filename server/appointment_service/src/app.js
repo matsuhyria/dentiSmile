@@ -1,13 +1,9 @@
-import { publishAllSlots, handleBookingRequests } from './controllers/appointmentMqttController.js';
 import connectDB from './config/db.js'
-//import appointmentRouter from './routes/appointmentRouter.js'
-import mqttUtils from 'shared-mqtt'
+import setupMQTT from './config/mqtt.js'
+import mqttRouter from './routes/appointmentRouter.js'
 
-const { connectMQTT, disconnectMQTT, subscribe, publish } = mqttUtils
-
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017'
-const PORT = process.env.PORT || 5000
-const MQTT_URI = process.env.MQTT_URI || 'ws://localhost:8080'
+const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/appointment_db'
+const MQTT_URI = process.env.MQTT_URI || 'mqtt://localhost:1883'
 const MQTT_OPTIONS = {
     clientId: 'appointmentService',
     reconnectPeriod: 2000,
@@ -15,38 +11,7 @@ const MQTT_OPTIONS = {
     clean: true
 }
 
-await connectDB(MONGODB_URI);
+await connectDB(MONGODB_URI)
+await setupMQTT(MQTT_URI, MQTT_OPTIONS)
 
-const pollDatabaseAndPublish = async (interval = 5000) => {
-    try {
-        setInterval(async () => {
-            console.log('Polling database for changes...');
-            await publishAllSlots();
-        }, interval); // Check database every 5 seconds
-    } catch (error) {
-        console.error('Error polling database:', error);
-    }
-};
-
-const setupMQTT = async () => {
-    try {
-        console.log('Starting MQTT connection...')
-        await connectMQTT(MQTT_URI, MQTT_OPTIONS)
-
-        // Subscribe to booking requests and set up the handler
-        await handleBookingRequests();
-
-        // Start polling for updates
-        pollDatabaseAndPublish();
-
-    } catch (error) {
-        console.error('Error initializing MQTT:', error);
-        await subscribe('test', (message) => {
-            console.log('Message received on /test', message)
-        })
-    }
-}
-
-await setupMQTT()
-
-console.log(`Server running on port ${PORT}`);
+mqttRouter()

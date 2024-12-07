@@ -36,7 +36,7 @@ export const publish = async (topic, message, options = {}) => {
         throw new Error("MQTT client not connected");
     }
     try {
-        await client.publishAsync(topic, message, options);
+        await client.publishAsync(topic, JSON.stringify(message), options);
         console.log(`Message published to topic "${topic}": ${message}`);
     } catch (error) {
         console.error(`Error publishing to topic "${topic}":`, error);
@@ -54,7 +54,7 @@ export const subscribe = async (topic, callback, options = {}) => {
 
         client.on("message", (receivedTopic, message) => {
             if (receivedTopic === topic) {
-                callback(message.toString());
+                callback(JSON.parse(message.toString()));
             }
         });
     } catch (error) {
