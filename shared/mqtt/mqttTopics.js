@@ -1,14 +1,51 @@
 export const MQTT_TOPICS = {
     AUTHENTICATION: {
         REGISTER: {
-            REQUEST: 'service/authentication/register',
-            RESPONSE: (clientId) =>
-                `client/${clientId}/authentication/register`,
+            REQUEST: 'register',
+            RESPONSE: (clientId) => `register/${clientId}`,
         },
         LOGIN: {
-            REQUEST: 'service/authentication/login',
-            RESPONSE: (clientId) => `client/${clientId}/authentication/login`,
+            REQUEST: 'login',
+            RESPONSE: (clientId) => `login/${clientId}`,
         },
+    },
+    APPOINTMENT: {
+        CREATE: {
+            REQUEST: 'appointment/create',
+            RESPONSE: (clientId) => `appointment/create/${clientId}`
+        },
+        DELETE: {
+            REQUEST: 'appointment/delete',
+            RESPONSE: (clientId) => `appointment/delete/${clientId}`
+        },
+        BOOK: {
+            REQUEST: 'appointment/book',
+            RESPONSE: (clientId) => `appointment/book/${clientId}`
+        },
+        CANCEL: {
+            REQUEST: 'appointment/cancel',
+            RESPONSE: (clientId) => `appointment/cancel/${clientId}`
+        },
+    },
+    NOTIFICATION: {
+        APPOINTMENT: {
+            CREATE: {
+                REQUEST: (clientId) => `appointment/create/${clientId}`,
+                RESPONSE: (clientId) => `notification/appointment/create/${clientId}`
+            },
+            DELETE: {
+                REQUEST: (clientId) => `appointment/delete/${clientId}`,
+                RESPONSE: (clientId) => `notification/appointment/delete/${clientId}`
+            },
+            BOOK: {
+                REQUEST: (clientId) => `appointment/book/${clientId}`,
+                RESPONSE: (clientId) => `notification/appointment/book/${clientId}`
+            },
+            CANCEL: {
+                REQUEST: (clientId) => `appointment/cancel/${clientId}`,
+                RESPONSE: (clientId) => `notification/appointment/cancel/${clientId}`
+            },
+        }
     },
     PATIENT: {
         UPDATE_PROFILE: {
@@ -50,11 +87,5 @@ export const MQTT_TOPICS = {
             RESPONSE: (clientId) =>
                 `client/${clientId}/dentist/removeAppointment`,
         },
-    },
-    EVENTS: {
-        USER_REGISTERED: 'events/user/registered',
-        APPOINTMENT_BOOKED: 'events/appointment/booked',
-        APPOINTMENT_CANCELED: 'events/appointment/canceled',
-        APPOINTMENT_REMOVED: 'events/appointment/removed',
-    },
+    }
 }
