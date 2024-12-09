@@ -4,8 +4,8 @@ import mqttUtils from 'shared-mqtt';
 const { handleEndpoint, MQTT_TOPICS } = mqttUtils;
 
 export const initializeRoutes = async () => {
-    const { REGISTER, LOGIN } = MQTT_TOPICS.NOTIFICATION;
+    // const { REGISTER, LOGIN } = MQTT_TOPICS.NOTIFICATION;
 
-    await handleEndpoint(REGISTER.REQUEST, register, REGISTER.RESPONSE);
-    await handleEndpoint(LOGIN.REQUEST, login, LOGIN.RESPONSE);
+    // await handleEndpoint(REGISTER.REQUEST, register, REGISTER.RESPONSE);
+    // await handleEndpoint(LOGIN.REQUEST, login, LOGIN.RESPONSE);
 };
