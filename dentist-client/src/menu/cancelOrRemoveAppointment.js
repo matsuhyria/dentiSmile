@@ -29,8 +29,8 @@ export const cancelOrRemoveAppointment = async () => {
         },
     ]);
 
-    let confirm = {confirmed: false};
-    await mqttRequestResponse({ data: { "appointmentId": action.appointmentId } }, MQTT_TOPICS.DENTIST.GET_APPOINTMENT).then(async (response) => {
+    let confirm = { confirmed: false };
+    await mqttRequestResponse({ data: { "appointmentId": action.appointmentId } }, MQTT_TOPICS.APPOINTMENT.RETREIVE.ONE.REQUEST).then(async (response) => {
         if (response.status.code === 200) {
             printAppointment(response.data);
             confirm = await inquirer.prompt([
@@ -90,7 +90,7 @@ const printAppointment = (appointment) => {
 }
 
 const cancelAppointment = async (appointmentId) => {
-    await mqttRequestResponse({ data: { "appointmentId": appointmentId } }, MQTT_TOPICS.DENTIST.CANCEL_APPOINTMENT).then((response) => {
+    await mqttRequestResponse({ data: { "appointmentId": appointmentId } }, MQTT_TOPICS.APPOINTMENT.CANCEL.REQUEST).then((response) => {
         if (response.status.code === 200) {
             console.log(chalk.green('Appointment cancelled successfully'));
         } else {
@@ -102,7 +102,7 @@ const cancelAppointment = async (appointmentId) => {
 };
 
 const removeAppointment = async (appointmentId) => {
-    await mqttRequestResponse({ data: { "appointmentId": appointmentId } }, MQTT_TOPICS.DENTIST.REMOVE_APPOINTMENT).then((response) => {
+    await mqttRequestResponse({ data: { "appointmentId": appointmentId } }, MQTT_TOPICS.APPOINTMENT.DELETE.REQUEST).then((response) => {
         if (response.status.code === 200) {
             console.log(chalk.green('Appointment removed successfully'));
         } else {

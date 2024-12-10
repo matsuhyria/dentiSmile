@@ -60,7 +60,7 @@ const displayAppointments = async () => {
 
 const retrieveAppointments = async (startingDate, endingDate) => {
     try {
-        let response = await mqttRequestResponse({ data: { dentistId: hardCodedDentistId, startingDate: startingDate, endingDate: endingDate } }, MQTT_TOPICS.DENTIST.GET_APPOINTMENTS);
+        let response = await mqttRequestResponse({ data: { dentistId: hardCodedDentistId, startingDate: startingDate, endingDate: endingDate } }, MQTT_TOPICS.APPOINTMENT.RETREIVE.MANY.REQUEST);
         if (response.status.code === 200) {
             appointments = response.data;
             appointments.sort((a, b) => new Date(a.startTime) - new Date(b.startTime));

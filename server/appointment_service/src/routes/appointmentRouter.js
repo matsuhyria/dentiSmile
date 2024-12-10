@@ -5,87 +5,30 @@ import { MQTT_TOPICS } from '../../../../shared/mqtt/mqttTopics.js';
 
 const mqttRouter = async () => {
 
-    /* 
-        Dentist Related Topics
-    */
+    // Utility function to handle subscriptions
+    const handleSubscription = async (topic, handler) => {
+        await subscribe(topic, async (message) => {
+            try {
+                console.log(`${topic} Request:`, message);
+                const response = await handler(message);
+                publish(topic.replace('.REQUEST', `.RESPONSE(${message.clientId})`), response);
+            } catch (error) {
+                console.error(`Error caught during publishing for ${topic}:`, error);
+            }
+        });
+    };
 
-    // Get Appointments for Dentist
-    await subscribe(MQTT_TOPICS.DENTIST.GET_APPOINTMENTS.REQUEST, async (message) => {
-        try {
-            console.log('Get Appointments Request:', message);
-            publish(MQTT_TOPICS.DENTIST.GET_APPOINTMENTS.RESPONSE(message.clientId), await getAppointments(message))
-        } catch (error) {
-            console.error('Error caught during publishing: ', error);
-        }
-    })
+    // Dentist Topics
+    await handleSubscription(MQTT_TOPICS.APPOINTMENT.RETREIVE.MANY.REQUEST, getAppointments);
+    await handleSubscription(MQTT_TOPICS.APPOINTMENT.RETREIVE.ONE.REQUEST, getSlotDetails);
+    await handleSubscription(MQTT_TOPICS.APPOINTMENT.CREATE.REQUEST, createAppointments);
+    await handleSubscription(MQTT_TOPICS.APPOINTMENT.CANCEL.REQUEST, cancelAppointment);
+    await handleSubscription(MQTT_TOPICS.APPOINTMENT.DELETE.REQUEST, removeAppointment);
 
-    // Get Appointment for Dentist
-    await subscribe(MQTT_TOPICS.DENTIST.GET_APPOINTMENT.REQUEST, async (message) => {
-        try {
-            console.log('Get Appointment Request:', message);
-            publish(MQTT_TOPICS.DENTIST.GET_APPOINTMENT.RESPONSE(message.clientId), await getSlotDetails(message))
-        } catch (error) {
-            console.error('Error caught during publishing: ', error);
-        }
-    })
+    // Patient Topics
+    await handleSubscription(MQTT_TOPICS.APPOINTMENT.RETREIVE.MANY.REQUEST, getAppointments);
+    await handleSubscription(MQTT_TOPICS.APPOINTMENT.BOOK.REQUEST, bookAppointment);
 
-    // Create Appointments for Dentist
-    await subscribe(MQTT_TOPICS.DENTIST.REGISTER_AVAILABILITY.REQUEST, async (message) => {
-        try {
-            console.log('Create Appointments Request:', message);
-            publish(MQTT_TOPICS.DENTIST.REGISTER_AVAILABILITY.RESPONSE(message.clientId), await createAppointments(message))
-        } catch (error) {
-            console.error('Error caught during publishing: ', error);
-        }
-    })
-
-    // Cancel Appointment for Dentist
-    await subscribe(MQTT_TOPICS.DENTIST.CANCEL_APPOINTMENT.REQUEST, async (message) => {
-        try {
-            console.log('Cancel Appointment Request:', message);
-            publish(MQTT_TOPICS.DENTIST.CANCEL_APPOINTMENT.RESPONSE(message.clientId), await cancelAppointment(message))
-        }
-        catch (error) {
-            console.error('Error caught during publishing: ', error);
-        }
-    })
-
-    // Remove Appointment for Dentist
-    await subscribe(MQTT_TOPICS.DENTIST.REMOVE_APPOINTMENT.REQUEST, async (message) => {
-        try {
-            console.log('Remove Appointment Request:', message);
-            publish(MQTT_TOPICS.DENTIST.REMOVE_APPOINTMENT.RESPONSE(message.clientId), await removeAppointment(message))
-        }
-        catch (error) {
-            console.error('Error caught during publishing: ', error);
-        }
-    })
-
-    /* 
-        Patient Related Topics
-    */
-
-    // Get Appointments for Patient
-    await subscribe(MQTT_TOPICS.PATIENT.GET_APPOINTMENTS.REQUEST, async (message) => {
-        try {
-            console.log('Get Appointments Request:', message);
-            publish(MQTT_TOPICS.PATIENT.GET_APPOINTMENTS.RESPONSE(message.clientId), await getAppointments(message))
-        }
-        catch (error) {
-            console.error('Error caught during publishing: ', error);
-        }
-    })
-
-    // Book Appointment for Patient
-    await subscribe(MQTT_TOPICS.PATIENT.BOOK_APPOINTMENT.REQUEST, async (message) => {
-        try {
-            console.log('Book Appointment Request:', message);
-            publish(MQTT_TOPICS.PATIENT.BOOK_APPOINTMENT.RESPONSE(message.clientId), await bookAppointment(message))
-        }
-        catch (error) {
-            console.error('Error caught during publishing: ', error);
-        }
-    })
 }
 
 export default mqttRouter;
