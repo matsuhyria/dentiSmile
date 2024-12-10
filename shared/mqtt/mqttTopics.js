@@ -26,6 +26,10 @@ export const MQTT_TOPICS = {
             REQUEST: 'appointment/cancel',
             RESPONSE: (clientId) => `appointment/cancel/${clientId}`
         },
+        RETREIVE: {
+            REQUEST: 'appointment/retreive',
+            RESPONSE: (clientId) => `appointment/cancel/${clientId}`
+        }
     },
     NOTIFICATION: {
         APPOINTMENT: {
