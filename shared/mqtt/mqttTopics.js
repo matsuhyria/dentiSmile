@@ -26,6 +26,16 @@ export const MQTT_TOPICS = {
             REQUEST: 'appointment/cancel',
             RESPONSE: (clientId) => `appointment/cancel/${clientId}`
         },
+        RETREIVE: {
+            ONE: {
+                REQUEST: 'appointment/retreiveOne',
+                RESPONSE: (clientId) => `appointment/retreive/${clientId}`
+            },
+            MANY: {
+                REQUEST: 'appointment/retreive',
+                RESPONSE: (clientId) => `appointment/retreive/${clientId}`
+            }
+        }
     },
     NOTIFICATION: {
         APPOINTMENT: {
@@ -46,46 +56,5 @@ export const MQTT_TOPICS = {
                 RESPONSE: (clientId) => `notification/appointment/cancel/${clientId}`
             },
         }
-    },
-    PATIENT: {
-        UPDATE_PROFILE: {
-            REQUEST: 'service/patient/updateProfile',
-            RESPONSE: (clientId) => `client/${clientId}/patient/updateProfile`,
-        },
-        BOOK_APPOINTMENT: {
-            REQUEST: 'service/patient/bookAppointment',
-            RESPONSE: (clientId) => `client/${clientId}/patient/bookAppointment`,
-        },
-        GET_APPOINTMENTS: {
-            REQUEST: 'service/patient/getAppointments',
-            RESPONSE: (clientId) => `client/${clientId}/patient/getAppointments`,
-        },
-    },
-    DENTIST: {
-        GET_APPOINTMENTS: {
-            REQUEST: 'service/dentist/getAppointments',
-            RESPONSE: (clientId) =>
-                `client/${clientId}/dentist/getAppointments`,
-        },
-        GET_APPOINTMENT: {
-            REQUEST: 'service/dentist/getAppointment',
-            RESPONSE: (clientId) =>
-                `client/${clientId}/dentist/getAppointment`,
-        },
-        REGISTER_AVAILABILITY: {
-            REQUEST: 'service/dentist/viewAppointments',
-            RESPONSE: (clientId) =>
-                `client/${clientId}/dentist/viewAppointments`,
-        },
-        CANCEL_APPOINTMENT: {
-            REQUEST: 'service/dentist/cancelAppointment',
-            RESPONSE: (clientId) =>
-                `client/${clientId}/dentist/cancelAppointment`,
-        },
-        REMOVE_APPOINTMENT: {
-            REQUEST: 'service/dentist/removeAppointment',
-            RESPONSE: (clientId) =>
-                `client/${clientId}/dentist/removeAppointment`,
-        },
     }
 }

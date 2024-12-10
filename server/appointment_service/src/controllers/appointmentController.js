@@ -99,7 +99,6 @@ const getAppointments = async (message) => {
                 $lte: new Date(endingDate)
             }
         });
-        console.log(appointments);
         return { status: { code: 200, message: "Appointments retrieved successfully" }, data: appointments };
     } catch (error) {
         console.log(error);
