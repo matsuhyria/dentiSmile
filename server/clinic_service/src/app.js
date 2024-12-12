@@ -32,7 +32,7 @@ const test = async () => {
         name: 'Smily Smiles',
         address: '123 Smile St.',
         phone: '123-456-7890',
-        email: '123',
+        email: 'contact@brightsmiles.com',
         latitude: 40.7128,
         longitude: -74.0060,
         clientId: clientId,
@@ -46,6 +46,10 @@ const test = async () => {
         // UPDATE:
         await subscribe(MQTT_TOPICS.CLINIC.UPDATE.RESPONSE(clientId), console.log);
         await publish(MQTT_TOPICS.CLINIC.UPDATE.REQUEST, message);
+
+        // REMOVE:
+        await subscribe(MQTT_TOPICS.CLINIC.REMOVE.RESPONSE(clientId), console.log);
+        await publish(MQTT_TOPICS.CLINIC.REMOVE.REQUEST, message);
     } catch (error) {
         console.error('Error during test clinic/create');
     }

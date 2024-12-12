@@ -61,3 +61,22 @@ export const update = async (message) => {
     }
 };
 
+export const remove = async (message) => {
+    try {
+        const { email } = JSON.parse(message);
+
+        const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+
+        if (email && !emailRegex.test(email)) {
+            return { status: { code: 400, message: 'Invalid email format' } };
+        }
+
+        await Clinic.findOneAndDelete({ email });
+
+        return { status: { code: 200, message: 'Clinic removed successfully' } };
+    } catch (error) {
+        console.error('Error removing clinic:', error);
+        return { status: { code: 500, message: 'Internal server error' } };
+    }
+};
+
