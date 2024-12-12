@@ -59,4 +59,4 @@ export const initializeRoutes = async () => {
 
 }
 
-export { mqttRouter, publishNotification };
+export { publishNotification };

@@ -43,8 +43,10 @@ const getSlotDetails = async (message) => {
 };
 
 const createAppointments = async (message) => {
-    const { dentistId, startTime, endTime, rangeMinutes, isSingleDay } = message.data;
-
+    console.log('create appointment:', JSON.parse(message));
+    const { dentistId, startTime, endTime, rangeMinutes, isSingleDay } = message;
+    
+    
     if (!isValidIsoDate(startTime) || !isValidIsoDate(endTime)) {
         return { status: { code: 400, message: 'Invalid date format. Use ISO 8601 (YYYY-MM-DDTHH:mm:ssZ) or (YYYY-MM-DDTHH:mm)' } };
     }

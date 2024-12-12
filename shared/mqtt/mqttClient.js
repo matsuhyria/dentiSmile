@@ -95,7 +95,10 @@ export const handleEndpoint = async (requestTopic, callback, responseTopic, opti
 
         client.on("message", async (receivedTopic, message) => {
             if (receivedTopic === requestTopic) {
+                console.log('message', message);
+                console.log('message string', message.toString());
                 const { clientId } = JSON.parse(message.toString());
+                console.log('clientId', clientId);
                 const dynamicResponseTopic = responseTopic(clientId);
                 const response = await callback(message.toString());
                 await publish(dynamicResponseTopic, response, options);
