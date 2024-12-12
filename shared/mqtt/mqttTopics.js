@@ -12,7 +12,8 @@ export const MQTT_TOPICS = {
     APPOINTMENT: {
         CREATE: {
             REQUEST: 'appointment/create',
-            RESPONSE: (clientId) => `appointment/create/${clientId}`
+            RESPONSE: (clientId) => `appointment/create/${clientId}`,
+            NOTIFICATION: 'appointment/patient/notification'
         },
         DELETE: {
             REQUEST: 'appointment/delete',
@@ -41,7 +42,8 @@ export const MQTT_TOPICS = {
         APPOINTMENT: {
             CREATE: {
                 REQUEST: (clientId) => `appointment/create/${clientId}`,
-                RESPONSE: (clientId) => `notification/appointment/create/${clientId}`
+                RESPONSE: (clientId) => `notification/appointment/create/${clientId}`,
+                CHECK: 'appointment/patient/notification'
             },
             DELETE: {
                 REQUEST: (clientId) => `appointment/delete/${clientId}`,
