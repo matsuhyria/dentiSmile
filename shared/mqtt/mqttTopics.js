@@ -56,5 +56,11 @@ export const MQTT_TOPICS = {
                 RESPONSE: (clientId) => `notification/appointment/cancel/${clientId}`
             },
         }
+    },
+    CLINIC: {
+        CREATE: {
+            REQUEST: 'clinic/create',
+            RESPONSE: (clientId) => `clinic/create/${clientId}`
+        }
     }
 }
