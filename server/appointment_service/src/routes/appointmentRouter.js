@@ -20,8 +20,6 @@ const publishNotification = async (createdSlots) => {
 };
 
 export const initializeRoutes = async () => {
-
-
     const { CREATE, RETRIEVE, BOOK, CANCEL, DELETE } = MQTT_TOPICS.APPOINTMENT;
 
     await handleEndpoint(RETRIEVE.MANY.REQUEST, getAppointments, RETRIEVE.MANY.RESPONSE);
@@ -30,33 +28,6 @@ export const initializeRoutes = async () => {
     await handleEndpoint(CANCEL.REQUEST, cancelAppointment, CANCEL.RESPONSE);
     await handleEndpoint(DELETE.REQUEST, removeAppointment, DELETE.RESPONSE);
     await handleEndpoint(BOOK.REQUEST, bookAppointment, BOOK.RESPONSE);
-
-
-    // const handleSubscription = async (topic, handler) => {
-    //     await subscribe(topic, async (message) => {
-    //         try {
-    //             console.log(`${topic} Request:`, message);
-    //             const response = await handler(message);
-    //             publish(topic.replace('.REQUEST', `.RESPONSE(${message.clientId})`), response);
-    //         } catch (error) {
-    //             console.error(`Error caught during publishing for ${topic}:`, error);
-    //         }
-    //     });
-    // };
-
-    // // Dentist Topics
-    // await handleSubscription(MQTT_TOPICS.APPOINTMENT.RETREIVE.MANY.REQUEST, getAppointments);
-    // await handleSubscription(MQTT_TOPICS.APPOINTMENT.RETREIVE.ONE.REQUEST, getSlotDetails);
-    // await handleSubscription(MQTT_TOPICS.APPOINTMENT.CREATE.REQUEST, createAppointments);
-    // await handleSubscription(MQTT_TOPICS.APPOINTMENT.CANCEL.REQUEST, cancelAppointment);
-    // await handleSubscription(MQTT_TOPICS.APPOINTMENT.DELETE.REQUEST, removeAppointment);
-
-    // // Patient Topics
-    // await handleSubscription(MQTT_TOPICS.APPOINTMENT.RETREIVE.MANY.REQUEST, getAppointments);
-    // await handleSubscription(MQTT_TOPICS.APPOINTMENT.BOOK.REQUEST, bookAppointment);
-
-
-
 }
 
-export { mqttRouter, publishNotification };
+export { publishNotification };
