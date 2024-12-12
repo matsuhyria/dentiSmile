@@ -1,8 +1,6 @@
 import AppointmentSlot from '../models/appointmentSlot.js';
 import { generateSingleDaySlots, generateMultiDaySlots, isValidIsoDate } from '../utils/dateUtils.js';
-import { MQTT_TOPICS } from '../../../../shared/mqtt/mqttTopics.js';
-import mqttUtils from 'shared-mqtt';
-const { publish } = mqttUtils;
+import { publishNotification } from '../routes/appointmentRouter.js';
 
 
 //appointment/book
@@ -81,14 +79,7 @@ const createAppointments = async (message) => {
         const createdSlots = await AppointmentSlot.insertMany(slots);
 
         // Publish notification event for patients
-        const notificationEvent = {
-            message: `New appointment slots are now available from dentist ID ${dentistId}.`,
-            slots: createdSlots.map(slot => ({
-                slotId: slot._id
-            })),
-        };
-
-        await publish(MQTT_TOPICS.NOTIFICATION.APPOINTMENT.CREATE.RESPONSE, notificationEvent);
+        await publishNotification(createdSlots);
 
         return { status: { code: 200, message: 'Appointment slots created successfully' } };
     } catch (error) {
