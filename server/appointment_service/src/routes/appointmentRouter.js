@@ -11,7 +11,7 @@ const publishNotification = async (createdSlots) => {
     };
 
     try {
-        await publish(MQTT_TOPICS.NOTIFICATION.APPOINTMENT.CREATE.REQUEST, notificationEvent);
+        await publish(MQTT_TOPICS.NOTIFICATION.APPOINTMENT.CREATE, notificationEvent);
     } catch (error) {
         console.error('Error publishing notification:', error);
     }

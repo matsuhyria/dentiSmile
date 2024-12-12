@@ -39,10 +39,7 @@ export const MQTT_TOPICS = {
     },
     NOTIFICATION: {
         APPOINTMENT: {
-            CREATE: {
-                REQUEST: 'notification/appointment/create',
-                RESPONSE: (clientId) => `notification/appointment/create/${clientId}`
-            },
+            CREATE: 'notification/appointment/create',
             DELETE: {
                 REQUEST: (clientId) => `appointment/delete/${clientId}`,
                 RESPONSE: (clientId) => `notification/appointment/delete/${clientId}`
