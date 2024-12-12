@@ -61,6 +61,10 @@ export const MQTT_TOPICS = {
         CREATE: {
             REQUEST: 'clinic/create',
             RESPONSE: (clientId) => `clinic/create/${clientId}`
+        },
+        UPDATE: {
+            REQUEST: 'clinic/update',
+            RESPONSE: (clientId) => `clinic/update/${clientId}`
         }
     }
 }
