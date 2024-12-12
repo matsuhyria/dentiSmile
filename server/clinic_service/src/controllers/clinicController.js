@@ -80,3 +80,17 @@ export const remove = async (message) => {
     }
 };
 
+export const retrieveAll = async () => {
+    try {
+        const clinics = await Clinic.find();
+
+        if (clinics.length === 0) {
+            return { status: { code: 404, message: 'No clinics found' } };
+        }
+
+        return { status: { code: 200, message: 'Clinics retrieved successfully' }, data: clinics };
+    } catch (error) {
+        console.error('Error retrieving clinics:', error);
+        return { status: { code: 500, message: 'Internal server error' } };
+    }
+};

@@ -69,6 +69,10 @@ export const MQTT_TOPICS = {
         REMOVE: {
             REQUEST: 'clinic/remove',
             RESPONSE: (clientId) => `clinic/remove/${clientId}`
+        },
+        RETRIEVE: {
+            REQUEST: 'clinic/retrieve',
+            RESPONSE: (clientId) => `clinic/retrieve/${clientId}`
         }
     }
 }
