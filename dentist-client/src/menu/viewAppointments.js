@@ -2,9 +2,10 @@ import chalk from 'chalk';
 import inquirer from 'inquirer';
 import { mainMenu } from './mainMenu.js';
 import { mqttRequestResponse } from '../util/mqttRequest.js';
-import { MQTT_TOPICS } from '../../../shared/mqtt/mqttTopics.js';
+import mqttUtils from 'shared-mqtt'
 import Table from 'cli-table3';
 
+const { MQTT_TOPICS } = mqttUtils;
 const hardCodedDentistId = '673d250e840b29fc54c9da0c'; // Hard-coded dentist ID for now
 let appointments = [];
 let appointmentsByDay = {};
@@ -60,7 +61,7 @@ const displayAppointments = async () => {
 
 const retrieveAppointments = async (startingDate, endingDate) => {
     try {
-        let response = await mqttRequestResponse({ data: { dentistId: hardCodedDentistId, startingDate: startingDate, endingDate: endingDate } }, MQTT_TOPICS.APPOINTMENT.RETREIVE.MANY.REQUEST);
+        let response = await mqttRequestResponse({ data: { dentistId: hardCodedDentistId, startingDate: startingDate, endingDate: endingDate } }, MQTT_TOPICS.APPOINTMENT.RETRIEVE.MANY);
         if (response.status.code === 200) {
             appointments = response.data;
             appointments.sort((a, b) => new Date(a.startTime) - new Date(b.startTime));
