@@ -1,6 +1,6 @@
-import Link from 'next/link'
-import Image from 'next/image'
-import { User } from 'lucide-react'
+import Link from 'next/link';
+import Image from 'next/image';
+import { User } from 'lucide-react';
 
 export default function Nav() {
     return (
@@ -17,9 +17,9 @@ export default function Nav() {
                                     <Image
                                         src="/logo.svg"
                                         alt="DentiSmile Logo"
-                                        width={40}
+                                        width={80}
                                         height={40}
-                                        className="h-10 w-auto"
+                                        priority
                                     />
                                 </Link>
                             </div>
@@ -36,5 +36,5 @@ export default function Nav() {
                 </nav>
             </header>
         </div>
-    )
+    );
 }

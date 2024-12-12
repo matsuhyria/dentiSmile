@@ -2,12 +2,12 @@ export const MQTT_TOPICS = {
     AUTHENTICATION: {
         REGISTER: {
             REQUEST: 'register',
-            RESPONSE: (clientId) => `register/${clientId}`,
+            RESPONSE: (clientId) => `register/${clientId}`
         },
         LOGIN: {
             REQUEST: 'login',
-            RESPONSE: (clientId) => `login/${clientId}`,
-        },
+            RESPONSE: (clientId) => `login/${clientId}`
+        }
     },
     APPOINTMENT: {
         CREATE: {
@@ -41,20 +41,34 @@ export const MQTT_TOPICS = {
         APPOINTMENT: {
             CREATE: {
                 REQUEST: (clientId) => `appointment/create/${clientId}`,
-                RESPONSE: (clientId) => `notification/appointment/create/${clientId}`
+                RESPONSE: (clientId) =>
+                    `notification/appointment/create/${clientId}`
             },
             DELETE: {
                 REQUEST: (clientId) => `appointment/delete/${clientId}`,
-                RESPONSE: (clientId) => `notification/appointment/delete/${clientId}`
+                RESPONSE: (clientId) =>
+                    `notification/appointment/delete/${clientId}`
             },
             BOOK: {
                 REQUEST: (clientId) => `appointment/book/${clientId}`,
-                RESPONSE: (clientId) => `notification/appointment/book/${clientId}`
+                RESPONSE: (clientId) =>
+                    `notification/appointment/book/${clientId}`
             },
             CANCEL: {
                 REQUEST: (clientId) => `appointment/cancel/${clientId}`,
-                RESPONSE: (clientId) => `notification/appointment/cancel/${clientId}`
-            },
+                RESPONSE: (clientId) =>
+                    `notification/appointment/cancel/${clientId}`
+            }
         }
+    },
+    CLINICS: {
+        UPDATED: 'clinics/updated',
+        DETAILS: {
+            REQUEST: 'clinics/detailsRequest',
+            RESPONSE: 'clinics/detailsResponse'
+        }
+    },
+    REASONS: {
+        UPDATED: 'REASONS_UPDATED'
     }
 }
