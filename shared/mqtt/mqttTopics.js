@@ -2,17 +2,17 @@ export const MQTT_TOPICS = {
     AUTHENTICATION: {
         REGISTER: {
             REQUEST: 'register',
-            RESPONSE: (clientId) => `register/${clientId}`
+            RESPONSE: (clientId) => `register/${clientId}`,
         },
         LOGIN: {
             REQUEST: 'login',
-            RESPONSE: (clientId) => `login/${clientId}`
-        }
+            RESPONSE: (clientId) => `login/${clientId}`,
+        },
     },
     APPOINTMENT: {
         CREATE: {
             REQUEST: 'appointment/create',
-            RESPONSE: (clientId) => `appointment/create/${clientId}`
+            RESPONSE: (clientId) => `appointment/create/${clientId}`,
         },
         DELETE: {
             REQUEST: 'appointment/delete',
@@ -26,7 +26,7 @@ export const MQTT_TOPICS = {
             REQUEST: 'appointment/cancel',
             RESPONSE: (clientId) => `appointment/cancel/${clientId}`
         },
-        RETREIVE: {
+        RETRIEVE: {
             ONE: {
                 REQUEST: 'appointment/retreiveOne',
                 RESPONSE: (clientId) => `appointment/retreive/${clientId}`
@@ -39,36 +39,19 @@ export const MQTT_TOPICS = {
     },
     NOTIFICATION: {
         APPOINTMENT: {
-            CREATE: {
-                REQUEST: (clientId) => `appointment/create/${clientId}`,
-                RESPONSE: (clientId) =>
-                    `notification/appointment/create/${clientId}`
-            },
+            CREATE: 'notification/appointment/create',
             DELETE: {
                 REQUEST: (clientId) => `appointment/delete/${clientId}`,
-                RESPONSE: (clientId) =>
-                    `notification/appointment/delete/${clientId}`
+                RESPONSE: (clientId) => `notification/appointment/delete/${clientId}`
             },
             BOOK: {
                 REQUEST: (clientId) => `appointment/book/${clientId}`,
-                RESPONSE: (clientId) =>
-                    `notification/appointment/book/${clientId}`
+                RESPONSE: (clientId) => `notification/appointment/book/${clientId}`
             },
             CANCEL: {
                 REQUEST: (clientId) => `appointment/cancel/${clientId}`,
-                RESPONSE: (clientId) =>
-                    `notification/appointment/cancel/${clientId}`
-            }
+                RESPONSE: (clientId) => `notification/appointment/cancel/${clientId}`
+            },
         }
-    },
-    CLINICS: {
-        UPDATED: 'clinics/updated',
-        DETAILS: {
-            REQUEST: 'clinics/detailsRequest',
-            RESPONSE: 'clinics/detailsResponse'
-        }
-    },
-    REASONS: {
-        UPDATED: 'REASONS_UPDATED'
     }
 }

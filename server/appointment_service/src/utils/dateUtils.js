@@ -80,7 +80,7 @@ const generateMultiDaySlots = (dentistId, startDateISO, endDateISO, rangeMinutes
  * @returns {boolean} - Returns `true` if the date string is a valid ISO 8601 format and represents a valid date; otherwise, `false`.
  **/
 const isValidIsoDate = (date) => {
-    const regex = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(:\d{2}.\d{3}Z)?$/;
+    const regex = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(:\d{2}(\.\d{1,3})?)?Z?$/;
     if (!regex.test(date)) {
         return false;
     }
