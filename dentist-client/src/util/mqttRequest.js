@@ -1,4 +1,5 @@
-import { publish, subscribe, unsubscribe } from '../../../shared/mqtt/mqtt.js'
+import mqttUtils from 'shared-mqtt'
+const { publish, subscribe, unsubscribe } = mqttUtils;
 import { getClientId } from './clientId.js'
 
 // Failure conditions can be handled by reject instead

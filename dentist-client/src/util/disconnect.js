@@ -1,4 +1,5 @@
-import { disconnectMQTT } from "../../../shared/mqtt/mqtt.js"
+import mqttUtils from 'shared-mqtt'
+const { disconnectMQTT } = mqttUtils;
 
 export const exitSequence = async () => {
     await disconnectMQTT()

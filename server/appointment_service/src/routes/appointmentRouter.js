@@ -2,7 +2,6 @@ import { createAppointments, getAppointments, bookAppointment, getSlotDetails, c
 import mqttUtils from 'shared-mqtt'
 const { handleEndpoint, MQTT_TOPICS, subscribe, publish } = mqttUtils;
 
-// Utility function to publish notifications
 const publishNotification = async (createdSlots) => {
     const notificationEvent = {
         message: 'New appointment slots are now available',
@@ -12,8 +11,7 @@ const publishNotification = async (createdSlots) => {
     };
 
     try {
-        // Publish the notification
-        await publish(MQTT_TOPICS.NOTIFICATION.APPOINTMENT.CREATE.RESPONSE, notificationEvent);
+        await publish(MQTT_TOPICS.NOTIFICATION.APPOINTMENT.CREATE.REQUEST, notificationEvent);
     } catch (error) {
         console.error('Error publishing notification:', error);
     }

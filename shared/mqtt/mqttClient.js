@@ -1,4 +1,4 @@
-import { connectAsync } from 'mqtt'
+import mqtt from 'mqtt'
 
 let client = null
 
@@ -7,9 +7,9 @@ export const connectMQTT = async (MQTT_URI, options = {}) => {
         return client
     }
     try {
-        client = await connectAsync(MQTT_URI, options)
+        client = await mqtt.connectAsync(MQTT_URI, options)
 
-        console.log(`Connected to MQTT Broker at ${MQTT_URI}`);
+        console.log(`Connected to MQTT Broker at ${MQTT_URI}`)
 
         client.on('error', (err) => {
             console.error('MQTT connection error:', err)
@@ -85,28 +85,29 @@ export const disconnectMQTT = async (options = {}) => {
     }
 }
 
-export const handleEndpoint = async (requestTopic, callback, responseTopic, options = {}) => {
+export const handleEndpoint = async (
+    requestTopic,
+    callback,
+    responseTopic,
+    options = {}
+) => {
     if (!client) {
-        throw new Error("MQTT client not connected");
+        throw new Error('MQTT client not connected')
     }
     try {
-        await client.subscribeAsync(requestTopic, options);
-        console.log(`Subscribed to topic "${requestTopic}"`);
+        await client.subscribeAsync(requestTopic, options)
+        console.log(`Subscribed to topic "${requestTopic}"`)
 
-        client.on("message", async (receivedTopic, message) => {
+        client.on('message', async (receivedTopic, message) => {
             if (receivedTopic === requestTopic) {
-                console.log('message', message);
-                console.log('message string', message.toString());
-                const { clientId } = JSON.parse(message.toString());
-                console.log('clientId', clientId);
-                const dynamicResponseTopic = responseTopic(clientId);
-                const response = await callback(message.toString());
-                await publish(dynamicResponseTopic, response, options);
+                const { clientId } = JSON.parse(message.toString())
+                const dynamicResponseTopic = responseTopic(clientId)
+                const response = await callback(message.toString())
+                await publish(dynamicResponseTopic, response, options)
             }
-        });
-
+        })
     } catch (error) {
-        console.error(`Error subscribing to topic "${requestTopic}":`, error);
-        throw error;
+        console.error(`Error subscribing to topic "${requestTopic}":`, error)
+        throw error
     }
 }
