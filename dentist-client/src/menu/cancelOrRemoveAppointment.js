@@ -1,8 +1,7 @@
+import mqttUtils from 'shared-mqtt'
+const { MQTT_TOPICS } = mqttUtils;
 import inquirer from "inquirer";
-import { startupScreen } from "./startup.js";
-import { viewAppointments } from "./viewAppointments.js";
 import { mqttRequestResponse } from '../util/mqttRequest.js';
-import { MQTT_TOPICS } from '../../../shared/mqtt/mqttTopics.js';
 import Table from 'cli-table3';
 import chalk from 'chalk';
 import { mainMenu } from "./mainMenu.js";
@@ -30,7 +29,7 @@ export const cancelOrRemoveAppointment = async () => {
     ]);
 
     let confirm = { confirmed: false };
-    await mqttRequestResponse({ data: { "appointmentId": action.appointmentId } }, MQTT_TOPICS.APPOINTMENT.RETREIVE.ONE.REQUEST).then(async (response) => {
+    await mqttRequestResponse({ data: { "appointmentId": action.appointmentId } }, MQTT_TOPICS.APPOINTMENT.RETRIEVE.ONE).then(async (response) => {
         if (response.status.code === 200) {
             printAppointment(response.data);
             confirm = await inquirer.prompt([
