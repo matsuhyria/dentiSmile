@@ -56,8 +56,8 @@ Below is a detailed description of each MQTT endpoint in the appointments servic
 {
   "data": {
     "dentistId": "ObjectId",
-    "startTime": "Date",
-    "endTime": "Date",
+    "startTime": "DateTime",
+    "endTime": "DateTime",
     "rangeMinutes": "integer",
     "isSingleDay": "boolean"
   },
