@@ -1,5 +1,7 @@
 import AppointmentSlot from '../models/appointmentSlot.js';
 import { generateSingleDaySlots, generateMultiDaySlots, isValidIsoDate } from '../utils/dateUtils.js';
+import { publishNotification } from '../routes/appointmentRouter.js';
+
 
 //appointment/book
 const bookAppointment = async (message) => {
@@ -41,7 +43,9 @@ const getSlotDetails = async (message) => {
 };
 
 const createAppointments = async (message) => {
-    const { dentistId, startTime, endTime, rangeMinutes, isSingleDay } = message.data;
+    const parsedData = JSON.parse(message);
+    const parsedData2 = JSON.parse(parsedData);
+    const { dentistId, startTime, endTime, rangeMinutes, isSingleDay } = parsedData2.data;
 
     if (!isValidIsoDate(startTime) || !isValidIsoDate(endTime)) {
         return { status: { code: 400, message: 'Invalid date format. Use ISO 8601 (YYYY-MM-DDTHH:mm:ssZ) or (YYYY-MM-DDTHH:mm)' } };
@@ -74,7 +78,11 @@ const createAppointments = async (message) => {
 
         if (slots.length < 1) return { status: { code: 400, message: 'Appointment duration invalid' } };
 
-        await AppointmentSlot.insertMany(slots);
+        const createdSlots = await AppointmentSlot.insertMany(slots);
+
+        // Publish notification event for patients
+        await publishNotification(createdSlots);
+
         return { status: { code: 200, message: 'Appointment slots created successfully' } };
     } catch (error) {
         console.log(error);

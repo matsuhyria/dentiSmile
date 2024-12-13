@@ -1,34 +1,31 @@
 import { createAppointments, getAppointments, bookAppointment, getSlotDetails, cancelAppointment, removeAppointment } from '../controllers/appointmentController.js';
 import mqttUtils from 'shared-mqtt'
-const { subscribe, publish } = mqttUtils;
-import { MQTT_TOPICS } from '../../../../shared/mqtt/mqttTopics.js';
+const { handleEndpoint, MQTT_TOPICS, subscribe, publish } = mqttUtils;
 
-const mqttRouter = async () => {
-
-    // Utility function to handle subscriptions
-    const handleSubscription = async (topic, handler) => {
-        await subscribe(topic, async (message) => {
-            try {
-                console.log(`${topic} Request:`, message);
-                const response = await handler(message);
-                publish(topic.replace('.REQUEST', `.RESPONSE(${message.clientId})`), response);
-            } catch (error) {
-                console.error(`Error caught during publishing for ${topic}:`, error);
-            }
-        });
+const publishNotification = async (createdSlots) => {
+    const notificationEvent = {
+        message: 'New appointment slots are now available',
+        slots: createdSlots.map(slot => ({
+            slotId: slot._id,
+        })),
     };
 
-    // Dentist Topics
-    await handleSubscription(MQTT_TOPICS.APPOINTMENT.RETREIVE.MANY.REQUEST, getAppointments);
-    await handleSubscription(MQTT_TOPICS.APPOINTMENT.RETREIVE.ONE.REQUEST, getSlotDetails);
-    await handleSubscription(MQTT_TOPICS.APPOINTMENT.CREATE.REQUEST, createAppointments);
-    await handleSubscription(MQTT_TOPICS.APPOINTMENT.CANCEL.REQUEST, cancelAppointment);
-    await handleSubscription(MQTT_TOPICS.APPOINTMENT.DELETE.REQUEST, removeAppointment);
+    try {
+        await publish(MQTT_TOPICS.NOTIFICATION.APPOINTMENT.CREATE, notificationEvent);
+    } catch (error) {
+        console.error('Error publishing notification:', error);
+    }
+};
 
-    // Patient Topics
-    await handleSubscription(MQTT_TOPICS.APPOINTMENT.RETREIVE.MANY.REQUEST, getAppointments);
-    await handleSubscription(MQTT_TOPICS.APPOINTMENT.BOOK.REQUEST, bookAppointment);
+export const initializeRoutes = async () => {
+    const { CREATE, RETRIEVE, BOOK, CANCEL, DELETE } = MQTT_TOPICS.APPOINTMENT;
 
+    await handleEndpoint(RETRIEVE.MANY.REQUEST, getAppointments, RETRIEVE.MANY.RESPONSE);
+    await handleEndpoint(RETRIEVE.ONE.REQUEST, getSlotDetails, RETRIEVE.ONE.RESPONSE);
+    await handleEndpoint(CREATE.REQUEST, createAppointments, CREATE.RESPONSE);
+    await handleEndpoint(CANCEL.REQUEST, cancelAppointment, CANCEL.RESPONSE);
+    await handleEndpoint(DELETE.REQUEST, removeAppointment, DELETE.RESPONSE);
+    await handleEndpoint(BOOK.REQUEST, bookAppointment, BOOK.RESPONSE);
 }
 
-export default mqttRouter;
+export { publishNotification };

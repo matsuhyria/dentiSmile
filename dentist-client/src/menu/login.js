@@ -2,7 +2,9 @@ import inquirer from 'inquirer';
 import { mainMenu } from './mainMenu.js';
 import { mqttRequestResponse } from '../util/mqttRequest.js';
 import { startupScreen } from './startup.js';
-import { MQTT_TOPICS } from '../../../shared/mqtt/mqttTopics.js';
+import mqttUtils from 'shared-mqtt'
+
+const { MQTT_TOPICS } = mqttUtils;
 
 // Login functionality
 export const login = async () => {

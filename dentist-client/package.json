@@ -17,6 +17,8 @@
     "chalk": "^5.3.0",
     "cli-table3": "^0.6.5",
     "inquirer": "^12.1.0",
-    "uuid": "^11.0.3"
+    "uuid": "^11.0.3",
+    "shared-mqtt": "file:../shared/mqtt"
+
   }
 }
