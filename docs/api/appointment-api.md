@@ -5,9 +5,10 @@ This document provides an overview of the MQTT endpoints used in the appointment
 1. [Introduction to MQTT and clientId](#introduction-to-mqtt-and-clientid)
 2. [MQTT Topics Structure](#mqtt-topics-structure)
 3. [Endpoints Details](#endpoints-details)
-4. [Handling Requests and Responses](#handling-requests-and-responses)
-5. [Example Usage](#example-usage)
-6. [Error Handling](#error-handling)
+4. [Appointment Slot Structure](#appointment-slot-structure)
+5. [Handling Requests and Responses](#handling-requests-and-responses)
+6. [Example Usage](#example-usage)
+7. [Error Handling](#error-handling)
 
 ## Introduction to MQTT and clientId
 **MQTT** (Message Queuing Telemetry Transport) is the chosen communication protocol for appointments service. MQTT works by exchanging messages (payloads) through topics between publishers and subscribers.
@@ -228,6 +229,32 @@ Below is a detailed description of each MQTT endpoint in the appointments servic
   ]
 }
 ```
+
+## Appointment Slot Structure
+
+An appointment slot is represented by the following structure:
+
+```json
+{
+  "_id": "ObjectId",
+  "dentistId": "ObjectId",
+  "patientId": "ObjectId" || null,
+  "startTime": "DateTime",
+  "endTime": "DateTime",
+  "status": "enum ['available', 'booked', 'canceled']"
+}
+```
+**Field Descriptions**:
+- **_id**: The unique identifier of the appointment slot.
+- **dentistId**: The unique identifier of the dentist associated with this slot.
+- **patientId**: The unique identifier of the patient who has booked the slot. This field is null if the slot is still available.
+- **startTime**: The starting time of the appointment slot in ISO 8601 format.
+- **endTime**: The ending time of the appointment slot in ISO 8601 format.
+- **status**: Indicates the current status of the appointment slot:
+  - **available**: The slot is open for booking.
+  - **booked**: The slot has been booked by a patient.
+  - **canceled**: The slot has been canceled by dentist and is not available for booking by a patient.
+
 
 ## Handling Requests and Responses
 
