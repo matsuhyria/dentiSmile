@@ -7,12 +7,12 @@ export const register = async (message) => {
         const { email, password, role } = JSON.parse(message);
         // to restrict dentists from registering
         if (role !== 'patient') {
-            return JSON.stringify({ success: false, message: 'Invalid role' });
+            return { status: { code: 400, message: 'Invalid role' } };
         }
 
         const user = await User.findOne({ email });
         if (user) {
-            return JSON.stringify({ success: false, message: 'Invalid credentials' });
+            return { status: { code: 400, message: 'User already exists' } };
         }
 
         const newUser = new User({ email, password, role });
@@ -21,14 +21,10 @@ export const register = async (message) => {
 
         const token = generateToken({ id: newUser._id, role });
 
-        return JSON.stringify({
-            success: true,
-            message: 'Patient registered successfully',
-            token
-        });
+        return { status: { code: 200, message: 'User registered successfully' }, token };
     } catch (error) {
         console.error('Error registering user:', error);
-        return JSON.stringify({ success: false, message: 'Error during register' });
+        return { status: { code: 500, message: 'Error during register' } };
     }
 };
 
@@ -38,23 +34,19 @@ export const login = async (message) => {
 
         const user = await User.findOne({ email });
         if (!user) {
-            return JSON.stringify({ success: false, message: 'Invalid credentials' });
+            return { status: { code: 404, message: 'User not found' } };
         }
 
         const isValidPassword = await user.matchPassword(password);
         if (!isValidPassword) {
-            return JSON.stringify({ success: false, message: 'Invalid credentials' });
+            return { status: { code: 400, message: 'Invalid credentials' } };
         }
 
         const token = generateToken({ id: user._id, role: user.role });
 
-        return JSON.stringify({
-            success: true,
-            message: 'Login successful',
-            token
-        });
+        return { status: { code: 200, message: 'Login successful' }, token };
     } catch (error) {
         console.error('Error logging in user:', error);
-        return JSON.stringify({ success: false, message: 'Error during login' });
+        return { status: { code: 500, message: 'Error during login' } };
     }
 };
