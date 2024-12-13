@@ -16,7 +16,7 @@ The **clientId**  is a unique identifier for each client connected to the MQTT b
 
 ## MQTT Topics Structure
 
-The MQTT topics are structured in a hierarchical way, structured as follows:
+The MQTT topics are structured in a hierarchical way, structure as follows:
 
 - Appointment
 	- CREATE:
@@ -58,8 +58,8 @@ Below is a detailed description of each MQTT endpoint in the appointments servic
     "dentistId": "ObjectId",
     "startTime": "Date",
     "endTime": "Date",
-    "rangeMinutes": integer,
-    "isSingleDay": boolean
+    "rangeMinutes": "integer",
+    "isSingleDay": "boolean"
   },
   "clientId": "ObjectId"
 }
@@ -70,7 +70,7 @@ Below is a detailed description of each MQTT endpoint in the appointments servic
 ```json
 {
   "status": {
-    "code": integer,
+    "code": "integer",
     "message": "string"
   }
 }
@@ -97,10 +97,9 @@ Below is a detailed description of each MQTT endpoint in the appointments servic
 ```json
 {
   "status": {
-    "code": integer,
+    "code": "integer",
     "message": "string"
   },
-  // Most of the time, data object does not exist in failure messages
   "data": {
     // Deleted appointment details
   }
@@ -129,10 +128,9 @@ Below is a detailed description of each MQTT endpoint in the appointments servic
 ```json
 {
   "status": {
-    "code": integer,
+    "code": "integer",
     "message": "string"
   },
-  // Most of the time, data object does not exist in failure messages
   "data":{
 	  // Booked appointment slot details
   }
@@ -160,10 +158,9 @@ Below is a detailed description of each MQTT endpoint in the appointments servic
 ```json
 {
   "status": {
-    "code": integer,
+    "code": "integer",
     "message": "string"
   },
-  // Most of the time, data object does not exist in failure messages
   "data": {
     // Updated appointment details
   }
@@ -191,10 +188,9 @@ Below is a detailed description of each MQTT endpoint in the appointments servic
 ```json
 {
   "status": {
-    "code": integer,
+    "code": "integer",
     "message": "string"
   },
-  // Most of the time, data object does not exist in failure messages
   "data": {
     // Appointment slot details
   }
@@ -224,7 +220,7 @@ Below is a detailed description of each MQTT endpoint in the appointments servic
 ```json
 {
   "status": {
-    "code": integer,
+    "code": "integer",
     "message": "string"
   },
   "data": [
@@ -269,7 +265,6 @@ To interact with these MQTT endpoints:
     "message": "Appointment slot booked successfully"
   },
   "slot": {
-    // Booked appointment slot details
     "_id": "64b8f7f1f1a4e8b1a1a1a1a1",
     "dentistId": "64b8f7f1f1a4e8b1a1a1a1a3",
     "patientId": "673d250e840b29fc54c9da0c",
@@ -292,3 +287,4 @@ Common status codes:
 - `500`: Internal Server Error
 
 Always check the **status code** and handle errors appropriately in your client application.
+Keep in mind that most of the time, data object does not exist in failure messages.
