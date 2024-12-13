@@ -61,7 +61,7 @@ Below is a detailed description of each MQTT endpoint in the appointments servic
     "rangeMinutes": "integer",
     "isSingleDay": "boolean"
   },
-  "clientId": "ObjectId"
+  "clientId": "string"
 }
 ```
 
