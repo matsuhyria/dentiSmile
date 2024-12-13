@@ -25,4 +25,13 @@ const startService = async () => {
     }
 };
 
+const test = async () => {
+    try {
+
+    } catch (error) {
+        console.error(error);
+    }
+}
+
 await startService();
+test();

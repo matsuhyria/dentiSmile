@@ -7,7 +7,7 @@ export const register = async (message) => {
         const { email, password, role } = JSON.parse(message);
         // to restrict dentists from registering
         if (role !== 'patient') {
-            return { status: { code: 400, message: 'Invalid role' } };
+            return { status: { code: 403, message: 'Invalid role' } };
         }
 
         const user = await User.findOne({ email });
