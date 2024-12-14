@@ -5,18 +5,25 @@ const clinicSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    latitude: {
-        type: Number,
-        required: true,
-    },
-    longitude: {
-        type: Number,
-        required: true,
-    },
-    address: {
-        type: String,
-        required: true
-    },
+    position: new mongoose.Schema({
+        latitude: {
+            type: Number,
+            required: true,
+        },
+        longitude: {
+            type: Number,
+            required: true,
+        },
+    }),
+    address: new mongoose.Schema({
+        line1: {
+            type: String,
+            required: true,
+        },
+        line2: {
+            type: String
+        },
+    }),
     phone: {
         type: String,
         required: true,
@@ -27,6 +34,9 @@ const clinicSchema = new mongoose.Schema({
         required: true,
         unique: true,
         index: true
+    },
+    dentists: {
+        type: [String]
     }
 });
 
