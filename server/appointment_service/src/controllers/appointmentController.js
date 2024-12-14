@@ -4,9 +4,8 @@ import { generateSingleDaySlots, generateMultiDaySlots, isValidIsoDate } from '.
 
 //appointment/book
 const bookAppointment = async (message) => {
-    const { patientId, appointmentId } = message.data;
-
     try {
+        const { patientId, appointmentId } = JSON.parse(message);
         const slot = await AppointmentSlot.findById(appointmentId);
         if (!slot) {
             return { status: { code: 404, message: 'Appointment slot not found' } };
@@ -30,7 +29,7 @@ const bookAppointment = async (message) => {
 //appointments/details/{slotId}
 const getSlotDetails = async (message) => {
     try {
-        const { appointmentId } = message.data;
+        const { appointmentId } = JSON.parse(message);
         const slot = await AppointmentSlot.findById(appointmentId);
         if (!slot) {
             return { status: { code: 404, message: 'Slot not found' } };
@@ -42,20 +41,20 @@ const getSlotDetails = async (message) => {
 };
 
 const createAppointments = async (message) => {
-    const { dentistId, startTime, endTime, duration, isSingleDay } = JSON.parse(message);
-
-    if (!isValidIsoDate(startTime) || !isValidIsoDate(endTime)) {
-        return { status: { code: 400, message: 'Invalid date format. Use ISO 8601 (YYYY-MM-DDTHH:mm:ssZ) or (YYYY-MM-DDTHH:mm)' } };
-    }
-
-    const start = new Date(startTime);
-    const end = new Date(endTime);
-
-    if (start < new Date() || end < new Date()) {
-        return { status: { code: 400, message: 'Dates cannot be in the past' } };
-    }
-
     try {
+        const { dentistId, startTime, endTime, duration, isSingleDay } = JSON.parse(message);
+
+        if (!isValidIsoDate(startTime) || !isValidIsoDate(endTime)) {
+            return { status: { code: 400, message: 'Invalid date format. Use ISO 8601 (YYYY-MM-DDTHH:mm:ssZ) or (YYYY-MM-DDTHH:mm)' } };
+        }
+
+        const start = new Date(startTime);
+        const end = new Date(endTime);
+
+        if (start < new Date() || end < new Date()) {
+            return { status: { code: 400, message: 'Dates cannot be in the past' } };
+        }
+
         // TO-DO: check dentistId validity
         const existingSlots = await AppointmentSlot.find({
             dentistId,
@@ -87,7 +86,7 @@ const getAppointments = async (message) => {
     try {
         // Finds appointments for a specific dentist within the given timeframe
         // Dentist, starting date and ending date will be passed in as query parameters
-        const { dentistId, startingDate, endingDate } = message.data;
+        const { dentistId, startingDate, endingDate } = JSON.parse(message);
 
         if (!dentistId || !startingDate || !endingDate) {
             return { status: { code: 400, message: 'Missing required fields. Expected query format: ?dentistId=abcd&startingDate=YYYY-MM-DD&endingDate=YYYY-MM-DD' } };
@@ -109,16 +108,19 @@ const getAppointments = async (message) => {
 
 const cancelAppointment = async (message) => {
     try {
-        const { appointmentId } = message.data;
+        const { appointmentId } = JSON.parse(message);
+
         const appointment = await AppointmentSlot.findById(appointmentId);
+
         if (!appointment) {
             return { status: { code: 400, message: 'Appointment does not exist' } };
         }
-        console.log(appointment);
-        if (appointment.status === 'canceled' && appointment.patientId === null) {
+
+        if (appointment.status === 'available' && appointment.patientId === null) {
             return { status: { code: 400, message: 'Appointment is already cancelled' } };
         }
-        appointment.status = 'canceled';
+
+        appointment.status = 'available';
         appointment.patientId = null;
         await appointment.save();
 
@@ -131,7 +133,7 @@ const cancelAppointment = async (message) => {
 
 const removeAppointment = async (message) => {
     try {
-        const { appointmentId } = message.data;
+        const { appointmentId } = JSON.parse(message);
         const appointment = await AppointmentSlot.findByIdAndDelete(appointmentId);
         if (!appointment) {
             return { status: { code: 404, message: 'Appointment not found' } };
