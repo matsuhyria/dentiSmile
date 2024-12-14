@@ -1,91 +1,61 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { IClinicService } from './interfaces/IClinicService';
-import { MQTT_TOPICS } from './base/MQTTService';
-import { BaseClinicService } from './BaseClinicService';
-
-interface ClinicResponse {
-    attemptId: string;
-    success: boolean;
-    error?: string;
-    data?: any;
-}
+import { IClinicService } from './interfaces/IClinicService'
+import { MQTT_TOPICS } from './base/MQTTService'
+import { BaseClinicService } from './BaseClinicService'
+import { RequestResponseManager } from '@/lib/RequestResponseManager'
+import { IClinic } from './interfaces/IClinic'
+import { IClinicDetails } from './interfaces/IClinicDetails'
 
 export class ClinicService extends BaseClinicService implements IClinicService {
-    protected client: any; // or public, depending on BaseClinicService
-    protected detailsCallbacks = new Map<string, (result: ClinicResponse) => void>();
+    protected requestManager: RequestResponseManager<any>
 
     constructor(client: any) {
-        super(client);
+        super(client)
+        this.requestManager = new RequestResponseManager()
+
         if (!client || typeof client.on !== 'function') {
-            throw new Error('Invalid MQTT client provided');
+            throw new Error('Invalid MQTT client provided')
         }
-        this.client = client;
-        this.setupSubscriptions();
     }
 
-    protected setupSubscriptions() {
+    public async getClinics(): Promise<{ data: IClinic[] }> {
         try {
-            this.client.on('message', (topic: string, message: Buffer) => {
-                if (topic === MQTT_TOPICS.CLINICS.DETAILS.RESPONSE) {
-                    const response = JSON.parse(
-                        message.toString()
-                    ) as ClinicResponse;
-                    const callback = this.detailsCallbacks.get(
-                        response.attemptId
-                    );
-                    if (callback) {
-                        callback(response);
-                        this.detailsCallbacks.delete(response.attemptId);
-                    }
-                }
-            });
+            const data = await this.requestManager.request(
+                MQTT_TOPICS.CLINIC.RETRIEVE.MANY.REQUEST,
+                MQTT_TOPICS.CLINIC.RETRIEVE.MANY.RESPONSE(),
+                {}, // Empty payload
+                this.client
+            )
 
-            this.client.subscribe(
-                MQTT_TOPICS.CLINICS.DETAILS.RESPONSE,
-                (err) => {
-                    if (err) {
-                        console.error(
-                            'Failed to subscribe to clinic details:',
-                            err
-                        );
-                    }
-                }
-            );
+            return { data }
         } catch (error) {
-            console.error('Error setting up MQTT subscriptions:', error);
-            throw error;
+            throw new Error(`Failed to retrieve clinics: ${error.message}`)
         }
-    }
-
-    public async getClinics(): Promise<{ error?: string; data?: any }> {
-        return new Promise((resolve) => {
-            this.client.publish(
-                MQTT_TOPICS.CLINICS.DETAILS.REQUEST,
-                null,
-                resolve
-            );
-        });
     }
 
     public async getClinicDetails(
         clinicId: string,
         reasonId: string,
         date: string
-    ): Promise<{ error?: string; data?: any }> {
-        return new Promise((resolve) => {
-            const attemptId = Math.random().toString(36);
-            this.detailsCallbacks.set(attemptId, resolve);
+    ): Promise<{ data: IClinicDetails }> {
+        try {
+            const data = await this.requestManager.request(
+                MQTT_TOPICS.CLINICS.DETAILS.REQUEST,
+                MQTT_TOPICS.CLINICS.DETAILS.RESPONSE,
+                { clinicId, reasonId, date },
+                this.client
+            )
 
-            this.client.publish(MQTT_TOPICS.CLINICS.DETAILS.REQUEST, {
-                clinicId,
-                reasonId,
-                date,
-                attemptId
-            });
-        });
+            return data
+        } catch (error) {
+            throw new Error(
+                `Failed to retrieve clinic details: ${error.message}`
+            )
+        }
     }
 
     public async disconnect(): Promise<void> {
-        return Promise.resolve();
+        // Implement actual disconnect logic if needed
+        return Promise.resolve()
     }
 }
