@@ -2,17 +2,17 @@ export const MQTT_TOPICS = {
     AUTHENTICATION: {
         REGISTER: {
             REQUEST: 'register',
-            RESPONSE: (clientId) => `register/${clientId}`,
+            RESPONSE: (clientId) => `register/${clientId}`
         },
         LOGIN: {
             REQUEST: 'login',
-            RESPONSE: (clientId) => `login/${clientId}`,
-        },
+            RESPONSE: (clientId) => `login/${clientId}`
+        }
     },
     APPOINTMENT: {
         CREATE: {
             REQUEST: 'appointment/create',
-            RESPONSE: (clientId) => `appointment/create/${clientId}`,
+            RESPONSE: (clientId) => `appointment/create/${clientId}`
         },
         DELETE: {
             REQUEST: 'appointment/delete',
@@ -42,16 +42,19 @@ export const MQTT_TOPICS = {
             CREATE: 'notification/appointment/create',
             DELETE: {
                 REQUEST: (clientId) => `appointment/delete/${clientId}`,
-                RESPONSE: (clientId) => `notification/appointment/delete/${clientId}`
+                RESPONSE: (clientId) =>
+                    `notification/appointment/delete/${clientId}`
             },
             BOOK: {
                 REQUEST: (clientId) => `appointment/book/${clientId}`,
-                RESPONSE: (clientId) => `notification/appointment/book/${clientId}`
+                RESPONSE: (clientId) =>
+                    `notification/appointment/book/${clientId}`
             },
             CANCEL: {
                 REQUEST: (clientId) => `appointment/cancel/${clientId}`,
-                RESPONSE: (clientId) => `notification/appointment/cancel/${clientId}`
-            },
+                RESPONSE: (clientId) =>
+                    `notification/appointment/cancel/${clientId}`
+            }
         }
     },
     CLINIC: {
@@ -73,12 +76,12 @@ export const MQTT_TOPICS = {
                 RESPONSE: (clientId) => `clinic/retrieveOne/${clientId}`
             },
             MANY: {
-                REQUEST: 'clinic/retrieve',
-                RESPONSE: (clientId) => `clinic/retrieve/${clientId}`
+                REQUEST: 'clinic/retrieve/request',
+                RESPONSE: (clientId) => `clinic/retrieve`
             }
         },
         ADD_DENTIST: {
-            REQUEST: 'clinic/addDentist',
+            REQUEST: 'clinic/addDentist'
         }
     },
     CLINICS: {
