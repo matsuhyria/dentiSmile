@@ -1,6 +1,5 @@
 import AppointmentSlot from '../models/appointmentSlot.js';
 import { generateSingleDaySlots, generateMultiDaySlots, isValidIsoDate } from '../utils/dateUtils.js';
-import { publishNotification } from '../routes/appointmentRouter.js';
 
 
 //appointment/book
@@ -43,28 +42,25 @@ const getSlotDetails = async (message) => {
 };
 
 const createAppointments = async (message) => {
-    const parsedData = JSON.parse(message);
-    const parsedData2 = JSON.parse(parsedData);
-    const { dentistId, startTime, endTime, rangeMinutes, isSingleDay } = parsedData2.data;
+    const { dentistId, startTime, endTime, duration, isSingleDay } = JSON.parse(message);
 
     if (!isValidIsoDate(startTime) || !isValidIsoDate(endTime)) {
         return { status: { code: 400, message: 'Invalid date format. Use ISO 8601 (YYYY-MM-DDTHH:mm:ssZ) or (YYYY-MM-DDTHH:mm)' } };
     }
 
-    // ensure timezone when the date does not include it
-    const start = new Date(startTime).toISOString();
-    const end = new Date(endTime).toISOString();
+    const start = new Date(startTime);
+    const end = new Date(endTime);
 
     if (start < new Date() || end < new Date()) {
         return { status: { code: 400, message: 'Dates cannot be in the past' } };
     }
 
     try {
+        // TO-DO: check dentistId validity
         const existingSlots = await AppointmentSlot.find({
             dentistId,
             $or: [
-                { startTime: { $lt: start }, endTime: { $gt: end } },
-                { startTime: { $gte: start }, endTime: { $lte: end } }
+                { startTime: { $lt: end }, endTime: { $gt: start } }
             ]
         });
 
@@ -73,15 +69,12 @@ const createAppointments = async (message) => {
         }
 
         const slots = isSingleDay
-            ? generateSingleDaySlots(dentistId, start, end, rangeMinutes)
-            : generateMultiDaySlots(dentistId, start, end, rangeMinutes);
+            ? generateSingleDaySlots(dentistId, start, end, duration)
+            : generateMultiDaySlots(dentistId, start, end, duration);
 
         if (slots.length < 1) return { status: { code: 400, message: 'Appointment duration invalid' } };
 
-        const createdSlots = await AppointmentSlot.insertMany(slots);
-
-        // Publish notification event for patients
-        await publishNotification(createdSlots);
+        await AppointmentSlot.insertMany(slots);
 
         return { status: { code: 200, message: 'Appointment slots created successfully' } };
     } catch (error) {

@@ -28,12 +28,12 @@ export const MQTT_TOPICS = {
         },
         RETRIEVE: {
             ONE: {
-                REQUEST: 'appointment/retreiveOne',
-                RESPONSE: (clientId) => `appointment/retreive/${clientId}`
+                REQUEST: 'appointment/retrieveOne',
+                RESPONSE: (clientId) => `appointment/retrieve/${clientId}`
             },
             MANY: {
-                REQUEST: 'appointment/retreive',
-                RESPONSE: (clientId) => `appointment/retreive/${clientId}`
+                REQUEST: 'appointment/retrieve',
+                RESPONSE: (clientId) => `appointment/retrieve/${clientId}`
             }
         }
     },
