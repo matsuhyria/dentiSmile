@@ -1,28 +1,29 @@
-import mongoose from 'mongoose';
+import mongoose from 'mongoose'
 
 const clinicSchema = new mongoose.Schema({
     name: {
         type: String,
         required: true
     },
-    position: new mongoose.Schema({
-        latitude: {
-            type: Number,
-            required: true,
-        },
-        longitude: {
-            type: Number,
-            required: true,
-        },
-    }),
+    position: {
+        type: [Number],
+        required: true,
+        validate: {
+            validator: function (value) {
+                return value.length === 2
+            },
+            message:
+                'Position must be an array of two numbers [latitude, longitude]'
+        }
+    },
     address: new mongoose.Schema({
         line1: {
             type: String,
-            required: true,
+            required: true
         },
         line2: {
             type: String
-        },
+        }
     }),
     phone: {
         type: String,
@@ -38,8 +39,8 @@ const clinicSchema = new mongoose.Schema({
     dentists: {
         type: [String]
     }
-});
+})
 
-const Clinic = mongoose.model('clinic', clinicSchema);
+const Clinic = mongoose.model('clinic', clinicSchema)
 
-export default Clinic;
+export default Clinic
