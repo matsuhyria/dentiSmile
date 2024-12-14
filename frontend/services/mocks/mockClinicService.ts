@@ -1,23 +1,24 @@
-import { IClinicDetails } from '../interfaces/IClinicDetails';
-import { BaseClinicService } from '../BaseClinicService';
-import { IClinicService } from '../interfaces/IClinicService';
+import { IClinicDetails } from '../interfaces/IClinicDetails'
+import { BaseClinicService } from '../BaseClinicService'
+import { IClinicService } from '../interfaces/IClinicService'
+import { IClinic } from '../interfaces/IClinic'
 
 class mockClinicService extends BaseClinicService implements IClinicService {
     constructor() {
-        super(null);
-        console.log('[MOCK] Initializing clinic service');
+        super(null)
+        console.log('[MOCK] Initializing clinic service')
     }
 
     protected setupSubscriptions(): void {
         // No-op for mock
     }
 
-    async getClinics(): Promise<{ error?: string; data?: IClinicDetails[] }> {
-        await new Promise((resolve) => setTimeout(resolve, 500));
+    async getClinics(): Promise<{ data: IClinic[]; error?: string }> {
+        await new Promise((resolve) => setTimeout(resolve, 500))
         return {
             data: [
                 {
-                    id: '1',
+                    _id: '1',
                     name: 'Mock Clinic One',
                     address: {
                         line1: '123 Mock Street',
@@ -28,7 +29,7 @@ class mockClinicService extends BaseClinicService implements IClinicService {
                     position: [57.70884, 11.934008]
                 },
                 {
-                    id: '2',
+                    _id: '2',
                     name: 'Mock Clinic Two',
                     address: {
                         line1: '456 Example Road',
@@ -37,43 +38,41 @@ class mockClinicService extends BaseClinicService implements IClinicService {
                     phone: '987-654-3210',
                     email: 'kontakt@clinictwo.se',
                     position: [57.7078, 11.933002]
+                },
+                {
+                    _id: '3',
+                    name: 'Mock Clinic Stockholm',
+                    address: {
+                        line1: '456 Example Road',
+                        line2: 'Townsville'
+                    },
+                    phone: '987-654-3210',
+                    email: 'kontakt@clinicsto.se',
+                    position: [59.3358583, 18.0599686]
                 }
             ]
-        };
+        }
     }
 
     async getClinicDetails(
         clinicId: string,
         reasonId?: string,
         date?: string
-    ): Promise<{ error?: string; data?: IClinicDetails }> {
-        await new Promise((resolve) => setTimeout(resolve, 500));
+    ): Promise<{ data: IClinicDetails; error?: string }> {
+        await new Promise((resolve) => setTimeout(resolve, 500))
         return {
             data: {
-                details: {
-                    id: clinicId,
-                    name: 'Mock Clinic One',
-                    address: {
-                        line1: '456 Example Road',
-                        line2: 'Townsville'
-                    },
-                    phone: '987-654-3210',
-                    email: '',
-                    position: [57.22634, 12.007868]
-                },
-                availability: [
-                    '9:00',
-                    '9:30',
-                    '10:00',
-                ]
+                id: clinicId,
+                name: 'Mock Clinic One',
+                availability: ['9:00', '9:30', '10:00']
             }
-        };
+        }
     }
 
     async disconnect(): Promise<void> {
-        console.log('[MOCK] Disconnecting clinic service');
-        return;
+        console.log('[MOCK] Disconnecting clinic service')
+        return
     }
 }
 
-export default mockClinicService;
+export default mockClinicService
