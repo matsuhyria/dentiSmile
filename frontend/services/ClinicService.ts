@@ -1,10 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { IClinicService } from './interfaces/IClinicService'
+import { IAppointment } from './interfaces/IAppointment'
+import { IClinic } from './interfaces/IClinic'
 import { MQTT_TOPICS } from './base/MQTTService'
 import { BaseClinicService } from './BaseClinicService'
-import { RequestResponseManager } from '@/lib/RequestResponseManager'
-import { IClinic } from './interfaces/IClinic'
-import { IClinicDetails } from './interfaces/IClinicDetails'
+import {
+    RequestResponseManager,
+    RequestType
+} from '@/lib/RequestResponseManager'
 
 export class ClinicService extends BaseClinicService implements IClinicService {
     protected requestManager: RequestResponseManager<any>
@@ -24,7 +27,8 @@ export class ClinicService extends BaseClinicService implements IClinicService {
                 MQTT_TOPICS.CLINIC.RETRIEVE.MANY.REQUEST,
                 MQTT_TOPICS.CLINIC.RETRIEVE.MANY.RESPONSE(),
                 {}, // Empty payload
-                this.client
+                this.client,
+                RequestType.BROADCAST
             )
 
             return { data }
@@ -33,20 +37,20 @@ export class ClinicService extends BaseClinicService implements IClinicService {
         }
     }
 
-    public async getClinicDetails(
+    public async getClinicAppointments(
         clinicId: string,
         reasonId: string,
         date: string
-    ): Promise<{ data: IClinicDetails }> {
+    ): Promise<{ data: IAppointment[] }> {
         try {
             const data = await this.requestManager.request(
-                MQTT_TOPICS.CLINICS.DETAILS.REQUEST,
-                MQTT_TOPICS.CLINICS.DETAILS.RESPONSE,
+                MQTT_TOPICS.APPOINTMENT.CLINIC.RETRIEVE.REQUEST,
+                MQTT_TOPICS.APPOINTMENT.CLINIC.RETRIEVE.RESPONSE(''),
                 { clinicId, reasonId, date },
                 this.client
             )
 
-            return data
+            return { data }
         } catch (error) {
             throw new Error(
                 `Failed to retrieve clinic details: ${error.message}`

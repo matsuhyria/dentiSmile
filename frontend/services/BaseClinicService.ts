@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { IClinicDetails } from './interfaces/IClinicDetails'
 import { IClinicService } from './interfaces/IClinicService'
 import { IClinic } from './interfaces/IClinic'
+import { IAppointment } from './interfaces/IAppointment'
 import { RequestResponseManager } from '@/lib/RequestResponseManager'
 
 export abstract class BaseClinicService implements IClinicService {
@@ -15,11 +15,11 @@ export abstract class BaseClinicService implements IClinicService {
 
     public abstract getClinics(): Promise<{ data: IClinic[] }>
 
-    public abstract getClinicDetails(
+    public abstract getClinicAppointments(
         clinicId: string,
         reasonId?: string,
         date?: string
-    ): Promise<{ data: IClinicDetails }>
+    ): Promise<{ error?: string; data?: IAppointment[] }>
 
     public abstract disconnect(): Promise<void>
 }
