@@ -1,14 +1,14 @@
 /**
  * Generates time slots for a dentist between the specified start and end times.
  *
- * @param {number} dentistId - The unique identifier of the dentist for whom the slots are being generated.
  * @param {string} startDateISO - The ISO string representing the start time for generating slots.
  * @param {string} endDateISO - The ISO string representing the end time for generating slots.
  * @param {number} [minutes=60] - The duration of each time slot in minutes. Defaults to 60 minutes (1 hour) if not provided.
+ * @param {Object} additionalParams - Can store the unique identifier of the dentist, clinic for whom the slots are being generated.
  *
- * @returns {Array} - An array of time slot objects, each containing a `startTime`, `endTime`, and `dentistId`.
+ * @returns {Array} - An array of time slot objects, each containing a `startTime`, `endTime`, and `additionalParams(dentistId, clinicId)`.
  **/
-const generateSingleDaySlots = (dentistId, startDateISO, endDateISO, rangeMinutes = 60) => {
+const generateSingleDaySlots = (startDateISO, endDateISO, duration = 60, additionalParams = {}) => {
     const slots = [];
 
     const end = new Date(endDateISO);
@@ -17,19 +17,19 @@ const generateSingleDaySlots = (dentistId, startDateISO, endDateISO, rangeMinute
     let currEnd = new Date(endDateISO);
 
     while (currStart < end) {
-        currEnd = addUTCMinutes(currStart, rangeMinutes);
+        currEnd = addUTCMinutes(currStart, duration);
 
         if (currEnd > end) {
             return slots;
         }
 
         slots.push({
-            dentistId: dentistId,
             startTime: currStart.toISOString(),
-            endTime: currEnd.toISOString()
+            endTime: currEnd.toISOString(),
+            ...additionalParams
         });
 
-        currStart = addUTCMinutes(currStart, rangeMinutes);
+        currStart = addUTCMinutes(currStart, duration);
     }
     return slots;
 };
@@ -48,7 +48,7 @@ const generateSingleDaySlots = (dentistId, startDateISO, endDateISO, rangeMinute
  * 
  * To handle such cases use generateSingleDaySlots() 
  **/
-const generateMultiDaySlots = (dentistId, startDateISO, endDateISO, rangeMinutes = 60) => {
+const generateMultiDaySlots = (startDateISO, endDateISO, duration = 60, additionalParams = {}) => {
     const slots = [];
 
     const end = new Date(endDateISO);
@@ -61,7 +61,7 @@ const generateMultiDaySlots = (dentistId, startDateISO, endDateISO, rangeMinutes
     currEnd.setUTCHours(endHour, endMinutes, 0, 0);
 
     while (currStart <= end) {
-        const dailySlots = generateSingleDaySlots(dentistId, currStart.toISOString(), currEnd.toISOString(), rangeMinutes);
+        const dailySlots = generateSingleDaySlots(currStart.toISOString(), currEnd.toISOString(), duration, additionalParams);
 
         slots.push(...dailySlots);
 
