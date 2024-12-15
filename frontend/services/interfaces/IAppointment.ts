@@ -1,13 +1,10 @@
 export interface IAppointment {
-    appointmentId: string;
-
-    status: string;
-
-    clinicId: string;
-
-    reasonId: string;
-
-    date: string;
-
-    slot: string;
+    _id: string
+    clinicName: string
+    clinicId: string
+    dentistId: string
+    patientId?: string
+    startTime: string
+    endTime: string
+    status: 'available' | 'booked'
 }

@@ -1,13 +1,10 @@
 import AppointmentSlot from '../models/appointmentSlot.js';
 import { generateSingleDaySlots, generateMultiDaySlots, isValidIsoDate } from '../utils/dateUtils.js';
-import { publishNotification } from '../routes/appointmentRouter.js';
 
 
-//appointment/book
-const bookAppointment = async (message) => {
-    const { patientId, appointmentId } = message.data;
-
+export const bookAppointment = async (message) => {
     try {
+        const { patientId, appointmentId } = JSON.parse(message);
         const slot = await AppointmentSlot.findById(appointmentId);
         if (!slot) {
             return { status: { code: 404, message: 'Appointment slot not found' } };
@@ -28,43 +25,28 @@ const bookAppointment = async (message) => {
     }
 };
 
-//appointments/details/{slotId}
-const getSlotDetails = async (message) => {
+export const createAppointments = async (message) => {
     try {
-        const { appointmentId } = message.data;
-        const slot = await AppointmentSlot.findById(appointmentId);
-        if (!slot) {
-            return { status: { code: 404, message: 'Slot not found' } };
+        const { clinicName, clinicId, dentistId, startTime, endTime, duration } = JSON.parse(message);
+
+        const additionalParams = { clinicName, clinicId, dentistId };
+
+        if (!isValidIsoDate(startTime) || !isValidIsoDate(endTime)) {
+            return { status: { code: 400, message: 'Invalid date format. Use ISO 8601 (YYYY-MM-DDTHH:mm:ssZ) or (YYYY-MM-DDTHH:mm)' } };
         }
-        return { status: { code: 200, message: 'Slot details retrieved successfully' }, data: slot };
-    } catch (error) {
-        return { status: { code: 500, message: 'Error fetching slot details' } };
-    }
-};
 
-const createAppointments = async (message) => {
-    const parsedData = JSON.parse(message);
-    const parsedData2 = JSON.parse(parsedData);
-    const { dentistId, startTime, endTime, rangeMinutes, isSingleDay } = parsedData2.data;
+        const start = new Date(startTime);
+        const end = new Date(endTime);
 
-    if (!isValidIsoDate(startTime) || !isValidIsoDate(endTime)) {
-        return { status: { code: 400, message: 'Invalid date format. Use ISO 8601 (YYYY-MM-DDTHH:mm:ssZ) or (YYYY-MM-DDTHH:mm)' } };
-    }
+        if (start < new Date() || end < new Date()) {
+            return { status: { code: 400, message: 'Dates cannot be in the past' } };
+        }
 
-    // ensure timezone when the date does not include it
-    const start = new Date(startTime).toISOString();
-    const end = new Date(endTime).toISOString();
-
-    if (start < new Date() || end < new Date()) {
-        return { status: { code: 400, message: 'Dates cannot be in the past' } };
-    }
-
-    try {
+        // TO-DO: check dentistId validity?
         const existingSlots = await AppointmentSlot.find({
             dentistId,
             $or: [
-                { startTime: { $lt: start }, endTime: { $gt: end } },
-                { startTime: { $gte: start }, endTime: { $lte: end } }
+                { startTime: { $lt: end }, endTime: { $gt: start } }
             ]
         });
 
@@ -72,16 +54,14 @@ const createAppointments = async (message) => {
             return { status: { code: 400, message: 'Slots for this timeframe already exist' } };
         }
 
+        const isSingleDay = (end - start) < (24 * 60 * 60 * 1000);
         const slots = isSingleDay
-            ? generateSingleDaySlots(dentistId, start, end, rangeMinutes)
-            : generateMultiDaySlots(dentistId, start, end, rangeMinutes);
+            ? generateSingleDaySlots(start, end, duration, additionalParams)
+            : generateMultiDaySlots(start, end, duration, additionalParams);
 
         if (slots.length < 1) return { status: { code: 400, message: 'Appointment duration invalid' } };
 
-        const createdSlots = await AppointmentSlot.insertMany(slots);
-
-        // Publish notification event for patients
-        await publishNotification(createdSlots);
+        await AppointmentSlot.insertMany(slots);
 
         return { status: { code: 200, message: 'Appointment slots created successfully' } };
     } catch (error) {
@@ -90,11 +70,67 @@ const createAppointments = async (message) => {
     }
 };
 
-const getAppointments = async (message) => {
+export const cancelAppointment = async (message) => {
+    try {
+        const { appointmentId } = JSON.parse(message);
+
+        const appointment = await AppointmentSlot.findById(appointmentId);
+
+        if (!appointment) {
+            return { status: { code: 400, message: 'Appointment does not exist' } };
+        }
+
+        if (appointment.status === 'available' && appointment.patientId === null) {
+            return { status: { code: 400, message: 'Appointment is already cancelled' } };
+        }
+
+        appointment.status = 'available';
+        appointment.patientId = null;
+        await appointment.save();
+
+        return { status: { code: 200, message: 'Appointment cancelled successfully' }, data: appointment };
+    } catch (error) {
+        console.error(error);
+        return { status: { code: 500, message: 'Error cancelling appointment' } };
+    }
+};
+
+export const removeAppointment = async (message) => {
+    try {
+        const { appointmentId } = JSON.parse(message);
+        const appointment = await AppointmentSlot.findByIdAndDelete(appointmentId);
+        if (!appointment) {
+            return { status: { code: 404, message: 'Appointment not found' } };
+        }
+        return { status: { code: 200, message: 'Appointment removed successfully' }, data: appointment };
+    } catch (error) {
+        console.log(error);
+        return { status: { code: 500, message: 'Error removing appointment' } };
+    }
+};
+
+export const getAppointmentsByClinic = async (message) => {
+    try {
+        const { clinicId } = JSON.parse(message);
+
+        const appointments = await AppointmentSlot.find({ clinicId });
+
+        if (appointments.length < 1) {
+            return { status: { code: 404, message: "Appointments not found" } };
+        }
+
+        return { status: { code: 200, message: "Appointments retrieved successfully" }, data: appointments };
+    } catch (error) {
+        console.log(error);
+        return { status: { code: 500, message: 'Error fetching appointments' } };
+    }
+};
+
+export const getAppointmentsByDentist = async (message) => {
     try {
         // Finds appointments for a specific dentist within the given timeframe
         // Dentist, starting date and ending date will be passed in as query parameters
-        const { dentistId, startingDate, endingDate } = message.data;
+        const { dentistId, startingDate, endingDate } = JSON.parse(message);
 
         if (!dentistId || !startingDate || !endingDate) {
             return { status: { code: 400, message: 'Missing required fields. Expected query format: ?dentistId=abcd&startingDate=YYYY-MM-DD&endingDate=YYYY-MM-DD' } };
@@ -114,40 +150,15 @@ const getAppointments = async (message) => {
     }
 };
 
-const cancelAppointment = async (message) => {
+export const getAppointmentById = async (message) => {
     try {
-        const { appointmentId } = message.data;
-        const appointment = await AppointmentSlot.findById(appointmentId);
-        if (!appointment) {
-            return { status: { code: 400, message: 'Appointment does not exist' } };
-        }
-        console.log(appointment);
-        if (appointment.status === 'canceled' && appointment.patientId === null) {
-            return { status: { code: 400, message: 'Appointment is already cancelled' } };
-        }
-        appointment.status = 'canceled';
-        appointment.patientId = null;
-        await appointment.save();
-
-        return { status: { code: 200, message: 'Appointment cancelled successfully' }, data: appointment };
-    } catch (error) {
-        console.error(error);
-        return { status: { code: 500, message: 'Error cancelling appointment' } };
-    }
-};
-
-const removeAppointment = async (message) => {
-    try {
-        const { appointmentId } = message.data;
-        const appointment = await AppointmentSlot.findByIdAndDelete(appointmentId);
-        if (!appointment) {
+        const { appointmentId } = JSON.parse(message);
+        const slot = await AppointmentSlot.findById(appointmentId);
+        if (!slot) {
             return { status: { code: 404, message: 'Appointment not found' } };
         }
-        return { status: { code: 200, message: 'Appointment removed successfully' }, data: appointment };
+        return { status: { code: 200, message: 'Appointment retrieved successfully' }, data: slot };
     } catch (error) {
-        console.log(error);
-        return { status: { code: 500, message: 'Error removing appointment' } };
+        return { status: { code: 500, message: 'Error fetching slot details' } };
     }
 };
-
-export { createAppointments, getAppointments, bookAppointment, getSlotDetails, cancelAppointment, removeAppointment };

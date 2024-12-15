@@ -1,60 +1,90 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+export enum RequestType {
+    BROADCAST = 'broadcast',
+    DIRECT = 'direct'
+}
+
 interface RequestResponse<T> {
     resolve: (value: T) => void
     reject: (error: Error) => void
     timeout?: NodeJS.Timeout
+    type: RequestType
 }
 
 export class RequestResponseManager<T> {
     private requests = new Map<string, RequestResponse<T>>()
-    private DEFAULT_TIMEOUT = 10000 // 10 seconds
+    private DEFAULT_TIMEOUT = 10000
+    private broadcastSubscriptions = new Set<string>()
 
     public async request(
         requestTopic: string,
         responseTopic: string,
         payload: any,
         client: any,
+        type: RequestType = RequestType.DIRECT,
         timeout = this.DEFAULT_TIMEOUT
     ): Promise<T> {
         return new Promise((resolve, reject) => {
             const clientId = this.generateUniqueId()
             const requestPayload = { ...payload, clientId }
 
-            // Setup timeout
-            const timeoutHandler = setTimeout(() => {
-                this.cleanup(clientId)
-                reject(new Error('Request timed out'))
-            }, timeout)
+            const timeoutHandler =
+                type === RequestType.DIRECT
+                    ? setTimeout(() => {
+                          this.cleanup(clientId, client)
+                          reject(new Error('Request timed out'))
+                      }, timeout)
+                    : undefined
 
             // Store request details
             this.requests.set(clientId, {
                 resolve,
                 reject,
-                timeout: timeoutHandler
+                timeout: timeoutHandler,
+                type
             })
 
-            // Subscribe to response topic
-            client.subscribe(responseTopic, (err) => {
+            // Handle subscription based on type
+            const topicToSubscribe =
+                type === RequestType.BROADCAST
+                    ? responseTopic
+                    : responseTopic + clientId
+
+            if (
+                type === RequestType.BROADCAST &&
+                this.broadcastSubscriptions.has(topicToSubscribe)
+            ) {
+                // Already subscribed to broadcast topic
+                client.publish(requestTopic, JSON.stringify(requestPayload))
+                return
+            }
+
+            client.subscribe(topicToSubscribe, (err: Error) => {
                 if (err) {
-                    this.cleanup(clientId)
+                    this.cleanup(clientId, client)
                     reject(new Error(`Subscription error: ${err.message}`))
+                    return
                 }
-            })
 
-            // Publish request
-            client.publish(requestTopic, JSON.stringify(requestPayload))
+                if (type === RequestType.BROADCAST) {
+                    this.broadcastSubscriptions.add(topicToSubscribe)
+                }
+
+                // Publish request
+                client.publish(requestTopic, JSON.stringify(requestPayload))
+            })
 
             // Setup message handler
             const messageHandler = (topic: string, message: Buffer) => {
-                if (topic === responseTopic) {
-                    try {
-                        const response = JSON.parse(message.toString())
+                try {
+                    const response = JSON.parse(message.toString())
 
-                        // if (response.clientId === clientId) { //TODO - uncomment this line when clientId is added to the response
-                        this.handleResponse(clientId, response)
-                        // }
-                    } catch (error) {
-                        this.cleanup(clientId)
+                    if (topic === topicToSubscribe) {
+                        this.handleResponse(clientId, response, client, type)
+                    }
+                } catch (error) {
+                    if (type === RequestType.DIRECT) {
+                        this.cleanup(clientId, client)
                         reject(new Error('Invalid response format', error))
                     }
                 }
@@ -64,28 +94,51 @@ export class RequestResponseManager<T> {
         })
     }
 
-    private handleResponse(clientId: string, response: any) {
+    private handleResponse(
+        clientId: string,
+        response: any,
+        client: any,
+        type: RequestType
+    ) {
         const request = this.requests.get(clientId)
         if (request) {
-            clearTimeout(request.timeout)
-            if (response.status.code === 200) {
-                request.resolve(response.data)
+            if (type === RequestType.DIRECT) {
+                clearTimeout(request.timeout)
+                if (response.status?.code === 200) {
+                    request.resolve(response.data)
+                } else {
+                    request.reject(
+                        new Error(response.error || 'Request failed')
+                    )
+                }
+                this.cleanup(clientId, client)
             } else {
-                request.reject(new Error(response.error || 'Request failed'))
+                // For broadcast, just resolve with data and keep subscription
+                request.resolve(response.data)
             }
-            this.cleanup(clientId)
         }
     }
 
-    private cleanup(clientId: string) {
+    private cleanup(clientId: string, client: any) {
         const request = this.requests.get(clientId)
         if (request) {
-            clearTimeout(request.timeout)
+            if (request.type === RequestType.DIRECT) {
+                clearTimeout(request.timeout)
+                client.unsubscribe(clientId)
+            }
             this.requests.delete(clientId)
         }
     }
 
+    public unsubscribeAll(client: any) {
+        // Clean up all subscriptions when component unmounts
+        this.broadcastSubscriptions.forEach((topic) => {
+            client.unsubscribe(topic)
+        })
+        this.broadcastSubscriptions.clear()
+    }
+
     private generateUniqueId(): string {
-        return Math.random().toString(36).substr(2, 9)
+        return Math.random().toString(36).slice(2, 9)
     }
 }

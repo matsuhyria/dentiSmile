@@ -1,19 +1,16 @@
-import { IClinicDetails } from '../interfaces/IClinicDetails'
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { BaseClinicService } from '../BaseClinicService'
 import { IClinicService } from '../interfaces/IClinicService'
 import { IClinic } from '../interfaces/IClinic'
+import { IAppointment } from '@/services/interfaces/IAppointment'
 
-class mockClinicService extends BaseClinicService implements IClinicService {
+class MockClinicService extends BaseClinicService implements IClinicService {
     constructor() {
         super(null)
         console.log('[MOCK] Initializing clinic service')
     }
 
-    protected setupSubscriptions(): void {
-        // No-op for mock
-    }
-
-    async getClinics(): Promise<{ data: IClinic[]; error?: string }> {
+    async getClinics(): Promise<{ data: IClinic[] }> {
         await new Promise((resolve) => setTimeout(resolve, 500))
         return {
             data: [
@@ -54,25 +51,40 @@ class mockClinicService extends BaseClinicService implements IClinicService {
         }
     }
 
-    async getClinicDetails(
-        clinicId: string,
-        reasonId?: string,
-        date?: string
-    ): Promise<{ data: IClinicDetails; error?: string }> {
+    async getClinicAppointments(
+        clinicId: string
+    ): Promise<{ data: IAppointment[] }> {
         await new Promise((resolve) => setTimeout(resolve, 500))
         return {
-            data: {
-                id: clinicId,
-                name: 'Mock Clinic One',
-                availability: ['9:00', '9:30', '10:00']
-            }
+            data: [
+                {
+                    _id: '675f0c5688ae1c7ec8cc58fd',
+                    clinicName: 'Mock clinic one',
+                    clinicId: '675dced728e6de00811c0b42',
+                    dentistId: '64f1c9a9c7f35b2e4e4d5d1e',
+                    patientId: null,
+                    startTime: '2024-12-19T10:00:00.000Z',
+                    endTime: '2024-12-19T11:00:00.000Z',
+                    status: 'available'
+                },
+                {
+                    _id: '675f0c7888ae1c7ec8cc5900',
+                    clinicName: 'Mock Clinic One',
+                    clinicId: '675dced728e6de00811c0b42',
+                    dentistId: '64f1c9a9c7f35b2e4e4d5d1e',
+                    patientId: null,
+                    startTime: '2024-12-29T13:00:00.000Z',
+                    endTime: '2024-12-29T15:00:00.000Z',
+                    status: 'available'
+                }
+            ]
         }
     }
 
     async disconnect(): Promise<void> {
         console.log('[MOCK] Disconnecting clinic service')
-        return
+        return Promise.resolve()
     }
 }
 
-export default mockClinicService
+export default MockClinicService

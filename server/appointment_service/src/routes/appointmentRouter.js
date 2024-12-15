@@ -1,4 +1,4 @@
-import { createAppointments, getAppointments, bookAppointment, getSlotDetails, cancelAppointment, removeAppointment } from '../controllers/appointmentController.js';
+import { getAppointmentsByClinic, createAppointments, getAppointmentsByDentist, bookAppointment, getAppointmentById, cancelAppointment, removeAppointment } from '../controllers/appointmentController.js';
 import mqttUtils from 'shared-mqtt'
 const { handleEndpoint, MQTT_TOPICS, subscribe, publish } = mqttUtils;
 
@@ -18,10 +18,11 @@ const publishNotification = async (createdSlots) => {
 };
 
 export const initializeRoutes = async () => {
-    const { CREATE, RETRIEVE, BOOK, CANCEL, DELETE } = MQTT_TOPICS.APPOINTMENT;
+    const { CREATE, RETRIEVE, BOOK, CANCEL, DELETE, CLINIC } = MQTT_TOPICS.APPOINTMENT;
 
-    await handleEndpoint(RETRIEVE.MANY.REQUEST, getAppointments, RETRIEVE.MANY.RESPONSE);
-    await handleEndpoint(RETRIEVE.ONE.REQUEST, getSlotDetails, RETRIEVE.ONE.RESPONSE);
+    await handleEndpoint(CLINIC.RETRIEVE.REQUEST, getAppointmentsByClinic, CLINIC.RETRIEVE.RESPONSE);
+    await handleEndpoint(RETRIEVE.MANY.REQUEST, getAppointmentsByDentist, RETRIEVE.MANY.RESPONSE);
+    await handleEndpoint(RETRIEVE.ONE.REQUEST, getAppointmentById, RETRIEVE.ONE.RESPONSE);
     await handleEndpoint(CREATE.REQUEST, createAppointments, CREATE.RESPONSE);
     await handleEndpoint(CANCEL.REQUEST, cancelAppointment, CANCEL.RESPONSE);
     await handleEndpoint(DELETE.REQUEST, removeAppointment, DELETE.RESPONSE);
