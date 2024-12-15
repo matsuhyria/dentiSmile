@@ -19,8 +19,8 @@ export const useClinics = () => {
 
         const fetchClinics = async () => {
             try {
-                const response = await clinicService.getClinics()
-                setClinics(response.data)
+                const { data } = await clinicService.getClinics()
+                setClinics(data)
             } catch (err) {
                 setError(
                     err instanceof Error
