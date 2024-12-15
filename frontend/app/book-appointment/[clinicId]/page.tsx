@@ -1,78 +1,66 @@
-'use client';
+'use client'
 
-import { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import Link from 'next/link';
-import { useClinicDetails } from '@/hooks/useClinicDetails';
-import { useBooking } from '@/hooks/useBooking';
-import ReasonSelection from '@/components/booking/ReasonSelection';
-import DateTimeSelection from '@/components/booking/date-time/DateTimeSelection';
-import Confirmation from '@/components/booking/Confirmation';
-import { getAvailableReasons } from '@/lib/reasonStore';
+import { useState } from 'react'
+import { Button } from '@/components/ui/button'
+import Link from 'next/link'
+import useClinicAppointments from '@/hooks/useClinicAppointments'
+import { useBooking } from '@/hooks/useBooking'
+import ReasonSelection from '@/components/booking/ReasonSelection'
+import DateTimeSelection from '@/components/booking/date-time/DateTimeSelection'
+import Confirmation from '@/components/booking/Confirmation'
+import { getAvailableReasons } from '@/lib/reasonStore'
 
 export default function BookAppointmentPage({
     params
 }: {
-    params: { clinicId: string };
+    params: { clinicId: string }
 }) {
-    const { clinicId } = params;
+    const { clinicId } = params
     const [currentStep, setCurrentStep] = useState<
         'reason' | 'datetime' | 'confirmation'
-    >('reason');
-    const [reasonId, setReasonId] = useState<string>('');
-    const [duration, setDuration] = useState<number | null>(null);
-    const [selectedDate, setSelectedDate] = useState<Date | null>(null);
-    const [selectedTime, setSelectedTime] = useState<Date | null>(null);
-    const [appointmentConfirmed, setAppointmentConfirmed] = useState(false);
+    >('reason')
+    const [reasonId, setReasonId] = useState<string>('')
+    const [duration, setDuration] = useState<number | null>(null)
+    const [selectedDate, setSelectedDate] = useState<Date | null>(null)
+    const [selectedTime, setSelectedTime] = useState<Date | null>(null)
+    const [appointmentConfirmed, setAppointmentConfirmed] = useState(false)
 
-    const {
-        details = { details: null, availability: [] }, // Provide default value
-        error: detailsError
-    } = useClinicDetails({
-        clinicId,
-        reasonId,
-        date: selectedDate?.toISOString().split('T')[0]
-    });
-
-    const { details: clinic = null, availability = [] } = details;
-
-    const { requestAppointment } = useBooking();
-
-    const handleReasonSelect = (selectedReasonId: string) => {
-        setReasonId(selectedReasonId);
-        const reasons = getAvailableReasons();
-        const chosenReason = reasons.find((r) => r.id === selectedReasonId);
-        setDuration(chosenReason ? chosenReason.duration : 30);
-        setCurrentStep('datetime');
-    };
-
-    const handleDateTimeSelect = (date: Date, time: Date) => {
-        setSelectedDate(date);
-        setSelectedTime(time);
-        setCurrentStep('confirmation');
-    };
-
-    const handleConfirm = async () => {
-        if (!reasonId || !selectedDate || !selectedTime || !duration) return;
-
-        const slotString = `${selectedDate.toISOString().split('T')[0]}T${
-            selectedTime.toTimeString().split(' ')[0]
-        }`;
-
-        const result = await requestAppointment({
+    const { clinicName, monthlyAvailability, availableTimes } =
+        useClinicAppointments({
             clinicId,
             reasonId,
-            date: selectedDate.toISOString().split('T')[0],
-            slot: slotString
-        });
+            selectedDate
+        })
+
+    const { requestAppointment } = useBooking()
+
+    const handleReasonSelect = (selectedReasonId: string) => {
+        setReasonId(selectedReasonId)
+        const reasons = getAvailableReasons()
+        const chosenReason = reasons.find((r) => r.id === selectedReasonId)
+        setDuration(chosenReason ? chosenReason.duration : 30)
+        setCurrentStep('datetime')
+    }
+
+    const handleDateTimeSelect = (date: Date, time: Date) => {
+        setSelectedDate(date)
+        setSelectedTime(time)
+        setCurrentStep('confirmation')
+    }
+
+    const handleConfirm = async () => {
+        
+        if (!reasonId || !selectedDate || !selectedTime || !duration) return
+
+        const result = await requestAppointment({
+            appointmentId: 'selectedTime.id',
+            patientId: 'current-user-id'
+        })
 
         if (result.success) {
-            setAppointmentConfirmed(true);
+            setAppointmentConfirmed(true)
         }
-    };
-
-    if (detailsError)
-        return <div>Error loading clinic details: {detailsError.message}</div>;
+    }
 
     return (
         <div className="w-full mt-5 max-w-3xl mx-auto">
@@ -82,7 +70,7 @@ export default function BookAppointmentPage({
 
             <div>
                 <div className="border border-b-0 p-4 py-2 rounded-t-lg flex justify-between items-center text-gray-600 text-sm">
-                    <p>{clinic?.name}</p>
+                    <p>{clinicName}</p>
                     <Button variant="ghost" asChild>
                         <Link href="/">Edit</Link>
                     </Button>
@@ -92,11 +80,11 @@ export default function BookAppointmentPage({
                     onSelect={handleReasonSelect}
                     selectedReason={reasonId}
                     onEdit={() => {
-                        setReasonId('');
-                        setSelectedDate(null);
-                        setSelectedTime(null);
-                        setDuration(null);
-                        setCurrentStep('reason');
+                        setReasonId('')
+                        setSelectedDate(null)
+                        setSelectedTime(null)
+                        setDuration(null)
+                        setCurrentStep('reason')
                     }}
                 />
                 <DateTimeSelection
@@ -109,7 +97,8 @@ export default function BookAppointmentPage({
                     setSelectedDate={setSelectedDate}
                     setSelectedTime={setSelectedTime}
                     appointmentDuration={duration || 30}
-                    availableTimes={availability}
+                    availableTimes={availableTimes}
+                    monthlyAvailability={monthlyAvailability}
                 />
                 <Confirmation
                     isActive={currentStep === 'confirmation'}
@@ -129,5 +118,5 @@ export default function BookAppointmentPage({
                 )}
             </div>
         </div>
-    );
+    )
 }
