@@ -1,20 +1,22 @@
-'use client';
+'use client'
 
-import { Button } from '@/components/ui/button';
-import DateSelection from './DateSelection';
-import TimeSelection from './TimeSelection';
+import { Button } from '@/components/ui/button'
+import DateSelection from './DateSelection'
+import TimeSelection from './TimeSelection'
+import { Alert } from '@/components/ui/alert'
 
 interface DateTimeSelectionProps {
-    onEdit: () => void;
-    onSelect: (date: Date, time: Date) => void;
-    isActive: boolean;
-    clinicId: string;
-    appointmentDuration: number;
-    selectedDate: Date | null;
-    selectedTime: Date | null;
-    setSelectedDate: (date: Date | null) => void;
-    setSelectedTime: (time: Date | null) => void;
-    availableTimes: string[];
+    onEdit: () => void
+    onSelect: (date: Date, time: Date) => void
+    isActive: boolean
+    clinicId: string
+    appointmentDuration: number
+    selectedDate: Date | null
+    selectedTime: Date | null
+    setSelectedDate: (date: Date | null) => void
+    setSelectedTime: (time: Date | null) => void
+    availableTimes: string[]
+    monthlyAvailability: Record<string, number>
 }
 
 export default function DateTimeSelection({
@@ -27,19 +29,20 @@ export default function DateTimeSelection({
     selectedDate,
     selectedTime,
     clinicId,
-    availableTimes
+    availableTimes,
+    monthlyAvailability
 }: DateTimeSelectionProps) {
     // If we're not active and we don't have a fully selected date/time, don't render anything.
-    if (!isActive && (!selectedDate || !selectedTime)) return null;
+    if (!isActive && (!selectedDate || !selectedTime)) return null
 
     const handleTimeSelected = (time: Date) => {
-        setSelectedTime(time);
+        setSelectedTime(time)
         if (selectedDate && time) {
-            const finalDateTime = new Date(selectedDate);
-            finalDateTime.setHours(time.getHours(), time.getMinutes(), 0, 0);
-            onSelect(finalDateTime, time);
+            const finalDateTime = new Date(selectedDate)
+            finalDateTime.setHours(time.getHours(), time.getMinutes(), 0, 0)
+            onSelect(finalDateTime, time)
         }
-    };
+    }
 
     // If step is active, show the date/time selection UI
     if (isActive) {
@@ -53,7 +56,7 @@ export default function DateTimeSelection({
                     setSelectedDate={setSelectedDate}
                     selectedDate={selectedDate}
                     clinicId={clinicId}
-                    monthlyAvailability={{}}
+                    monthlyAvailability={monthlyAvailability}
                 />
 
                 {selectedDate && availableTimes.length > 0 && (
@@ -67,12 +70,14 @@ export default function DateTimeSelection({
                 )}
 
                 {selectedDate && availableTimes.length === 0 && (
-                    <p className="text-sm text-gray-600 mt-2">
-                        No available times for this date.
-                    </p>
+                    <Alert className="mt-8 bg-sky-100">
+                        <p className="text-sm text-gray-600">
+                            No available times on this date.
+                        </p>
+                    </Alert>
                 )}
             </div>
-        );
+        )
     }
 
     // If we reach here, the step is not active and we have a selected date/time, so show a summary
@@ -98,5 +103,5 @@ export default function DateTimeSelection({
                 </Button>
             </div>
         </div>
-    );
+    )
 }

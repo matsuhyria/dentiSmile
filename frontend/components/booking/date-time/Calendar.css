@@ -132,7 +132,7 @@
     top: 0;
 }
 .react-calendar .react-calendar__tile + .react-calendar__tile {
-    border-left: none;
+    border-right: none;
 }
 
 .react-calendar__tile:disabled {
@@ -159,7 +159,7 @@
 }
 
 .react-calendar__tile.react-calendar__tile--now {
-    background: #f3f3f3;
+    background: #d7d7d7;
     color: #757575;
 }
 
