@@ -34,6 +34,12 @@ export const MQTT_TOPICS = {
             MANY: {
                 REQUEST: 'appointment/retrieve',
                 RESPONSE: (clientId) => `appointment/retrieve/${clientId}`
+            },
+        },
+        CLINIC: {
+            RETRIEVE: {
+                REQUEST: 'appointment/clinic/retrieve',
+                RESPONSE: (clientId) => `appointment/clinic/retrieve/${clientId}`
             }
         }
     },

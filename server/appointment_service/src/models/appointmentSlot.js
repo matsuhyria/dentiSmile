@@ -1,6 +1,14 @@
 import mongoose from 'mongoose';
 
 const appointmentSlot = new mongoose.Schema({
+    clinicName: {
+        type: String,
+        required: true
+    },
+    clinicId: {
+        type: mongoose.Schema.Types.ObjectId,
+        required: true
+    },
     dentistId: {
         type: mongoose.Schema.Types.ObjectId,
         required: true
