@@ -42,6 +42,24 @@ The DentiSmile+ system leverages a distributed microservices architecture combin
 - As a dentist: manage their own availability through the dentist interface.
 - Real-time notifications are enabled for booking status updates through MQTT.
 
+## Docker Setup
+
+### Quick Start
+
+```bash
+# Using default setup
+docker compose up -d
+
+# Using development setup
+docker compose -f docker-compose.dev.yml up -d
+```
+
+### Available Docker Configurations
+
+1. **Development Setup**:
+   - Enhanced for development with hot-reloading
+   - Uses files: `docker-compose.dev.yml` and `.dev` Dockerfiles in service directories
+
 ## Issues / Support
 
 In order to follow a unified process, we have agreed as a team to follow the general rules in an [Issue template](Issue-template.md) that we created.
