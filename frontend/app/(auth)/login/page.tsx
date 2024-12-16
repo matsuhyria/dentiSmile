@@ -4,7 +4,7 @@ import { redirect, RedirectType } from 'next/navigation';
 import { useState, useEffect } from 'react'
 import Image from 'next/image';
 import Link from 'next/link';
-import LoginForm from '@/components/login/loginForm';
+import LoginForm from '@/components/auth/loginForm';
 import { useAuth } from '@/hooks/useAuth';
 
 

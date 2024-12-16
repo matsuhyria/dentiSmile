@@ -1,49 +1,58 @@
-export default function SignUp() {
-  return (
-    <div className="flex items-center justify-center min-h-screen bg-main-blue">
-      <div className="w-full max-w-lg p-8 bg-transparent-blue rounded-lg shadow-lg">
-        <div className="flex flex-col items-center mb-8">
-          <img
-            src="/assets/logo_vertical.png"
-            alt="Tooth Beacon Logo"
-            className="w-40 h-35 mb-4 mt-1"
-          />
+'use client'
+
+import { redirect, RedirectType } from 'next/navigation';
+import { useState, useEffect } from 'react'
+import Image from 'next/image';
+import Link from 'next/link';
+import RegisterForm from '@/components/auth/registerForm';
+import { useAuth } from '@/hooks/useAuth';
+
+
+export default function Register() {
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const { register, loading, error, token } = useAuth();
+
+    useEffect(() => {
+        if (token) {
+            localStorage.setItem('authToken', token);
+            redirect('/', RedirectType.push);
+        }
+    }, [token]);
+
+    const handleSubmit = async (formData: { email: string; password: string }) => {
+        setIsSubmitting(true);
+
+        try {
+            const { email, password } = formData;
+            await register(email, password);
+        } catch (error) {
+            console.error(error);
+        } finally {
+            setIsSubmitting(false);
+        }
+    }
+
+    return (
+        <div className="flex items-center justify-center min-h-screen bg-main-blue">
+            <div className="w-full max-w-lg p-8 bg-transparent-blue rounded-lg shadow-lg">
+                <div className="flex flex-col items-center mb-8">
+                    <Image
+                        src="/logo.svg"
+                        alt="DentiSmile Logo"
+                        width={150}
+                        height={75}
+                        priority
+                    />
+                </div>
+                <RegisterForm onSubmit={handleSubmit} isSubmitting={isSubmitting} />
+                {error && <p className="mt-4 text-red-500 text-center">{error.message}</p>}
+                <p className="mt-4 text-center text-blue-900">
+                    Already have an account?{" "}
+                    <Link href="/login" className="font-semibold text-blue-900">
+                        Login
+                    </Link>
+                </p>
+            </div>
         </div>
-        <form className="space-y-4">
-          <input
-            type="text"
-            placeholder="full name"
-            className="w-full px-4 py-2 rounded bg-transparent-input text-white placeholder-blue-300 focus:outline-none"
-          />
-          <input
-            type="email"
-            placeholder="email"
-            className="w-full px-4 py-2 rounded bg-transparent-input text-white placeholder-blue-300 focus:outline-none"
-          />
-          <input
-            type="password"
-            placeholder="password"
-            className="w-full px-4 py-2 rounded bg-transparent-input text-white placeholder-blue-300 focus:outline-none"
-          />
-          <input
-            type="password"
-            placeholder="confirm password"
-            className="w-full px-4 py-2 rounded bg-transparent-input text-white placeholder-blue-300 focus:outline-none"
-          />
-          <button
-            type="submit"
-             className="py-2 px-8 mt-4 text-blue-900 bg-white rounded-full font-semibold hover:bg-gray-200 mx-auto block"
-          >
-            sign up
-          </button>
-        </form>
-        <p className="mt-4 text-center text-white">
-          already have an account?{" "}
-          <a href="/login" className="font-semibold text-blue-300">
-            log in
-          </a>
-        </p>
-      </div>
-    </div>
-  );
+    );
 }
