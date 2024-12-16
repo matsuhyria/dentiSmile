@@ -1,5 +1,6 @@
 import express from 'express';
 import { connectMQTT, subscribe } from '../shared/mqtt/mqttClient.js';
+import { MQTT_TOPICS } from '../shared/mqtt/mqttTopics.js';
 
 const MQTT_URI = process.env.MQTT_URI || 'mqtt://localhost:1883';
 const PORT = process.env.PORT || 3003;
@@ -15,13 +16,17 @@ let metrics = {
     connectedClients: 0,
     disconnectedClients: 0,
     messagesSent: 0,
-    messagesReceived: 0
+    messagesReceived: 0,
+    counter: 0
 };
 
 const topicsToMonitor = [
-    '$SYS/broker/clients/total',
+    '$SYS/broker/clients/active',
+    '$SYS/broker/clients/connected',
+    '$SYS/broker/clients/disconnected',
     '$SYS/broker/messages/sent',
-    '$SYS/broker/messages/received'
+    '$SYS/broker/messages/received',
+    'appointment/create'
 ];
 
 const app = express()
@@ -29,33 +34,45 @@ const app = express()
 const updateMetrics = (topic, message) => {
     const value = parseInt(message, 10);
 
-    if (topic === '$SYS/broker/clients/total'){
+    if (topic === '$SYS/broker/clients/connected'){
         metrics.connectedClients = value;
-        // console.log('This is ', value);
-    } else if (topic === '$SYS/broker/clients/disconnected'){
+    } 
+    if (topic === '$SYS/broker/clients/disconnected'){
         metrics.disconnectedClients = value;
-        // console.log('This is ', value);
-    } else if (topic === '$SYS/broker/messages/sent') {
+    } 
+    if (topic === '$SYS/broker/messages/sent') {
         metrics.messagesSent = value;
-        // console.log('This is ', value);
-    } else if (topic === '$SYS/broker/messages/received') {
+    }
+    if (topic === '$SYS/broker/messages/received') {
         metrics.messagesReceived = value;
-        // console.log('This is ', value);
+    }
+    if (topic === MQTT_TOPICS.APPOINTMENT.CREATE.REQUEST){
+        metrics.counter ++;
     }
 }
+
+const displayMetricsMenu = () => {
+    // console.clear(); // Clear the terminal before displaying new data
+    console.log('==== MQTT Broker Metrics ====');
+    console.log(`Connected Clients    : ${metrics.connectedClients}`);
+    console.log(`Disconnected Clients : ${metrics.disconnectedClients}`);
+    console.log(`Messages Sent        : ${metrics.messagesSent}`);
+    console.log(`Messages Received    : ${metrics.messagesReceived}`);
+    console.log(`Create appointment   : ${metrics.counter}`);
+    console.log('=============================');
+  };
 
 const startTool = async () => {
     try {
 
         await connectMQTT(MQTT_URI ,MQTT_OPTIONS);
 
-        for (const topic of topicsToMonitor) {
+        for (let topic of topicsToMonitor) {
             await subscribe(topic, (message) => {
-                console.log(`Topic: ${topic}, Message: ${message}`);
-                updateMetrics(topic, message); // Update metrics per topic
-                displayMetricsMenu(); // Refresh the metrics menu
+                updateMetrics(topic, message); 
+                displayMetricsMenu();
             });
-            console.log(`Subscribed to: ${topic}`);
+            
         }
 
         app.listen(PORT, () => {
