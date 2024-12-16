@@ -53,7 +53,7 @@ export const subscribe = async (topic, callback, options = {}) => {
 
         client.on('message', (receivedTopic, message) => {
             if (receivedTopic === topic) {
-                callback(JSON.parse(message.toString()))
+                callback(JSON.parse(message.toString()));
             }
         })
     } catch (error) {

@@ -13,12 +13,35 @@ const MQTT_OPTIONS = {
 
 let metrics = {
     connectedClients: 0,
-    disconnectedClients: 0
+    disconnectedClients: 0,
+    messagesSent: 0,
+    messagesReceived: 0
 };
+
+const topicsToMonitor = [
+    '$SYS/broker/clients/total',
+    '$SYS/broker/messages/sent',
+    '$SYS/broker/messages/received'
+];
 
 const app = express()
 
 const updateMetrics = (topic, message) => {
+    const value = parseInt(message, 10);
+
+    if (topic === '$SYS/broker/clients/total'){
+        metrics.connectedClients = value;
+        // console.log('This is ', value);
+    } else if (topic === '$SYS/broker/clients/disconnected'){
+        metrics.disconnectedClients = value;
+        // console.log('This is ', value);
+    } else if (topic === '$SYS/broker/messages/sent') {
+        metrics.messagesSent = value;
+        // console.log('This is ', value);
+    } else if (topic === '$SYS/broker/messages/received') {
+        metrics.messagesReceived = value;
+        // console.log('This is ', value);
+    }
 }
 
 const startTool = async () => {
@@ -26,12 +49,14 @@ const startTool = async () => {
 
         await connectMQTT(MQTT_URI ,MQTT_OPTIONS);
 
-        await subscribe('$SYS/#', (message, topic) => {
-            console.log(`Topic: ${topic}, Message: ${message}`);
-            updateMetrics(topic, message);
-        });
-
-        console.log('Monitoring started: Listening to $SYS topics');
+        for (const topic of topicsToMonitor) {
+            await subscribe(topic, (message) => {
+                console.log(`Topic: ${topic}, Message: ${message}`);
+                updateMetrics(topic, message); // Update metrics per topic
+                displayMetricsMenu(); // Refresh the metrics menu
+            });
+            console.log(`Subscribed to: ${topic}`);
+        }
 
         app.listen(PORT, () => {
             console.log(`Monitoring service is running on port ${PORT}`);
@@ -39,7 +64,6 @@ const startTool = async () => {
     
     } catch (error) {
         console.error('Error starting the monitoring service:', error);
-        process.exit(1);
     }
 };
 
