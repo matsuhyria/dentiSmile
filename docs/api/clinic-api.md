@@ -4,7 +4,7 @@ This document provides an overview of the MQTT endpoints used in the clinic serv
 
 ## Introduction to MQTT and clientId
 
-**MQTT** (Message Queuing Telemetry Transport) is the chosen communication protocol for appointments service. MQTT works by exchanging messages (payloads) through topics between publishers and subscribers.
+**MQTT** (Message Queuing Telemetry Transport) is the chosen communication protocol for clinic service. MQTT works by exchanging messages (payloads) through topics between publishers and subscribers.
 
 The **clientId**  is a unique identifier for each client connected to the MQTT broker. It is used to track message delivery and ensure that each client receives only the messages intended for it.
 
