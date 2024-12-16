@@ -8,14 +8,6 @@ import { MQTT_TOPICS } from "./base/MQTTService";
 
 const { AUTHENTICATION } = MQTT_TOPICS;
 
-interface AuthResponse {
-    status: {
-        code: number;
-        message: string;
-    };
-    token?: string;
-}
-
 export class AuthService implements IAuthService {
     private client: any
     private requestManager: RequestResponseManager<any>
@@ -28,7 +20,7 @@ export class AuthService implements IAuthService {
     public async register(
         email: string,
         password: string,
-    ): Promise<AuthResponse> {
+    ): Promise<{ token }> {
         try {
             // remove undefined
             let responseTopic = AUTHENTICATION.REGISTER.RESPONSE();
@@ -44,16 +36,7 @@ export class AuthService implements IAuthService {
                 RequestType.DIRECT
             )
 
-            if (response && response.token) {
-                return {
-                    status: { code: response.status.code, message: response.status.message },
-                    token: response.token
-                }
-            }
-
-            return {
-                status: { code: response.status.code, message: response.status.message }
-            }
+            return { token: response };
         } catch (error) {
             console.error(error);
             throw new Error(`Failed to register: ${error.message}`)
@@ -63,7 +46,7 @@ export class AuthService implements IAuthService {
     public async login(
         email: string,
         password: string
-    ): Promise<AuthResponse> {
+    ): Promise<{ token }> {
         try {
             // remove undefined
             let responseTopic = AUTHENTICATION.LOGIN.RESPONSE();
@@ -77,17 +60,9 @@ export class AuthService implements IAuthService {
                 this.client,
                 RequestType.DIRECT
             )
+            console.log('response', { token: response });
 
-            if (response && response.token) {
-                return {
-                    status: { code: response.status.code, message: response.status.message },
-                    token: response.token
-                }
-            }
-
-            return {
-                status: { code: response.status.code, message: response.status.message }
-            }
+            return { token: response };
         } catch (error) {
             console.error(error);
             throw new Error(`Failed to login: ${error.message}`)

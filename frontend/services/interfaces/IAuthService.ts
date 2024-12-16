@@ -2,12 +2,12 @@ export interface IAuthService {
     register(
         email: string,
         password: string,
-    ): Promise<{ status: { code: number; message: string }; token?: string }>;
+    ): Promise<{ token }>;
 
     login(
         email: string,
         password: string
-    ): Promise<{ status: { code: number, message: string }; token?: string }>;
+    ): Promise<{ token }>;
 
     disconnect(): Promise<void>;
 }

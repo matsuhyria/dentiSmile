@@ -21,7 +21,7 @@ export const register = async (message) => {
 
         const token = generateToken({ id: newUser._id, role });
 
-        return { status: { code: 200, message: 'User registered successfully' }, token };
+        return { status: { code: 200, message: 'User registered successfully' }, data: token };
     } catch (error) {
         console.error('Error registering user:', error);
         return { status: { code: 500, message: 'Error during register' } };
@@ -44,7 +44,7 @@ export const login = async (message) => {
 
         const token = generateToken({ id: user._id, role: user.role });
 
-        return { status: { code: 200, message: 'Login successful' }, token };
+        return { status: { code: 200, message: 'Login successful' }, data: token };
     } catch (error) {
         console.error('Error logging in user:', error);
         return { status: { code: 500, message: 'Error during login' } };
