@@ -1,0 +1,143 @@
+version: '3.8'
+
+services:
+    # Frontend Web Application
+    # client:
+    #     build:
+    #         context: .
+    #         dockerfile: client/Dockerfile
+    #     container_name: client
+    #     restart: unless-stopped
+    #     ports:
+    #         - '5173:5173'
+    #     volumes:
+    #         - ./client:/app/client
+    #         - /app/node_modules
+    #     environment:
+    #         - NODE_ENV=development
+    #         - NEXT_PUBLIC_API_URL=http://localhost:5000
+    #     depends_on:
+    #         - appointment-service
+
+    # Frontend Web Application
+    frontend:
+        build:
+            context: .
+            dockerfile: frontend/Dockerfile.dev
+        container_name: frontend
+        restart: unless-stopped
+        ports:
+            - '3000:3000'
+        volumes:
+            # Optimize volume mounts
+            - ./frontend:/app/frontend:delegated
+            - frontend_node_modules:/app/frontend/node_modules
+            # Exclude .next folder from mounting
+            - /app/frontend/.next
+        env_file:
+            - ./frontend/.env
+        environment:
+            - NODE_ENV=development
+        networks:
+            - network-cluster
+        depends_on:
+            - clinic-service
+            - appointment-service
+            - mqtt-broker
+
+    # Clinic Service
+    clinic-service:
+        build:
+            context: .
+            dockerfile: server/clinic_service/Dockerfile.dev
+        container_name: clinic-service
+        restart: unless-stopped
+        ports:
+            - '3300:3300'
+        volumes:
+            # Mount source code but exclude node_modules
+            - ./server/clinic_service:/app/server/clinic_service
+            - ./shared:/app/shared
+            - /app/server/clinic_service/node_modules
+            - /app/shared/node_modules
+        env_file:
+            - ./server/clinic_service/.env
+        environment:
+            - NODE_ENV=development
+        depends_on:
+            - mongo-clinic
+            - mqtt-broker
+        networks:
+            - network-cluster
+
+    # Appointment Service
+    appointment-service:
+        build:
+            context: .
+            dockerfile: server/appointment_service/Dockerfile.dev
+        container_name: appointment-service
+        restart: unless-stopped
+        ports:
+            - '5000:5000'
+        volumes:
+            # Mount source code but exclude node_modules
+            - ./server/appointment_service:/app/server/appointment_service
+            - ./shared:/app/shared
+            - /app/server/appointment_service/node_modules
+            - /app/shared/node_modules
+        env_file:
+            - ./server/appointment_service/.env
+        environment:
+            - NODE_ENV=development
+        depends_on:
+            - mongo-appointment
+            - mqtt-broker
+        networks:
+            - network-cluster
+
+    mqtt-broker:
+        image: eclipse-mosquitto:2.0
+        container_name: mqtt-broker
+        volumes:
+            - ./infrastructure/mqtt-broker/config:/mosquitto/config
+        ports:
+            - '1883:1883'
+            - '9001:9001'
+        networks:
+            - network-cluster
+
+    mongo-clinic:
+        image: mongo:latest
+        container_name: mongo-clinic
+        ports:
+            - '27018:27017'
+        volumes:
+            - ./infrastructure/database/clinic_data:/data/db
+        networks:
+            - network-cluster
+
+    mongo-appointment:
+        image: mongo:latest
+        container_name: mongo-appointment
+        ports:
+            - '27019:27017'
+        volumes:
+            - ./infrastructure/database/appointment_data:/data/db
+        networks:
+            - network-cluster
+
+    # mongo-auth:
+    #   image: mongo:latest
+    #   container_name: mongo-auth
+    #   ports:
+    #     - "27017:27017"
+    #   volumes:
+    #     - ./infrastructure/database/auth_data:/data/db
+    #   networks:
+    #     - network-cluster
+
+volumes:
+    frontend_node_modules:
+
+networks:
+    network-cluster:
