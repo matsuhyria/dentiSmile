@@ -1,8 +1,34 @@
+'use client'
 import Link from 'next/link';
 import Image from 'next/image';
 import { User } from 'lucide-react';
+import { redirect } from 'next/navigation';
+import { useState, useEffect } from 'react'
 
 export default function Nav() {
+    const [shouldRedirect, setShouldRedirect] = useState(false);
+    const [redirectTo, setRedirectTo] = useState('');
+
+    const handleAccountClick = (e) => {
+        e.preventDefault();
+        const token = localStorage.getItem('authToken');
+
+        if (token) {
+            setRedirectTo('/account');
+        } else {
+            setRedirectTo('/login');
+        }
+        setShouldRedirect(true);
+    }
+
+    useEffect(() => {
+        if (shouldRedirect) {
+            setShouldRedirect(false);
+            redirect(redirectTo);
+        }
+    }, [shouldRedirect, redirectTo]);
+
+
     return (
         <div className="sticky top-0 inset-x-0 z-50 group w-full">
             <header className="relative h-16 mx-auto border-b duration-200 bg-white border-ui-border-base">
@@ -26,6 +52,7 @@ export default function Nav() {
                             <div className="flex items-center">
                                 <Link
                                     href="/account"
+                                    onClick={handleAccountClick}
                                     className="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium flex items-center"
                                 >
                                     <User size={24} />
