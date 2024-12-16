@@ -1,12 +1,12 @@
-import { IClinicDetails } from '@/services/interfaces/IClinicDetails'
 import { IClinic } from './IClinic'
+import { IAppointment } from './IAppointment'
 
 export interface IClinicService {
     getClinics(): Promise<{ error?: string; data?: IClinic[] }>
-    getClinicDetails(
+    getClinicAppointments(
         clinicId: string,
         reasonId?: string,
         date?: string
-    ): Promise<{ error?: string; data?: IClinicDetails }>
+    ): Promise<{ error?: string; data?: IAppointment[] }>
     disconnect(): Promise<void>
 }
