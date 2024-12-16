@@ -1,25 +1,32 @@
 'use client'
 
-import { useState } from 'react'
+import { redirect, RedirectType } from 'next/navigation';
+import { useState, useEffect } from 'react'
 import Image from 'next/image';
 import Link from 'next/link';
 import LoginForm from '@/components/login/loginForm';
+import { useAuth } from '@/hooks/useAuth';
 
 
 export default function Login() {
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const { login, loading, error, token } = useAuth();
+
+    useEffect(() => {
+        if (token) {
+            localStorage.setItem('authToken', token);
+            redirect('/', RedirectType.push);
+        }
+    }, [token]);
 
     const handleSubmit = async (formData: { email: string; password: string }) => {
         setIsSubmitting(true);
 
         try {
-            await new Promise((resolve) => setTimeout(resolve, 2000));
-
-            console.log('Form Submitted', formData);
-            alert('Login successful');
+            const { email, password } = formData;
+            await login(email, password);
         } catch (error) {
             console.error(error);
-            alert('Login failed');
         } finally {
             setIsSubmitting(false);
         }
@@ -38,6 +45,7 @@ export default function Login() {
                     />
                 </div>
                 <LoginForm onSubmit={handleSubmit} isSubmitting={isSubmitting} />
+                {error && <p className="mt-4 text-red-500 text-center">{error.message}</p>}
                 <p className="mt-4 text-center text-blue-900">
                     Dont have an account?{" "}
                     <Link href="/register" className="font-semibold text-blue-900">

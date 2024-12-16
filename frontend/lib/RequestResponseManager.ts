@@ -31,9 +31,9 @@ export class RequestResponseManager<T> {
             const timeoutHandler =
                 type === RequestType.DIRECT
                     ? setTimeout(() => {
-                          this.cleanup(clientId, client)
-                          reject(new Error('Request timed out'))
-                      }, timeout)
+                        this.cleanup(clientId, client)
+                        reject(new Error('Request timed out'))
+                    }, timeout)
                     : undefined
 
             // Store request details
@@ -44,11 +44,14 @@ export class RequestResponseManager<T> {
                 type
             })
 
+            console.log('Response Topic', responseTopic);
+
             // Handle subscription based on type
             const topicToSubscribe =
                 type === RequestType.BROADCAST
                     ? responseTopic
                     : responseTopic + clientId
+            console.log('Topic', topicToSubscribe);
 
             if (
                 type === RequestType.BROADCAST &&
@@ -66,16 +69,20 @@ export class RequestResponseManager<T> {
                     return
                 }
 
+                console.log('Subscribed to topic', topicToSubscribe);
+
                 if (type === RequestType.BROADCAST) {
                     this.broadcastSubscriptions.add(topicToSubscribe)
                 }
 
                 // Publish request
                 client.publish(requestTopic, JSON.stringify(requestPayload))
+                console.log('Publishing to topic', requestTopic, 'with', requestPayload);
             })
 
             // Setup message handler
             const messageHandler = (topic: string, message: Buffer) => {
+                console.log('message received on topic', topic, 'message:', message.toString())
                 try {
                     const response = JSON.parse(message.toString())
 
@@ -105,7 +112,8 @@ export class RequestResponseManager<T> {
             if (type === RequestType.DIRECT) {
                 clearTimeout(request.timeout)
                 if (response.status?.code === 200) {
-                    request.resolve(response.data)
+                    // removed .data
+                    request.resolve(response)
                 } else {
                     request.reject(
                         new Error(response.error || 'Request failed')
