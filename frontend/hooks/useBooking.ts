@@ -1,76 +1,71 @@
-// hooks/useBooking.ts
-import { useState } from 'react';
-import { BookingService } from '@/services/BookingService';
-import { mockBookingService } from '@/services/mocks/mockBookingService';
-import { useMQTTService } from './useMQTTService';
+import { useState } from 'react'
+import { BookingService } from '@/services/BookingService'
+import MockBookingService from '@/services/mocks/mockBookingService'
+import { BookingResponse } from '@/services/interfaces/IBookingService'
+import { useMQTTService } from './useMQTTService'
 
-interface BookingRequest {
-    clinicId: string;
-    reasonId: string;
-    date: string;
-    slot: string;
+interface UseBookingReturn {
+    requestAppointment: (
+        appointmentId: string,
+        patientId: string
+    ) => Promise<{
+        success: boolean
+        data?: BookingResponse
+        error?: string
+    }>
+    loading: boolean
+    error: Error | null
 }
 
-interface BookingResponse {
-    success: boolean;
-    error?: string;
-    data?: {
-        appointmentId: string;
-        dateTime: string;
-        status: 'confirmed' | 'pending' | 'rejected';
-    };
-}
-
-export const useBooking = () => {
+export const useBooking = (): UseBookingReturn => {
     const { service: bookingService, error: serviceError } = useMQTTService(
         BookingService,
-        mockBookingService
-    );
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState<Error | null>(serviceError);
+        MockBookingService
+    )
+    const [loading, setLoading] = useState(false)
+    const [error, setError] = useState<Error | null>(serviceError)
 
     const requestAppointment = async (
-        request: BookingRequest
-    ): Promise<BookingResponse> => {
+        appointmentId: string,
+        patientId: string
+    ) => {
         if (!bookingService) {
-            return { success: false, error: 'Booking service not initialized' };
+            return { success: false, error: 'Booking service not initialized' }
         }
 
-        setLoading(true);
+        setLoading(true)
         try {
             const response = await bookingService.requestAppointment(
-                request.clinicId,
-                request.reasonId,
-                request.date,
-                request.slot
-            );
+                appointmentId,
+                patientId
+            )
 
             if (response.error) {
-                throw new Error(response.error);
+                throw new Error(response.error)
             }
 
             return {
                 success: true,
-                data: response.data
-            };
+                data: response
+            }
         } catch (err) {
             const errorMessage =
                 err instanceof Error
                     ? err.message
-                    : 'Failed to book appointment';
-            setError(new Error(errorMessage));
+                    : 'Failed to book appointment'
+            setError(new Error(errorMessage))
             return {
                 success: false,
                 error: errorMessage
-            };
+            }
         } finally {
-            setLoading(false);
+            setLoading(false)
         }
-    };
+    }
 
     return {
         requestAppointment,
         loading,
         error
-    };
-};
+    }
+}
