@@ -31,9 +31,9 @@ export class RequestResponseManager<T> {
             const timeoutHandler =
                 type === RequestType.DIRECT
                     ? setTimeout(() => {
-                          this.cleanup(clientId, client)
-                          reject(new Error('Request timed out'))
-                      }, timeout)
+                        this.cleanup(clientId, client)
+                        reject(new Error('Request timed out'))
+                    }, timeout)
                     : undefined
 
             // Store request details
