@@ -47,11 +47,15 @@ export const useAuth = () => {
                 }
                 setError(null)
             } catch (error) {
-                setError(
-                    error instanceof Error
-                        ? error
-                        : new Error('Failed to register')
-                )
+                let errorMessage = 'Failed to register. Please try again.';
+
+                if (error instanceof Error) {
+                    if (error.message.includes('Invalid credentials')) {
+                        errorMessage = 'Incorrect email or password. Please try again.';
+                    }
+                }
+
+                setError(new Error(errorMessage));
             } finally {
                 setLoading(false)
             }
@@ -71,11 +75,15 @@ export const useAuth = () => {
                 }
                 setError(null)
             } catch (error) {
-                setError(
-                    error instanceof Error
-                        ? error
-                        : new Error('Failed to login')
-                )
+                let errorMessage = 'Failed to login. Please try again.';
+
+                if (error instanceof Error) {
+                    if (error.message.includes('Invalid credentials')) {
+                        errorMessage = 'Incorrect email or password. Please try again.';
+                    }
+                }
+
+                setError(new Error(errorMessage));
             } finally {
                 setLoading(false)
             }

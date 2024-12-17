@@ -11,7 +11,7 @@ export const register = async (message) => {
 
         const user = await User.findOne({ email })
         if (user) {
-            return { status: { code: 400, message: 'User already exists' } }
+            return { status: { code: 400, message: 'Invalid credentials' } }
         }
 
         const newUser = new User({ email, password, role })
@@ -36,7 +36,7 @@ export const login = async (message) => {
 
         const user = await User.findOne({ email })
         if (!user) {
-            return { status: { code: 404, message: 'User not found' } }
+            return { status: { code: 400, message: 'Invalid credentials' } }
         }
 
         const isValidPassword = await user.matchPassword(password)
