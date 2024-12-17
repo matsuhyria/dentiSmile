@@ -1,53 +1,87 @@
-import { useState } from 'react';
+'use client'
 
-interface LoginFormProps {
-    onSubmit: (formData: { email: string; password: string }) => void
-    isSubmitting: boolean;
-}
+import { useState } from 'react'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Alert, AlertDescription } from '@/components/ui/alert'
+import { useAuth } from '@/hooks/useAuth'
+import { useRouter } from 'next/navigation'
 
-function LoginForm({ onSubmit, isSubmitting }: LoginFormProps) {
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
+function LoginForm() {
+    const router = useRouter()
 
-    const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
-        const formData = {
-            email,
-            password
+    const [passwordError, setPasswordError] = useState('')
+    const [isSubmitting, setIsSubmitting] = useState(false)
+    const { login, loading, error, token } = useAuth()
+
+    const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+        event.preventDefault()
+        setPasswordError('')
+        setIsSubmitting(true)
+
+        const formData = new FormData(event.currentTarget)
+
+        try {
+            await login(
+                formData.get('email')?.toString() || '',
+                formData.get('password').toString()
+            )
+            if (token) {
+                localStorage.setItem('authToken', token)
+                router.push('/')
+            }
+        } catch (error) {
+            setPasswordError('An unexpected error occurred')
+            console.error(error)
+        } finally {
+            setIsSubmitting(false)
         }
-
-        onSubmit(formData);
-    };
+    }
 
     return (
         <form onSubmit={handleSubmit} className="space-y-4">
-            <input
-                type="email"
-                name="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="Email"
-                required
-                className="w-full px-4 py-2 rounded placeholder-blue-300 focus:outline-none focus:ring focus:ring-blue-300"
-            />
-            <input
-                type="password"
-                name="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="Password"
-                required
-                className="w-full px-4 py-2 rounded placeholder-blue-300 focus:outline-none focus:ring focus:ring-blue-300"
-            />
-            <button
-                type="submit"
-                disabled={isSubmitting}
-                className="py-2 px-8 mt-4 text-blue-900 bg-white rounded-full font-semibold hover:bg-gray-200 mx-auto block"
-            >
-                {isSubmitting ? 'Logging in' : 'Log in'}
-            </button>
-        </form>
-    );
-};
+            <div className="space-y-2">
+                <Label htmlFor="email">Email address</Label>
+                <Input
+                    id="email"
+                    name="email"
+                    type="email"
+                    autoComplete="email"
+                    required
+                    placeholder="Enter your email"
+                />
+            </div>
+            <div className="space-y-2">
+                <Label htmlFor="password">Password</Label>
+                <Input
+                    id="password"
+                    name="password"
+                    type="password"
+                    autoComplete="new-password"
+                    required
+                    placeholder="Create a password"
+                />
+            </div>
 
-export default LoginForm;
+            {(error || passwordError) && (
+                <Alert variant="destructive">
+                    <AlertDescription>
+                        {error ? error.message : passwordError}
+                    </AlertDescription>
+                </Alert>
+            )}
+
+            <Button
+                type="submit"
+                className="w-full"
+                disabled={isSubmitting || loading}
+                color=''
+            >
+                Login
+            </Button>
+        </form>
+    )
+}
+
+export default LoginForm
