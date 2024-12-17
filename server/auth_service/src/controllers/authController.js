@@ -3,7 +3,7 @@ import { generateToken } from '../config/jwt.js'
 
 export const register = async (message) => {
     try {
-        const { email, password, role } = JSON.parse(message)
+        const { email, password, role = 'patient' } = JSON.parse(message)
         // to restrict dentists from registering
         if (role !== 'patient') {
             return { status: { code: 403, message: 'Invalid role' } }
@@ -22,7 +22,7 @@ export const register = async (message) => {
 
         return {
             status: { code: 200, message: 'User registered successfully' },
-            data: { token, userId: user._id }
+            data: { token, userId: newUser._id }
         }
     } catch (error) {
         console.error('Error registering user:', error)
