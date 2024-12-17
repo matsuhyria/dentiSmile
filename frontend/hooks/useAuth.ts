@@ -1,28 +1,38 @@
 import { useState, useEffect, useCallback } from 'react'
-import { AuthService } from '@/services/AuthService'
+import { AuthData, AuthService } from '@/services/AuthService'
 import { MQTTService } from '@/services/base/MQTTService'
+import { useRouter } from 'next/navigation'
 
 export const useAuth = () => {
+    const router = useRouter()
     const [authService, setAuthService] = useState<AuthService | null>(null)
     const [loading, setLoading] = useState<boolean>(false)
     const [error, setError] = useState<Error | null>(null)
-    const [token, setToken] = useState<string | null>(null)
+    const [authData, setAuthData] = useState<AuthData | null>(null)
+
+    useEffect(() => {
+        if (authData?.token) {
+            localStorage.setItem('authToken', authData.token)
+            localStorage.setItem('userId', authData.userId)
+            router.push('/')
+        }
+    }, [authData, router])
 
     useEffect(() => {
         const initAuthService = async () => {
             try {
-                const client = await MQTTService.getClient();
-                const service = new AuthService(client);
-                setAuthService(service);
+                const client = await MQTTService.getClient()
+                const service = new AuthService(client)
+                setAuthService(service)
             } catch (error) {
                 setError(
                     error instanceof Error
                         ? error
                         : new Error('Failed to initialize auth service')
-                );
+                )
             }
         }
-        initAuthService();
+        initAuthService()
     }, []) // run once when component mounts
 
     const register = useCallback(
@@ -31,9 +41,9 @@ export const useAuth = () => {
             setError(null)
 
             try {
-                const response = await authService.register(email, password)
-                if (response.token) {
-                    setToken(response.token)
+                const authData = await authService.register(email, password)
+                if (authData?.token) {
+                    setAuthData(authData)
                 }
                 setError(null)
             } catch (error) {
@@ -55,9 +65,9 @@ export const useAuth = () => {
             setError(null)
 
             try {
-                const response = await authService.login(email, password)
-                if (response.token) {
-                    setToken(response.token)
+                const authData = await authService.login(email, password)
+                if (authData?.token) {
+                    setAuthData(authData)
                 }
                 setError(null)
             } catch (error) {
@@ -76,10 +86,9 @@ export const useAuth = () => {
     // TO-DO: logout functionality or token refresh if needed.
 
     return {
-        token,
         loading,
         error,
         register,
-        login,
+        login
     }
 }
