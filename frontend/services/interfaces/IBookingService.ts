@@ -1,9 +1,18 @@
 export interface IBookingService {
     requestAppointment(
-        clinicId: string,
-        reasonId: string,
-        date: string,
-        slot: string
-    ): Promise<{ error?: string; data?: Record<string, unknown> }>;
-    disconnect(): Promise<void>;
+        appointmentId: string,
+        patientId: string
+    ): Promise<{ error?: string; data?: BookingResponse }>
+    disconnect(): Promise<void>
+}
+
+export interface BookingResponse {
+    appointmentId: string;
+    status: 'confirmed' | 'pending' | 'rejected';
+    dateTime: string;
+}
+
+export interface BookingRequest {
+    appointmentId: string
+    patientId: string
 }
