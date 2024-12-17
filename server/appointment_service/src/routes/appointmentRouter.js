@@ -15,7 +15,7 @@ export const publishAllNotifications = async (slots) => {
 
 const publishNotification = async (day) => {
     const notificationEvent = {
-        message: `New appointment slots are now available on ${day}`
+        notification: `New appointment slots are now available on ${day}`
     };
 
     try {
