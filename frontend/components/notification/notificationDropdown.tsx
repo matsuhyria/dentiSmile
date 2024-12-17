@@ -1,26 +1,18 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Bell } from "lucide-react";
+import useNotifications from "@/hooks/useNotifications";
+import mqtt from 'shared-mqtt';
+const { MQTT_TOPICS } = mqtt;
 
 function NotificationDropdown() {
     const [isOpen, setIsOpen] = useState(false);
-    const [notifications, setNotifications] = useState([]);
+    const topic = MQTT_TOPICS.NOTIFICATION.APPOINTMENT.CREATE;
+    const notifications = useNotifications(topic);
+
 
     const toggleDropdown = () => {
         setIsOpen((prev) => !prev);
     };
-
-    useEffect(() => {
-        async function fetchNotifications() {
-            try {
-                const response = await fetch("/api/notifications");
-                const data = await response.json();
-                setNotifications(data);
-            } catch (error) {
-                console.error("Failed to fetch notifications:", error);
-            }
-        }
-        fetchNotifications();
-    }, []);
 
     return (
         <div className="flex mr-5">
@@ -42,7 +34,7 @@ function NotificationDropdown() {
                             notifications.map((notification) => (
                                 <li
                                     key={notification.id}
-                                    className="p-2 hover:bg-gray-100 cursor-pointer"
+                                    className="text-gray-800 p-2 hover:bg-gray-100 cursor-pointer"
                                 >
                                     {notification.message}
                                 </li>
