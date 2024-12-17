@@ -6,7 +6,7 @@ import { v4 as uuidv4 } from 'uuid';
 const { MQTT_TOPICS } = mqttUtils;
 const MQTT_URI = process.env.MQTT_URI || 'mqtt://localhost:1883'
 
-describe('Appointment Service Integration Tests', function () {
+describe('Appointment Service - Slot Creation Tests', function () {
     let client;
     let clientId;
 
