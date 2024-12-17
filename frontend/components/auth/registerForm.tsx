@@ -1,85 +1,105 @@
-import { useState } from 'react';
+'use client'
 
-interface RegisterFormProps {
-    onSubmit: (formData: { email: string; password: string }) => void
-    isSubmitting: boolean;
-}
+import { useState } from 'react'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Alert, AlertDescription } from '@/components/ui/alert'
+import { useAuth } from '@/hooks/useAuth'
+import { useRouter } from 'next/navigation'
 
-function RegisterForm({ onSubmit, isSubmitting }: RegisterFormProps) {
-    const [fullname, setFullname] = useState('');
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [repeatPassword, setRepeatPassword] = useState('');
-    const [passwordError, setPasswordError] = useState('');
+function RegisterForm() {
+    const router = useRouter()
 
-    const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
+    const [passwordError, setPasswordError] = useState('')
+    const [isSubmitting, setIsSubmitting] = useState(false)
+    const { register, loading, error, token } = useAuth()
 
-        if (password !== repeatPassword) {
-            setPasswordError('Passwords do not match');
-            return;
-        } else {
-            setPasswordError('');
+    const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+        event.preventDefault()
+        setPasswordError('')
+        setIsSubmitting(true)
+
+        const formData = new FormData(event.currentTarget)
+        const password = formData.get('password') as string
+        const confirmPassword = formData.get('confirmPassword') as string
+
+        if (password !== confirmPassword) {
+            setPasswordError('Passwords do not match')
+            setIsSubmitting(false)
+            return
         }
 
-        const formData = {
-            email,
-            password
+        try {
+            await register(
+                formData.get('email')?.toString() || '',
+                formData.get('password').toString()
+            )
+            if (token) {
+                localStorage.setItem('authToken', token)
+                router.push('/')
+            }
+        } catch (error) {
+            setPasswordError('An unexpected error occurred')
+            console.error(error)
+        } finally {
+            setIsSubmitting(false)
         }
-
-        onSubmit(formData);
-    };
+    }
 
     return (
         <form onSubmit={handleSubmit} className="space-y-4">
-            <input
-                type="text"
-                name="fullname"
-                value={fullname}
-                onChange={(e) => setFullname(e.target.value)}
-                placeholder="Fullname"
-                required
-                className="w-full px-4 py-2 rounded placeholder-blue-300 focus:outline-none focus:ring focus:ring-blue-300"
-            />
-            <input
-                type="email"
-                name="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="Email"
-                required
-                className="w-full px-4 py-2 rounded placeholder-blue-300 focus:outline-none focus:ring focus:ring-blue-300"
-            />
-            <input
-                type="password"
-                name="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="Password"
-                required
-                className="w-full px-4 py-2 rounded placeholder-blue-300 focus:outline-none focus:ring focus:ring-blue-300"
-            />
-            <input
-                type="password"
-                name="password"
-                value={repeatPassword}
-                onChange={(e) => setRepeatPassword(e.target.value)}
-                placeholder="Repeat Password"
-                required
-                className="w-full px-4 py-2 rounded placeholder-blue-300 focus:outline-none focus:ring focus:ring-blue-300"
-            />
-            {passwordError && (
-                <p className="text-red-500 text-sm">{passwordError}</p>
-            )}
-            <button
-                type="submit"
-                disabled={isSubmitting}
-                className="py-2 px-8 mt-4 text-blue-900 bg-white rounded-full font-semibold hover:bg-gray-200 mx-auto block"
-            >
-                {isSubmitting ? 'Signing in' : 'Sign in'}
-            </button>
-        </form>
-    );
-};
+            <div className="space-y-2">
+                <Label htmlFor="email">Email address</Label>
+                <Input
+                    id="email"
+                    name="email"
+                    type="email"
+                    autoComplete="email"
+                    required
+                    placeholder="Enter your email"
+                />
+            </div>
+            <div className="space-y-2">
+                <Label htmlFor="password">Password</Label>
+                <Input
+                    id="password"
+                    name="password"
+                    type="password"
+                    autoComplete="new-password"
+                    required
+                    placeholder="Create a password"
+                />
+            </div>
+            <div className="space-y-2">
+                <Label htmlFor="confirm-password">Confirm Password</Label>
+                <Input
+                    id="confirm-password"
+                    name="confirmPassword"
+                    type="password"
+                    autoComplete="new-password"
+                    required
+                    placeholder="Confirm your password"
+                />
+            </div>
 
-export default RegisterForm;
+            {(error || passwordError) && (
+                <Alert variant="destructive">
+                    <AlertDescription>
+                        {error ? error.message : passwordError}
+                    </AlertDescription>
+                </Alert>
+            )}
+
+            <Button
+                type="submit"
+                className="w-full"
+                disabled={isSubmitting || loading}
+            >
+                Register
+            </Button>
+        </form>
+    )
+}
+
+export default RegisterForm
