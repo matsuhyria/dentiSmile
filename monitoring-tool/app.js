@@ -2,8 +2,6 @@ import { connectMQTT, subscribe } from '../shared/mqtt/mqttClient.js';
 import mongoose from 'mongoose';
 import { MQTT_TOPICS } from '../shared/mqtt/mqttTopics.js';
 import connectDB from './config/db.js';
-import AppointmentSlot from '../server/appointment_service/src/models/appointmentSlot.js';
-
 
 
 const MONGODB_URI = process.env.MONGODB_URI;
@@ -23,6 +21,7 @@ let metrics = {
     dentistCreate: 0,
     searchingPatients: 0,
     registeredDentists: 0,
+    availableAppointments: 0
 
 };
 
@@ -30,21 +29,27 @@ const topicsToMonitor = [
     '$SYS/broker/clients/active',
     '$SYS/broker/clients/connected',
     MQTT_TOPICS.APPOINTMENT.CREATE.REQUEST,
-    MQTT_TOPICS.APPOINTMENT.RETRIEVE.MANY,
-    MQTT_TOPICS.APPOINTMENT.RETRIEVE.ONE
+    MQTT_TOPICS.APPOINTMENT.RETRIEVE.MANY.REQUEST,
+    MQTT_TOPICS.APPOINTMENT.RETRIEVE.ONE.REQUEST
 
 ];
 
-const fetchMetricsFromDB = async () => {
+const fetchDentistMetrics = async () => {
     try {
-        const modelNames = mongoose.modelNames();
-        console.log('Registered Model Names:', modelNames);
-
-        const collection = mongoose.connection.db.collection('slots');
-        const collectionInfo = await collection.countDocuments();
-        console.log('Collection document count:', collectionInfo);
+        const collectionDentists = mongoose.connection.db.collection('dentist');
+        metrics.registeredDentists = await collectionDentists.countDocuments();
         
-       
+    } catch (error) {
+        console.error('Detailed error in fetchMetricsFromDB:', error)
+        throw error;
+    }
+};
+
+const fetchSlotMetrics = async () => {
+    try {
+        const collectionSlots = mongoose.connection.db.collection('slots');
+        metrics.availableAppointments = await collectionSlots.countDocuments({status: 'available'});
+        
     } catch (error) {
         console.error('Detailed error in fetchMetricsFromDB:', error)
         throw error;
@@ -52,7 +57,8 @@ const fetchMetricsFromDB = async () => {
 };
 
 const updateMetrics = (topic, message) => {
-    const value = parseInt(message, 10);
+
+    //const value = parseInt(message, 10);
 
     if (topic === '$SYS/broker/clients/connected'){
         metrics.connectedClients = value;
@@ -69,10 +75,12 @@ const updateMetrics = (topic, message) => {
 }
 
 const displayMetricsMenu = () => {
-    // console.clear(); // Clear the terminal before displaying new data
+    //console.clear(); // Clear the terminal before displaying new data
     console.log('==== MQTT Broker Metrics ====');
-    console.log(`Connected Users      : ${metrics.connectedClients}`);
-    console.log(`Create appointment   : ${metrics.dentistCreate}`);
+    console.log(`Connected Users                                      : ${metrics.connectedClients}`);
+    console.log(`The amount of dentists publishing new appointments   : ${metrics.dentistCreate}`);
+    console.log(`The number of registered dentists                    : ${metrics.registeredDentists}`);
+    console.log(`The amount of available appointments                 : ${metrics.availableAppointments}`);
     console.log('=============================');
   };
 
@@ -81,15 +89,20 @@ const startTool = async () => {
         console.log(`Service is running on port ${PORT}`);
         await connectDB(MONGODB_URI);
         await connectMQTT(MQTT_URI ,MQTT_OPTIONS);
-        fetchMetricsFromDB();
         
-        // for (let topic of topicsToMonitor) {
-        //     await subscribe(topic, (message) => {
-        //         updateMetrics(topic, message); 
-        //         displayMetricsMenu();
-        //     });
+        setInterval(displayMetricsMenu, 5000);
+
+
+        for (let topic of topicsToMonitor) {
+            await subscribe(topic, (message) => {
+                console.log('!')
+                updateMetrics(topic, message);
+                fetchDentistMetrics();
+                fetchSlotMetrics();
+
+            });
             
-        // }
+        }
     
     } catch (error) {
         console.error('Error starting the monitoring service:', error);
