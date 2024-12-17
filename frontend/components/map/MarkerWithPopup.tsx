@@ -1,22 +1,23 @@
-import { Marker, Popup } from 'react-leaflet';
-import { Phone, Mail } from 'lucide-react';
-import { Button } from '../ui/button';
-import Link from 'next/link';
-import L, { LatLngTuple } from 'leaflet';
+import { Marker, Popup } from 'react-leaflet'
+import { Phone, Mail } from 'lucide-react'
+import { Button } from '../ui/button'
+import Link from 'next/link'
+import L, { LatLngTuple } from 'leaflet'
+import { useState, useEffect } from 'react'
 
 interface MarkerWithPopupProps {
-    id: string;
-    position: LatLngTuple;
-    name: string;
+    id: string
+    position: LatLngTuple
+    name: string
     address: {
-        line1: string;
-        line2: string;
-    };
-    phone: string;
-    email: string;
-    isActive: boolean;
-    onOpen: () => void;
-    onClose: () => void;
+        line1: string
+        line2: string
+    }
+    phone: string
+    email: string
+    isActive: boolean
+    onOpen: () => void
+    onClose: () => void
 }
 
 const MarkerWithPopup = ({
@@ -30,18 +31,23 @@ const MarkerWithPopup = ({
     onOpen,
     onClose
 }: MarkerWithPopupProps) => {
+    const [token, setToken] = useState<string | null>(null)
+
+    useEffect(() => {
+        setToken(localStorage.getItem('authToken'))
+    }, [])
+
     const defaultIcon = L.icon({
         iconUrl: 'marker-icon-2x.png',
         shadowUrl: 'marker-shadow.png',
         iconSize: [25, 41],
         iconAnchor: [12, 41]
-    });
+    })
 
     const clickedIcon = L.icon({
         ...defaultIcon.options,
         iconUrl: 'marker-icon-2x-red.png'
-    });
-
+    })
     return (
         <Marker
             position={position}
@@ -76,13 +82,13 @@ const MarkerWithPopup = ({
                     asChild
                     className="w-full mt-2 px-16 uppercase !text-white"
                 >
-                    <Link href={`/book-appointment/${id}`}>
+                    <Link href={token ? `/book-appointment/${id}` : '/login'}>
                         Book an appointment
                     </Link>
                 </Button>
             </Popup>
         </Marker>
-    );
-};
+    )
+}
 
-export default MarkerWithPopup;
+export default MarkerWithPopup
