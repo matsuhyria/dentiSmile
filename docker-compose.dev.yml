@@ -123,6 +123,8 @@ services:
             - '27019:27017'
         volumes:
             - ./infrastructure/database/appointment_data:/data/db
+            - ./server/mock_data/appointment_db/init_appointment.sh:/docker-entrypoint-initdb.d/init_appointment.sh
+            - ./server/mock_data/appointment_db/seed_appointment_data.json:/docker-entrypoint-initdb.d/seed_appointment_data.json
         networks:
             - network-cluster
 
