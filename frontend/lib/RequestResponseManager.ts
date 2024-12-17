@@ -108,7 +108,7 @@ export class RequestResponseManager<T> {
                     request.resolve(response.data)
                 } else {
                     request.reject(
-                        new Error(response.error || 'Request failed')
+                        new Error(response.status.message || 'Request failed')
                     )
                 }
                 this.cleanup(clientId, client)
