@@ -15,7 +15,7 @@ const MapContainer = ({ children, center, zoom }: MapContainerProps) => (
         center={center}
         zoom={zoom}
         scrollWheelZoom={false}
-        style={{ height: '90vh' }}
+        style={{ height: '90vh', zIndex: 1 }}
         maxBounds={[
             [55.02652, 10.54138],
             [69.06643, 24.22472]
