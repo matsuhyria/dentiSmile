@@ -1,9 +1,15 @@
-import express from 'express';
 import { connectMQTT, subscribe } from '../shared/mqtt/mqttClient.js';
+import mongoose from 'mongoose';
 import { MQTT_TOPICS } from '../shared/mqtt/mqttTopics.js';
+import connectDB from './config/db.js';
+import AppointmentSlot from '../server/appointment_service/src/models/appointmentSlot.js';
 
+
+
+const MONGODB_URI = process.env.MONGODB_URI;
 const MQTT_URI = process.env.MQTT_URI || 'mqtt://localhost:1883';
-const PORT = process.env.PORT || 3003;
+const PORT = process.env.PORT || 3005;
+
 
 const MQTT_OPTIONS = {
     clientId: 'monitoringTool',
@@ -14,22 +20,36 @@ const MQTT_OPTIONS = {
 
 let metrics = {
     connectedClients: 0,
-    disconnectedClients: 0,
-    messagesSent: 0,
-    messagesReceived: 0,
-    counter: 0
+    dentistCreate: 0,
+    searchingPatients: 0,
+    registeredDentists: 0,
+
 };
 
 const topicsToMonitor = [
     '$SYS/broker/clients/active',
     '$SYS/broker/clients/connected',
-    '$SYS/broker/clients/disconnected',
-    '$SYS/broker/messages/sent',
-    '$SYS/broker/messages/received',
-    'appointment/create'
+    MQTT_TOPICS.APPOINTMENT.CREATE.REQUEST,
+    MQTT_TOPICS.APPOINTMENT.RETRIEVE.MANY,
+    MQTT_TOPICS.APPOINTMENT.RETRIEVE.ONE
+
 ];
 
-const app = express()
+const fetchMetricsFromDB = async () => {
+    try {
+        const modelNames = mongoose.modelNames();
+        console.log('Registered Model Names:', modelNames);
+
+        const collection = mongoose.connection.db.collection('slots');
+        const collectionInfo = await collection.countDocuments();
+        console.log('Collection document count:', collectionInfo);
+        
+       
+    } catch (error) {
+        console.error('Detailed error in fetchMetricsFromDB:', error)
+        throw error;
+    }
+};
 
 const updateMetrics = (topic, message) => {
     const value = parseInt(message, 10);
@@ -39,48 +59,41 @@ const updateMetrics = (topic, message) => {
     } 
     if (topic === '$SYS/broker/clients/disconnected'){
         metrics.disconnectedClients = value;
-    } 
-    if (topic === '$SYS/broker/messages/sent') {
-        metrics.messagesSent = value;
-    }
-    if (topic === '$SYS/broker/messages/received') {
-        metrics.messagesReceived = value;
     }
     if (topic === MQTT_TOPICS.APPOINTMENT.CREATE.REQUEST){
-        metrics.counter ++;
+        metrics.dentistCreate ++;
+    }
+    if (topic === MQTT_TOPICS.APPOINTMENT.RETRIEVE.MANY || topic === MQTT_TOPICS.APPOINTMENT.RETRIEVE.ONE){
+        metrics.searchingPatients ++;
     }
 }
 
 const displayMetricsMenu = () => {
     // console.clear(); // Clear the terminal before displaying new data
     console.log('==== MQTT Broker Metrics ====');
-    console.log(`Connected Clients    : ${metrics.connectedClients}`);
-    console.log(`Disconnected Clients : ${metrics.disconnectedClients}`);
-    console.log(`Messages Sent        : ${metrics.messagesSent}`);
-    console.log(`Messages Received    : ${metrics.messagesReceived}`);
-    console.log(`Create appointment   : ${metrics.counter}`);
+    console.log(`Connected Users      : ${metrics.connectedClients}`);
+    console.log(`Create appointment   : ${metrics.dentistCreate}`);
     console.log('=============================');
   };
 
 const startTool = async () => {
     try {
-
+        console.log(`Service is running on port ${PORT}`);
+        await connectDB(MONGODB_URI);
         await connectMQTT(MQTT_URI ,MQTT_OPTIONS);
-
-        for (let topic of topicsToMonitor) {
-            await subscribe(topic, (message) => {
-                updateMetrics(topic, message); 
-                displayMetricsMenu();
-            });
+        fetchMetricsFromDB();
+        
+        // for (let topic of topicsToMonitor) {
+        //     await subscribe(topic, (message) => {
+        //         updateMetrics(topic, message); 
+        //         displayMetricsMenu();
+        //     });
             
-        }
-
-        app.listen(PORT, () => {
-            console.log(`Monitoring service is running on port ${PORT}`);
-        });
+        // }
     
     } catch (error) {
         console.error('Error starting the monitoring service:', error);
+        process.exit(1);
     }
 };
 
