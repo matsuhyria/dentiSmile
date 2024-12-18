@@ -165,3 +165,16 @@ export const getAppointmentById = async (message) => {
         return { status: { code: 500, message: 'Error fetching slot details' } };
     }
 };
+
+export const getAppointmentsByPatientId = async (message) => {
+    try {
+        const { patientId } = JSON.parse(message);
+        const slot = await AppointmentSlot.find({ patientId: patientId });
+        if (!slot) {
+            return { status: { code: 404, message: 'Appointments not found' } };
+        }
+        return { status: { code: 200, message: 'Appointments retrieved successfully' }, data: slot };
+    } catch (error) {
+        return { status: { code: 500, message: 'Error fetching appointments' } };
+    }
+};

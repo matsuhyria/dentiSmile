@@ -18,16 +18,15 @@ interface BookingResponse {
 
 export class BookingService
     extends BaseBookingService
-    implements IBookingService
-{
+    implements IBookingService {
     public async cancelBooking(
-        bookingId: string
+        appointmentId: string,
     ): Promise<{ error?: string; data?: Record<string, unknown> }> {
         try {
             const data = await this.requestManager.request(
-                MQTT_TOPICS.BOOKING.CANCEL.REQUEST,
-                MQTT_TOPICS.BOOKING.CANCEL.RESPONSE,
-                { bookingId },
+                MQTT_TOPICS.APPOINTMENT.CANCEL.REQUEST,
+                MQTT_TOPICS.APPOINTMENT.CANCEL.RESPONSE(''),
+                { appointmentId },
                 this.client,
                 RequestType.DIRECT
             )
@@ -68,15 +67,18 @@ export class BookingService
         }
     }
 
-    public async getBookings(): Promise<{ data: IBooking[] }> {
+    public async getBookings(
+        patientId: string
+    ): Promise<{ data: IBooking[] }> {
         try {
             const data = await this.requestManager.request(
-                MQTT_TOPICS.BOOKING.GET.REQUEST,
-                MQTT_TOPICS.BOOKING.GET.RESPONSE,
-                {},
+                MQTT_TOPICS.APPOINTMENT.PATIENT.RETRIEVE.REQUEST,
+                MQTT_TOPICS.APPOINTMENT.PATIENT.RETRIEVE.RESPONSE(''),
+                { patientId },
                 this.client,
                 RequestType.DIRECT
             )
+            console.log('DATA', data);
             return { data }
         } catch (error) {
             throw new Error(`Failed to retrieve bookings: ${error.message}`)
@@ -96,6 +98,7 @@ export class BookingService
                 this.client,
                 RequestType.DIRECT
             )
+            console.log('DATA', data);
             return { data }
         } catch (error) {
             throw new Error(`Failed to retrieve appointments: ${error.message}`)

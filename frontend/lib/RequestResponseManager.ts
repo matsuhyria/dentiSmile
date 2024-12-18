@@ -47,10 +47,13 @@ export class RequestResponseManager<T> {
             })
 
             // Handle subscription based on type
+
             const topicToSubscribe =
                 type === RequestType.BROADCAST
                     ? responseTopic
                     : responseTopic + clientId
+
+            console.log('TOPIC:', topicToSubscribe);
 
             if (
                 type === RequestType.BROADCAST &&
