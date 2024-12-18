@@ -1,4 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { generateUniqueId } from "./utils"
+
 export enum RequestType {
     BROADCAST = 'broadcast',
     DIRECT = 'direct'
@@ -25,7 +27,7 @@ export class RequestResponseManager<T> {
         timeout = this.DEFAULT_TIMEOUT
     ): Promise<T> {
         return new Promise((resolve, reject) => {
-            const clientId = this.generateUniqueId()
+            const clientId = generateUniqueId()
             const requestPayload = { ...payload, clientId }
 
             const timeoutHandler =
@@ -139,9 +141,5 @@ export class RequestResponseManager<T> {
             client.unsubscribe(topic)
         })
         this.broadcastSubscriptions.clear()
-    }
-
-    private generateUniqueId(): string {
-        return Math.random().toString(36).slice(2, 9)
     }
 }

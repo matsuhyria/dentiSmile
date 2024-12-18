@@ -17,3 +17,8 @@ export function minutesToTime(minutes: number): string {
     const min = (minutes % 60).toString().padStart(2, '0');
     return `${h}:${min}`;
 }
+
+
+export function generateUniqueId(): string {
+    return Math.random().toString(36).slice(2, 9)
+}

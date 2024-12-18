@@ -1,5 +1,6 @@
 import AppointmentSlot from '../models/appointmentSlot.js';
 import { generateSingleDaySlots, generateMultiDaySlots, isValidIsoDate } from '../utils/dateUtils.js';
+import { publishAllNotifications } from '../routes/appointmentRouter.js';
 
 
 export const bookAppointment = async (message) => {
@@ -63,6 +64,8 @@ export const createAppointments = async (message) => {
 
         await AppointmentSlot.insertMany(slots);
 
+        // don't need to await here
+        publishAllNotifications(slots);
         return { status: { code: 200, message: 'Appointment slots created successfully' } };
     } catch (error) {
         console.log(error);
