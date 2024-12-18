@@ -2,30 +2,16 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { User } from 'lucide-react'
-import { redirect } from 'next/navigation'
-import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 
 export default function Nav() {
-    const [shouldRedirect, setShouldRedirect] = useState(false)
-    const [redirectTo, setRedirectTo] = useState('')
+    const router = useRouter()
 
-    const handleAccountClick = (e) => {
+    const handleAccountClick = (e: React.MouseEvent) => {
         e.preventDefault()
         const token = localStorage.getItem('authToken')
-
-        if (!token) {
-            setRedirectTo('/register')
-        }
-
-        setShouldRedirect(true)
+        router.push(token ? '/account' : '/register')
     }
-
-    useEffect(() => {
-        if (shouldRedirect) {
-            setShouldRedirect(false)
-            redirect(redirectTo)
-        }
-    }, [shouldRedirect, redirectTo])
 
     return (
         <div className="sticky top-0 inset-x-0 z-50 group w-full">
