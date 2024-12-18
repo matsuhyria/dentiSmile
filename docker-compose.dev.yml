@@ -64,6 +64,7 @@ services:
             - ./server/clinic_service/.env
         environment:
             - NODE_ENV=development
+            - MONGODB_URI=mongodb://mongo-clinic/clinic_db
         depends_on:
             - mongo-clinic
             - mqtt-broker
@@ -89,6 +90,7 @@ services:
             - ./server/appointment_service/.env
         environment:
             - NODE_ENV=development
+            - MONGODB_URI=mongodb://mongo-appointment/appointment_db
         depends_on:
             - mongo-appointment
             - mqtt-broker
@@ -113,6 +115,8 @@ services:
             - '27018:27017'
         volumes:
             - ./infrastructure/database/clinic_data:/data/db
+            - ./server/mock_data/clinic_db/init_clinic.sh:/docker-entrypoint-initdb.d/init_clinic.sh
+            - ./server/mock_data/clinic_db/seed_clinic_data.json:/docker-entrypoint-initdb.d/seed_clinic_data.json
         networks:
             - network-cluster
 
