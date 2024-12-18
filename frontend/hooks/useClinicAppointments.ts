@@ -43,6 +43,8 @@ export const useClinicAppointments = ({
 
     const availableTimes = useMemo(() => {
         if (!selectedDate) return []
+        // ACHTUNG!
+        // DATE KEY IS OFF BY MINUS ONE DAY
         const dateKey = selectedDate.toISOString().split('T')[0]
         return availableTimesByDate[dateKey] || []
     }, [selectedDate, availableTimesByDate])

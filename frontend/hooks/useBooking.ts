@@ -1,5 +1,7 @@
-import { useState } from 'react'
+'use client'
+import { useState, useEffect } from 'react'
 import { BookingService } from '@/services/BookingService'
+import { IBooking } from '@/services/interfaces/IBooking'
 import MockBookingService from '@/services/mocks/mockBookingService'
 import { BookingResponse } from '@/services/interfaces/IBookingService'
 import { useMQTTService } from './useMQTTService'
@@ -15,6 +17,7 @@ interface UseBookingReturn {
     }>
     loading: boolean
     error: Error | null
+    bookings: IBooking[];
 }
 
 export const useBooking = (): UseBookingReturn => {
@@ -24,6 +27,40 @@ export const useBooking = (): UseBookingReturn => {
     )
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState<Error | null>(serviceError)
+    const [bookings, setBookings] = useState<IBooking[]>([]);
+
+    useEffect(() => {
+        const fetchBookings = async () => {
+            const userId = localStorage.getItem('userId');
+
+            if (!userId) {
+                setError(new Error('UserId not found in local storage'));
+                return;
+            }
+
+            if (!bookingService) {
+                setError(new Error('Booking service not initialized'));
+                return;
+            }
+
+            setLoading(true);
+            try {
+                const response = await bookingService.getBookings(userId);
+                setBookings(response.data);
+                setError(null);
+            } catch (err) {
+                const errorMessage =
+                    err instanceof Error
+                        ? err.message
+                        : 'Failed to retrieve bookings';
+                setError(new Error(errorMessage));
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchBookings();
+    }, [bookingService]);
 
     const requestAppointment = async (
         appointmentId: string,
@@ -65,6 +102,7 @@ export const useBooking = (): UseBookingReturn => {
 
     return {
         requestAppointment,
+        bookings,
         loading,
         error
     }

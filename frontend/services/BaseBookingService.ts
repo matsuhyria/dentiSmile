@@ -19,7 +19,9 @@ export abstract class BaseBookingService implements IBookingService {
     public abstract cancelBooking(
         bookingId: string
     ): Promise<{ error?: string; data?: Record<string, unknown> }>
-    public abstract getBookings(): Promise<{ data: IBooking[] }>
+    public abstract getBookings(
+        patientId: string
+    ): Promise<{ data: IBooking[] }>
 
     public abstract getBookingAppointments(
         clinicId: string,

@@ -1,32 +1,40 @@
+'use client'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { AppointmentsTable } from './appointments-table'
+import { IBooking } from '@/services/interfaces/IBooking';
+import { useBooking } from '@/hooks/useBooking';
 
-async function getAppointments() {
-    await new Promise((resolve) => setTimeout(resolve, 1000))
-    return [
-        {
-            id: 1,
-            date: '2023-06-15',
-            time: '10:00 AM',
-            service: 'Teeth Cleaning'
-        },
-        {
-            id: 2,
-            date: '2023-06-20',
-            time: '2:00 PM',
-            service: 'Regular Checkup'
-        },
-        {
-            id: 3,
-            date: '2023-06-25',
-            time: '11:30 AM',
-            service: 'Cosmetic Consultation'
-        }
-    ]
+// copied interface
+interface Appointment {
+    id: number
+    date: string
+    time: string
+    service: string
 }
 
-export async function AppointmentsList() {
-    const appointments = await getAppointments()
+const mapBookingToAppointment = (booking: IBooking): Appointment => {
+    const date = new Date(booking.startTime);
+    const time = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true });
+
+    const formattedDate = date.toISOString().split('T')[0];
+
+    return {
+        id: parseInt(booking._id, 10),
+        date: formattedDate,
+        time: time,
+        service: booking.clinicName,
+    };
+};
+
+export function AppointmentsList() {
+    const { bookings, loading, error } = useBooking();
+    const appointments: Appointment[] = [];
+    for (const booking of bookings) {
+        appointments.push(mapBookingToAppointment(booking))
+    }
+
+    if (loading) return <div>Loading your appointments...</div>;
+    if (error) return <div>Error: {error.message}</div>;
 
     return (
         <Card>
@@ -34,8 +42,12 @@ export async function AppointmentsList() {
                 <CardTitle>Your Appointments</CardTitle>
             </CardHeader>
             <CardContent>
-                <AppointmentsTable appointments={appointments} />
+                {appointments.length === 0 ? (
+                    <p>No appointments found.</p>
+                ) : (
+                    <AppointmentsTable appointments={appointments} />
+                )}
             </CardContent>
         </Card>
-    )
+    );
 }
