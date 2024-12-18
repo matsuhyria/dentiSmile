@@ -1,7 +1,6 @@
 import connectDB from './config/db.js'
-import { connectMQTT, subscribe, publish } from 'shared-mqtt/mqttClient.js'
+import { connectMQTT } from 'shared-mqtt/mqttClient.js'
 import { initializeRoutes } from './routes/appointmentRouter.js'
-import { MQTT_TOPICS } from 'shared-mqtt/mqttTopics.js';
 
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/appointment_db'
 const PORT = process.env.PORT || 3002;
@@ -24,6 +23,5 @@ const startService = async () => {
         process.exit(1);
     }
 };
-
 
 await startService();

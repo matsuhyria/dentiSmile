@@ -3,8 +3,31 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { User } from 'lucide-react';
 import NotificationDropdown from '@/components/notification/notificationDropdown';
+import { redirect } from 'next/navigation'
+import { useState, useEffect } from 'react'
 
 export default function Nav() {
+    const [shouldRedirect, setShouldRedirect] = useState(false)
+    const [redirectTo, setRedirectTo] = useState('')
+
+    const handleAccountClick = (e) => {
+        e.preventDefault()
+        const token = localStorage.getItem('authToken')
+
+        if (!token) {
+            setRedirectTo('/register')
+        }
+
+        setShouldRedirect(true)
+    }
+
+    useEffect(() => {
+        if (shouldRedirect) {
+            setShouldRedirect(false)
+            redirect(redirectTo)
+        }
+    }, [shouldRedirect, redirectTo])
+
     return (
         <div className="sticky top-0 inset-x-0 z-50 group w-full">
             <header className="relative h-16 mx-auto border-b duration-200 bg-white border-ui-border-base">
@@ -29,7 +52,9 @@ export default function Nav() {
                                 <NotificationDropdown />
                                 <Link
                                     href="/account"
-                                    className="text-gray-600 hover:text-gray-900  rounded-md text-sm font-medium flex items-center"
+                                    //className="text-gray-600 hover:text-gray-900  rounded-md text-sm font-medium flex items-center"
+                                    onClick={handleAccountClick}
+                                    className="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium flex items-center"
                                 >
                                     <User size={24} />
                                 </Link>
@@ -39,5 +64,5 @@ export default function Nav() {
                 </nav>
             </header>
         </div>
-    );
+    )
 }

@@ -15,7 +15,15 @@ const useNotifications = (topic) => {
                 message: message.notification,
             };
 
-            setNotifications((prevNotifications) => [newNotification, ...prevNotifications]);
+            setNotifications((prevNotifications) => {
+                const isDuplicate = prevNotifications.some(
+                    (notification) => notification.message === newNotification.message
+                );
+                if (isDuplicate) {
+                    return prevNotifications;
+                }
+                return [newNotification, ...prevNotifications];
+            });
         };
 
         const connectAndSubscribe = async () => {
@@ -31,8 +39,10 @@ const useNotifications = (topic) => {
         connectAndSubscribe();
 
         return () => {
-            // clean up to avoid memory leak
-            //unsubscribe(topic);
+            // (async () => {
+            //     // clean up to avoid memory leak
+            //     await unsubscribe(topic);
+            // })();
         };
     }, [topic]);
 

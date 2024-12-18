@@ -1,12 +1,13 @@
-import { Button } from '@/components/ui/button';
+import { Button } from '@/components/ui/button'
 
 interface ConfirmationProps {
-    isActive: boolean;
-    reason: string;
-    selectedDate: Date | null;
-    selectedTime: Date | null;
-    appointmentDuration: number;
-    onConfirm: () => void;
+    isActive: boolean
+    reason: string
+    selectedDate: Date | null
+    selectedTime: Date | null
+    appointmentDuration: number
+    onConfirm: () => void
+    disableButton: boolean
 }
 
 function Confirmation({
@@ -15,9 +16,10 @@ function Confirmation({
     selectedDate,
     selectedTime,
     appointmentDuration,
-    onConfirm
+    onConfirm,
+    disableButton
 }: ConfirmationProps) {
-    if (!isActive) return null;
+    if (!isActive) return null
 
     return (
         <div className="border rounded-b-lg p-4">
@@ -54,11 +56,11 @@ function Confirmation({
                         : `${appointmentDuration} minutes`}
                 </p>
             </div>
-            <Button className="" onClick={onConfirm}>
+            <Button className="" onClick={onConfirm} disabled={disableButton}>
                 Confirm Appointment
             </Button>
         </div>
-    );
+    )
 }
 
-export default Confirmation;
+export default Confirmation

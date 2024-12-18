@@ -1,23 +1,24 @@
-import { useState, useEffect, useMemo } from 'react';
-import { ClinicService } from '@/services/ClinicService';
-import mockClinicService from '@/services/mocks/mockClinicService';
-import { IAppointment } from '@/services/interfaces/IAppointment';
-import { useMQTTService } from './useMQTTService';
-import { transformAppointments } from '@/lib/appointmentUtils';
+import { useState, useEffect, useMemo } from 'react'
+import { ClinicService } from '@/services/ClinicService'
+import mockClinicService from '@/services/mocks/mockClinicService'
+import { IAppointment } from '@/services/interfaces/IAppointment'
+import { useMQTTService } from './useMQTTService'
+import { transformAppointments } from '@/lib/appointmentUtils'
+import { TimeSlot } from '@/lib/appointmentUtils'
 
 interface UseClinicAppointmentsProps {
-    clinicId: string;
-    reasonId?: string;
-    date?: string;
-    selectedDate?: Date | null;
+    clinicId: string
+    reasonId?: string
+    date?: string
+    selectedDate?: Date | null
 }
 
 interface UseClinicAppointmentsReturn {
-    clinicName: string | undefined;
-    monthlyAvailability: Record<string, number>;
-    availableTimes: string[];
-    loading: boolean;
-    error: Error | null;
+    clinicName: string | undefined
+    monthlyAvailability: Record<string, number>
+    availableTimes: TimeSlot[]
+    loading: boolean
+    error: Error | null
 }
 
 export const useClinicAppointments = ({
@@ -29,27 +30,30 @@ export const useClinicAppointments = ({
     const { service: clinicService, error: serviceError } = useMQTTService(
         ClinicService,
         mockClinicService
-    );
+    )
 
-    const [appointments, setAppointments] = useState<IAppointment[]>([]);
-    const [loading, setLoading] = useState<boolean>(true);
-    const [error, setError] = useState<Error | null>(serviceError);
+    const [appointments, setAppointments] = useState<IAppointment[]>([])
+    const [loading, setLoading] = useState<boolean>(true)
+    const [error, setError] = useState<Error | null>(serviceError)
 
     const { monthlyAvailability, availableTimesByDate } = useMemo(
         () => transformAppointments(appointments),
         [appointments]
-    );
+    )
 
     const availableTimes = useMemo(() => {
-        if (!selectedDate) return [];
-        const dateKey = selectedDate.toISOString().split('T')[0];
-        return availableTimesByDate[dateKey] || [];
-    }, [selectedDate, availableTimesByDate]);
+        if (!selectedDate) return []
+        const dateKey = selectedDate.toISOString().split('T')[0]
+        return availableTimesByDate[dateKey] || []
+    }, [selectedDate, availableTimesByDate])
 
-    const clinicName = useMemo(() => appointments[0]?.clinicName, [appointments]);
+    const clinicName = useMemo(
+        () => appointments[0]?.clinicName,
+        [appointments]
+    )
 
     useEffect(() => {
-        if (!clinicService || !clinicId) return;
+        if (!clinicService || !clinicId) return
 
         const fetchAppointments = async () => {
             try {
@@ -57,21 +61,21 @@ export const useClinicAppointments = ({
                     clinicId,
                     reasonId || '',
                     date || ''
-                );
-                setAppointments(response.data || []);
+                )
+                setAppointments(response.data || [])
             } catch (err) {
                 setError(
                     err instanceof Error
                         ? err
                         : new Error('Failed to fetch clinic appointments')
-                );
+                )
             } finally {
-                setLoading(false);
+                setLoading(false)
             }
-        };
+        }
 
-        fetchAppointments();
-    }, [clinicService, clinicId, reasonId, date]);
+        fetchAppointments()
+    }, [clinicService, clinicId, reasonId, date])
 
     return {
         clinicName,
@@ -79,7 +83,7 @@ export const useClinicAppointments = ({
         availableTimes,
         loading,
         error
-    };
-};
+    }
+}
 
-export default useClinicAppointments;
+export default useClinicAppointments

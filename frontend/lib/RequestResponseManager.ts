@@ -107,16 +107,16 @@ export class RequestResponseManager<T> {
             if (type === RequestType.DIRECT) {
                 clearTimeout(request.timeout)
                 if (response.status?.code === 200) {
-                    request.resolve(response.data)
+                    request.resolve(response.data || response)
                 } else {
                     request.reject(
-                        new Error(response.error || 'Request failed')
+                        new Error(response.status?.message || 'Request failed')
                     )
                 }
                 this.cleanup(clientId, client)
             } else {
                 // For broadcast, just resolve with data and keep subscription
-                request.resolve(response.data)
+                request.resolve(response.data || response)
             }
         }
     }
