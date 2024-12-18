@@ -15,6 +15,13 @@ interface UseBookingReturn {
         data?: BookingResponse
         error?: string
     }>
+    cancelBooking: (
+        appointmentId: string,
+    ) => Promise<{
+        success: boolean
+        data?: BookingResponse
+        error?: string
+    }>
     loading: boolean
     error: Error | null
     bookings: IBooking[];
@@ -100,8 +107,45 @@ export const useBooking = (): UseBookingReturn => {
         }
     }
 
+    const cancelBooking = async (appointmentId: string) => {
+        if (!bookingService) {
+            setError(new Error('Booking service not initialized'));
+            return { success: false, error: 'Booking service not initialized' };
+        }
+
+        setLoading(true);
+        try {
+            const response = await bookingService.cancelBooking(appointmentId);
+
+            if (response.error) {
+                throw new Error(response.error);
+            }
+
+            // Optimistically remove the cancelled booking from the state
+            setBookings((prev) => prev.filter((b) => b._id !== appointmentId));
+
+            return {
+                success: true,
+                data: response.data,
+            };
+        } catch (err) {
+            const errorMessage =
+                err instanceof Error
+                    ? err.message
+                    : 'Failed to cancel booking';
+            setError(new Error(errorMessage));
+            return {
+                success: false,
+                error: errorMessage,
+            };
+        } finally {
+            setLoading(false);
+        }
+    };
+
     return {
         requestAppointment,
+        cancelBooking,
         bookings,
         loading,
         error

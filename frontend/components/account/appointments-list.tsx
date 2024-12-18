@@ -6,7 +6,7 @@ import { useBooking } from '@/hooks/useBooking';
 
 // copied interface
 interface Appointment {
-    id: number
+    id: string
     date: string
     time: string
     service: string
@@ -19,7 +19,7 @@ const mapBookingToAppointment = (booking: IBooking): Appointment => {
     const formattedDate = date.toISOString().split('T')[0];
 
     return {
-        id: parseInt(booking._id, 10),
+        id: booking._id,
         date: formattedDate,
         time: time,
         service: booking.clinicName,
@@ -27,15 +27,20 @@ const mapBookingToAppointment = (booking: IBooking): Appointment => {
 };
 
 export function AppointmentsList() {
-    const { bookings, loading, error } = useBooking();
-    const appointments: Appointment[] = [];
-    for (const booking of bookings) {
-        appointments.push(mapBookingToAppointment(booking))
-    }
+    const { bookings, cancelBooking, loading, error } = useBooking();
+
+    const handleCancel = async (id: string) => {
+        const result = await cancelBooking(id);
+        return result;
+    };
 
     if (loading) return <div>Loading your appointments...</div>;
     if (error) return <div>Error: {error.message}</div>;
 
+    const appointments: Appointment[] = [];
+    for (const booking of bookings) {
+        appointments.push(mapBookingToAppointment(booking))
+    }
     return (
         <Card>
             <CardHeader>
@@ -45,7 +50,7 @@ export function AppointmentsList() {
                 {appointments.length === 0 ? (
                     <p>No appointments found.</p>
                 ) : (
-                    <AppointmentsTable appointments={appointments} />
+                    <AppointmentsTable appointments={appointments} onCancel={handleCancel} />
                 )}
             </CardContent>
         </Card>

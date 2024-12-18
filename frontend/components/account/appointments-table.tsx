@@ -14,7 +14,7 @@ import { Button } from '@/components/ui/button'
 import { toast } from 'sonner'
 
 interface Appointment {
-    id: number
+    id: string
     date: string
     time: string
     service: string
@@ -22,38 +22,33 @@ interface Appointment {
 
 interface AppointmentsTableProps {
     appointments: Appointment[]
+    onCancel: (id: string) => Promise<{ success: boolean; message?: string }>
 }
 
 export function AppointmentsTable({
-    appointments: initialAppointments
+    appointments: initialAppointments,
+    onCancel
 }: AppointmentsTableProps) {
     const [appointments, setAppointments] = useState(initialAppointments)
-    const [cancellingId, setCancellingId] = useState<number | null>(null)
+    const [cancellingId, setCancellingId] = useState<string | null>(null)
 
-    const handleCancel = async (id: number) => {
-        setCancellingId(id)
+    const handleCancel = async (id: string) => {
+        setCancellingId(id);
         try {
-            // TODO - Implement cancelAppointment function
-            // const result = await cancelAppointment(id)
-            // if (result.success) {
-            //     setAppointments(
-            //         appointments.filter((appointment) => appointment.id !== id)
-            //     )
-            //     toast({
-            //         title: 'Appointment Cancelled',
-            //         description: result.message
-            //     })
-            // }
+            const result = await onCancel(id);
+            if (result.success) {
+                toast.message('Appointment Cancelled', {
+                    description: result.message || 'The appointment was successfully cancelled.'
+                });
+            } else {
+                throw new Error(result.message || 'Cancellation failed.');
+            }
         } catch (error) {
-            toast({
-                title: 'Error',
-                description: 'Failed to cancel appointment. Please try again.',
-                variant: 'destructive'
-            })
+            toast.error('Failed to cancel appointment. Please try again.');
         } finally {
-            setCancellingId(null)
+            setCancellingId(null);
         }
-    }
+    };
 
     return (
         <Table>

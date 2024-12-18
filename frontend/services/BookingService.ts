@@ -20,13 +20,13 @@ export class BookingService
     extends BaseBookingService
     implements IBookingService {
     public async cancelBooking(
-        bookingId: string
+        appointmentId: string,
     ): Promise<{ error?: string; data?: Record<string, unknown> }> {
         try {
             const data = await this.requestManager.request(
-                MQTT_TOPICS.BOOKING.CANCEL.REQUEST,
-                MQTT_TOPICS.BOOKING.CANCEL.RESPONSE,
-                { bookingId },
+                MQTT_TOPICS.APPOINTMENT.CANCEL.REQUEST,
+                MQTT_TOPICS.APPOINTMENT.CANCEL.RESPONSE(''),
+                { appointmentId },
                 this.client,
                 RequestType.DIRECT
             )
