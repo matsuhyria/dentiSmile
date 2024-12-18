@@ -65,8 +65,8 @@ describe('Appointment Service - Slot Creation Tests', function () {
     });
 
     it('appointment slot should not be created if it already exists', function (done) {
-        const startTime = '2028-01-01T09:00:00Z';
-        const endTime = '2028-01-01T10:00:00Z';
+        const startTime = '2025-10-07T09:00:00Z';
+        const endTime = '2025-10-07T10:00:00Z';
         
         const payload = JSON.stringify({
             clinicName: 'Test Clinic',
@@ -150,7 +150,5 @@ describe('Appointment Service - Slot Creation Tests', function () {
             done(error);
         }
     });
-
-
-
+    
 });

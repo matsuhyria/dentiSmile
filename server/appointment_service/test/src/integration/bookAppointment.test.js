@@ -37,7 +37,7 @@ describe('Appointment Service - Slot Booking Tests', function () {
     it('appointment slot should be booked', function (done) {
         const payload = JSON.stringify({
             patientId: '6761b4a29a1b18382321d161',
-            appointmentId: '64b8f7f1f1a4e8b1a1a1a1a1',
+            appointmentId: '676209f6c70d224bab0ed315',
             clientId: clientId
         });
 
@@ -60,7 +60,7 @@ describe('Appointment Service - Slot Booking Tests', function () {
     it('appointment slot should not be booked in case it already is booked', function (done) {
         const payload = JSON.stringify({
             patientId: '6761b4a29a1b18382321d161',
-            appointmentId: '64b8f7f1f1a4e8b1a1a1a1a4',
+            appointmentId: '676209f6c70d224bab0ed318',
             clientId: clientId
         });
 
@@ -104,7 +104,7 @@ describe('Appointment Service - Slot Booking Tests', function () {
     it('appointment slot should not be booked in case it was cancelled by dentist', function (done) {
         const payload = JSON.stringify({
             patientId: '6761b4a29a1b18382321d161',
-            appointmentId: '64b8f7f1f1a4e8b1a1a1a1a9',
+            appointmentId: '676209f6c70d224bab0ed31b',
             clientId: clientId
         });
 
