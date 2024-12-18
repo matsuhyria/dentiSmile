@@ -1,31 +1,62 @@
 image: node:20-alpine
 
 stages:
-  - build
+#  - build
   - test
   - deploy
 
-build:
-  stage: build
-  tags: 
-    - docker
-  script:
-    - cd server
-    - npm ci
-    - npm run build
-  artifacts:
-    paths:
-      - server/node_modules # cache for future builds
-      - server/dist
-    expire_in: 1 hour
+# Comments will be removed in the final version, currently build stage linting causes some errors
+#build:
+#  stage: build
+#  tags: 
+#    - docker
+#  script:
+#    - cd server
+#    - npm ci
+#    - npm run build
+#  artifacts:
+#    paths:
+#      - server/node_modules # cache for future builds
+#      - server/dist
+#    expire_in: 1 hour
 
-test:
+#test:
+#  stage: test
+#  tags:
+#    - docker
+#  script:
+#    - cd server
+#    - npm run test
+
+# This stage is for integration tests that require the services to be running
+# Tests can be executed either by connecting to each service and using npm test in the service directory
+# Or execute apk nodejs npm && npm ci && npm test:integration here, as it will use mapped mqtt ports to connect to the broker
+# Ill go with the first option for now as we wont have to install dependencies for every service
+integration-test:
   stage: test
+  image: docker:latest
+  services:
+    - name: docker:dind
   tags:
     - docker
   script:
-    - cd server
-    - npm run test
+    - docker-compose -f docker-compose.dev.yml up -d --build
+    # Connect to shell of each service and run integration tests, display it, create log file, copy it over to host and save it as artifact
+    # Appointment Service
+    - docker-compose exec appointment-service sh -c "cd /app && npm run test:integration > integration_test_output.log | tee integration_test_output.log"
+    - mkdir -p ./server/integration_test_report/appointment_service
+    - docker cp appointment-service:/app/integration_test_output.log ./server/integration_test_report/appointment_service/integration_test_output.log
+    # Clinic Service
+#    - docker-compose exec clinic-service sh -c "cd /app && npm run test:integration | tee integration_test_output.log"
+#    - mkdir -p ./server/integration_test_report/clinic_service
+#    - docker cp clinic-service:/app/integration_test_output.log ./server/integration_test_report/clinic_service/integration_test_output.log
+    # Clean up
+    - docker-compose -f docker-compose.dev.yml down
+
+  artifacts:
+    paths:
+      - ./server/integration_test_report
+    expire_in: 1 hour
 
 
 deploy:
