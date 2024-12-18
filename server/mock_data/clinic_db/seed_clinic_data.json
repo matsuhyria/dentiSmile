@@ -177,7 +177,7 @@
             "line1": "Nygatan 20",
             "line2": ""
         },
-        "phone": "+46712345678",
+        "phone": "+46712345638",
         "email": "contact@gavlesmilecenter.se",
         "dentists": [
             { "$oid": "64b8f9f1f1a4c8b1a1a1a1c8" },
