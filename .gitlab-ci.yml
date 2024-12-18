@@ -40,6 +40,8 @@ integration-test:
   tags:
     - docker
   script:
+    # Create empty .env files for frontend and backend services
+    - touch ./server/appointment_service/.env ./server/clinic_service/.env ./frontend/.env
     - docker-compose -f docker-compose.dev.yml up -d --build
     # Connect to shell of each service and run integration tests, display it, create log file, copy it over to host and save it as artifact
     # Appointment Service
