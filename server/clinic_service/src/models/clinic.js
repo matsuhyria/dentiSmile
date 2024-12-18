@@ -37,7 +37,7 @@ const clinicSchema = new mongoose.Schema({
         index: true
     },
     dentists: {
-        type: [String]
+        type: [mongoose.Schema.Types.ObjectId]
     }
 })
 

@@ -1,0 +1,295 @@
+[
+    {
+        "_id": { "$oid": "64b8f9f1f1a4c8b1a1a1a1a1" },
+        "name": "Göteborg Dental Clinic",
+        "position": [57.7089, 11.9746],
+        "address": {
+            "line1": "Kungsportsavenyen 10",
+            "line2": "Våning 2"
+        },
+        "phone": "+46701234567",
+        "email": "info@goteborgdental.se",
+        "dentists": [
+            { "$oid": "64b8f9f1f1a4c8b1a1a1a1a2" },
+            { "$oid": "64b8f9f1f1a4c8b1a1a1a1a3" }
+        ]
+    },
+    {
+        "_id": { "$oid": "64b8f9f1f1a4c8b1a1a1a1a4" },
+        "name": "Stockholm Smile",
+        "position": [59.3293, 18.0686],
+        "address": {
+            "line1": "Drottninggatan 50",
+            "line2": ""
+        },
+        "phone": "+46702345678",
+        "email": "contact@stockholmsmile.se",
+        "dentists": [
+            { "$oid": "64b8f9f1f1a4c8b1a1a1a1a5" },
+            { "$oid": "64b8f9f1f1a4c8b1a1a1a1a6" },
+            { "$oid": "64b8f9f1f1a4c8b1a1a1a1a7" }
+        ]
+    },
+    {
+        "_id": { "$oid": "64b8f9f1f1a4c8b1a1a1a1a8" },
+        "name": "Malmö Dental Care",
+        "position": [55.604981, 13.003822],
+        "address": {
+            "line1": "Södra Förstadsgatan 25",
+            "line2": ""
+        },
+        "phone": "+46703456789",
+        "email": "info@malmodentalcare.se",
+        "dentists": [
+            { "$oid": "64b8f9f1f1a4c8b1a1a1a1a9" }
+        ]
+    },
+    {
+        "_id": { "$oid": "64b8f9f1f1a4c8b1a1a1a1aa" },
+        "name": "Uppsala Dental Clinic",
+        "position": [59.8586, 17.6389],
+        "address": {
+            "line1": "Svartbäcksgatan 52",
+            "line2": ""
+        },
+        "phone": "+46704567890",
+        "email": "contact@uppsaladental.se",
+        "dentists": [
+            { "$oid": "64b8f9f1f1a4c8b1a1a1a1ab" },
+            { "$oid": "64b8f9f1f1a4c8b1a1a1a1ac" }
+        ]
+    },
+    {
+        "_id": { "$oid": "64b8f9f1f1a4c8b1a1a1a1ad" },
+        "name": "Lund Smile Center",
+        "position": [55.7047, 13.191],
+        "address": {
+            "line1": "Stora Södergatan 8",
+            "line2": ""
+        },
+        "phone": "+46705678901",
+        "email": "info@lundsmilecenter.se",
+        "dentists": [
+            { "$oid": "64b8f9f1f1a4c8b1a1a1a1ae" },
+            { "$oid": "64b8f9f1f1a4c8b1a1a1a1af" },
+            { "$oid": "64b8f9f1f1a4c8b1a1a1a1b0" },
+            { "$oid": "64b8f9f1f1a4c8b1a1a1a1b1" }
+        ]
+    },
+    {
+        "_id": { "$oid": "64b8f9f1f1a4c8b1a1a1a1b2" },
+        "name": "Linköping Dental",
+        "position": [58.4108, 15.6214],
+        "address": {
+            "line1": "Storgatan 22",
+            "line2": ""
+        },
+        "phone": "+46706789012",
+        "email": "contact@linkopingdental.se",
+        "dentists": [
+            { "$oid": "64b8f9f1f1a4c8b1a1a1a1b3" },
+            { "$oid": "64b8f9f1f1a4c8b1a1a1a1b4" }
+        ]
+    },
+    {
+        "_id": { "$oid": "64b8f9f1f1a4c8b1a1a1a1b5" },
+        "name": "Örebro Dental Clinic",
+        "position": [59.2753, 15.2134],
+        "address": {
+            "line1": "Kungsgatan 10",
+            "line2": ""
+        },
+        "phone": "+46707890123",
+        "email": "info@orebrodental.se",
+        "dentists": [
+            { "$oid": "64b8f9f1f1a4c8b1a1a1a1b6" },
+            { "$oid": "64b8f9f1f1a4c8b1a1a1a1b7" },
+            { "$oid": "64b8f9f1f1a4c8b1a1a1a1b8" }
+        ]
+    },
+    {
+        "_id": { "$oid": "64b8f9f1f1a4c8b1a1a1a1b9" },
+        "name": "Västerås Dental Care",
+        "position": [59.6162, 16.5528],
+        "address": {
+            "line1": "Stora Gatan 15",
+            "line2": ""
+        },
+        "phone": "+46708901234",
+        "email": "contact@vasterasdental.se",
+        "dentists": [
+            { "$oid": "64b8f9f1f1a4c8b1a1a1a1ba" },
+            { "$oid": "64b8f9f1f1a4c8b1a1a1a1bb" }
+        ]
+    },
+    {
+        "_id": { "$oid": "64b8f9f1f1a4c8b1a1a1a1bc" },
+        "name": "Helsingborg Smile",
+        "position": [56.0465, 12.6945],
+        "address": {
+            "line1": "Drottninggatan 7",
+            "line2": ""
+        },
+        "phone": "+46709012345",
+        "email": "info@helsingborgsmile.se",
+        "dentists": [
+            { "$oid": "64b8f9f1f1a4c8b1a1a1a1bd" },
+            { "$oid": "64b8f9f1f1a4c8b1a1a1a1be" },
+            { "$oid": "64b8f9f1f1a4c8b1a1a1a1bf" }
+        ]
+    },
+    {
+        "_id": { "$oid": "64b8f9f1f1a4c8b1a1a1a1c0" },
+        "name": "Jönköping Dental Clinic",
+        "position": [57.7826, 14.1618],
+        "address": {
+            "line1": "Östra Storgatan 12",
+            "line2": ""
+        },
+        "phone": "+46710123456",
+        "email": "contact@jonkopingdental.se",
+        "dentists": [
+            { "$oid": "64b8f9f1f1a4c8b1a1a1a1c1" },
+            { "$oid": "64b8f9f1f1a4c8b1a1a1a1c2" }
+        ]
+    },
+    {
+        "_id": { "$oid": "64b8f9f1f1a4c8b1a1a1a1c3" },
+        "name": "Norrköping Dental Care",
+        "position": [58.5877, 16.1924],
+        "address": {
+            "line1": "Södra Promenaden 5",
+            "line2": ""
+        },
+        "phone": "+46711234567",
+        "email": "info@norrkopingdental.se",
+        "dentists": [
+            { "$oid": "64b8f9f1f1a4c8b1a1a1a1c4" },
+            { "$oid": "64b8f9f1f1a4c8b1a1a1a1c5" },
+            { "$oid": "64b8f9f1f1a4c8b1a1a1a1c6" }
+        ]
+    },
+    {
+        "_id": { "$oid": "64b8f9f1f1a4c8b1a1a1a1c7" },
+        "name": "Gävle Smile Center",
+        "position": [60.6749, 17.1413],
+        "address": {
+            "line1": "Nygatan 20",
+            "line2": ""
+        },
+        "phone": "+46712345678",
+        "email": "contact@gavlesmilecenter.se",
+        "dentists": [
+            { "$oid": "64b8f9f1f1a4c8b1a1a1a1c8" },
+            { "$oid": "64b8f9f1f1a4c8b1a1a1a1c9" }
+        ]
+    },
+    {
+        "_id": { "$oid": "64b8f9f1f1a4c8b1a1a1a1ca" },
+        "name": "Sundsvall Dental Clinic",
+        "position": [62.3908, 17.3069],
+        "address": {
+            "line1": "Storgatan 10",
+            "line2": ""
+        },
+        "phone": "+46713456789",
+        "email": "info@sundsvalldental.se",
+        "dentists": [
+            { "$oid": "64b8f9f1f1a4c8b1a1a1a1cb" },
+            { "$oid": "64b8f9f1f1a4c8b1a1a1a1cc" },
+            { "$oid": "64b8f9f1f1a4c8b1a1a1a1cd" },
+            { "$oid": "64b8f9f1f1a4c8b1a1a1a1ce" }
+        ]
+    },
+    {
+        "_id": { "$oid": "64b8f9f1f1a4c8b1a1a1a1cf" },
+        "name": "Umeå Dental Care",
+        "position": [63.8258, 20.2630],
+        "address": {
+            "line1": "Kungsgatan 15",
+            "line2": ""
+        },
+        "phone": "+46714567890",
+        "email": "contact@umeadental.se",
+        "dentists": [
+            { "$oid": "64b8f9f1f1a4c8b1a1a1a1d0" },
+            { "$oid": "64b8f9f1f1a4c8b1a1a1a1d1" }
+        ]
+    },
+    {
+        "_id": { "$oid": "64b8f9f1f1a4c8b1a1a1a1d2" },
+        "name": "Luleå Smile",
+        "position": [65.5848, 22.1547],
+        "address": {
+            "line1": "Storgatan 25",
+            "line2": ""
+        },
+        "phone": "+46715678901",
+        "email": "info@luleasmile.se",
+        "dentists": [
+            { "$oid": "64b8f9f1f1a4c8b1a1a1a1d3" },
+            { "$oid": "64b8f9f1f1a4c8b1a1a1a1d4" },
+            { "$oid": "64b8f9f1f1a4c8b1a1a1a1d5" }
+        ]
+    },
+        {
+        "_id": { "$oid": "5f50c31c1c9d440000a1a1a1" },
+        "name": "Downtown Dental Clinic",
+        "position": [59.3293, 18.0686],
+        "address": {
+            "line1": "Vasagatan 10",
+            "line2": ""
+        },
+        "phone": "+46712345678",
+        "email": "info@downtowndental.se",
+        "dentists": [
+            { "$oid": "5f50c31c1c9d440000b1b1b1" },
+            { "$oid": "5f50c31c1c9d440000b1b1b2" }
+        ]
+    },
+    {
+        "_id": { "$oid": "5f50c31c1c9d440000a2a2a2" },
+        "name": "SmileCare Dental",
+        "position": [57.7089, 11.9746],
+        "address": {
+            "line1": "Avenyn 5",
+            "line2": ""
+        },
+        "phone": "+46723456789",
+        "email": "contact@smilecare.se",
+        "dentists": [
+            { "$oid": "5f50c31c1c9d440000b2b2b1" },
+            { "$oid": "5f50c31c1c9d440000b2b2b2" }
+        ]
+    },
+    {
+        "_id": { "$oid": "5f50c31c1c9d440000a3a3a3" },
+        "name": "Happy Teeth Clinic",
+        "position": [55.604981, 13.003822],
+        "address": {
+            "line1": "Lilla Torg 3",
+            "line2": ""
+        },
+        "phone": "+46734567890",
+        "email": "info@happyteeth.se",
+        "dentists": [
+            { "$oid": "5f50c31c1c9d440000b3b3b1" },
+            { "$oid": "5f50c31c1c9d440000b3b3b2" }
+        ]
+    },
+    {
+        "_id": { "$oid": "5f50c31c1c9d440000a4a4a4" },
+        "name": "Ocean Dental",
+        "position": [59.8586, 17.6389],
+        "address": {
+            "line1": "Stora Torget 1",
+            "line2": ""
+        },
+        "phone": "+46745678901",
+        "email": "contact@oceandental.se",
+        "dentists": [
+            { "$oid": "5f50c31c1c9d440000b4b4b2" },
+            { "$oid": "5f50c31c1c9d440000b4b4b1" }
+        ]
+    }
+]
