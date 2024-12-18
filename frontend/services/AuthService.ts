@@ -42,13 +42,7 @@ export class AuthService implements IAuthService {
 
     public async login(email: string, password: string): Promise<AuthData> {
         try {
-            // remove undefined
-            let responseTopic = AUTHENTICATION.LOGIN.RESPONSE('')
-            const remove = 'undefined'
-            responseTopic = responseTopic.substring(
-                0,
-                responseTopic.length - remove.length
-            )
+            const responseTopic = AUTHENTICATION.LOGIN.RESPONSE('')
 
             const response = await this.requestManager.request(
                 AUTHENTICATION.LOGIN.REQUEST,

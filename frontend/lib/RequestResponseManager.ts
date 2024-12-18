@@ -31,9 +31,9 @@ export class RequestResponseManager<T> {
             const timeoutHandler =
                 type === RequestType.DIRECT
                     ? setTimeout(() => {
-                          this.cleanup(clientId, client)
-                          reject(new Error('Request timed out'))
-                      }, timeout)
+                        this.cleanup(clientId, client)
+                        reject(new Error('Request timed out'))
+                    }, timeout)
                     : undefined
 
             // Store request details
@@ -45,10 +45,13 @@ export class RequestResponseManager<T> {
             })
 
             // Handle subscription based on type
+
             const topicToSubscribe =
                 type === RequestType.BROADCAST
                     ? responseTopic
                     : responseTopic + clientId
+
+            console.log('TOPIC:', topicToSubscribe);
 
             if (
                 type === RequestType.BROADCAST &&
