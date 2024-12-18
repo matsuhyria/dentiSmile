@@ -65,6 +65,7 @@ services:
         environment:
             - NODE_ENV=development
             - MONGODB_URI=mongodb://mongo-clinic/clinic_db
+            - MQTT_URI=mqtt://mqtt-broker:1883
         depends_on:
             - mongo-clinic
             - mqtt-broker
@@ -91,6 +92,7 @@ services:
         environment:
             - NODE_ENV=development
             - MONGODB_URI=mongodb://mongo-appointment/appointment_db
+            - MQTT_URI=mqtt://mqtt-broker:1883
         depends_on:
             - mongo-appointment
             - mqtt-broker
