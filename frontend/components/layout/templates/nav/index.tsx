@@ -1,7 +1,8 @@
 'use client'
-import Link from 'next/link'
-import Image from 'next/image'
-import { User } from 'lucide-react'
+import Link from 'next/link';
+import Image from 'next/image';
+import { User } from 'lucide-react';
+import NotificationDropdown from '@/components/notification/notificationDropdown';
 import { redirect } from 'next/navigation'
 import { useState, useEffect } from 'react'
 
@@ -48,8 +49,10 @@ export default function Nav() {
                                 </Link>
                             </div>
                             <div className="flex items-center">
+                                <NotificationDropdown />
                                 <Link
                                     href="/account"
+                                    //className="text-gray-600 hover:text-gray-900  rounded-md text-sm font-medium flex items-center"
                                     onClick={handleAccountClick}
                                     className="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium flex items-center"
                                 >
