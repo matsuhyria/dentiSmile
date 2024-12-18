@@ -31,9 +31,9 @@ export class RequestResponseManager<T> {
             const timeoutHandler =
                 type === RequestType.DIRECT
                     ? setTimeout(() => {
-                        this.cleanup(clientId, client)
-                        reject(new Error('Request timed out'))
-                    }, timeout)
+                          this.cleanup(clientId, client)
+                          reject(new Error('Request timed out'))
+                      }, timeout)
                     : undefined
 
             // Store request details
@@ -105,16 +105,16 @@ export class RequestResponseManager<T> {
             if (type === RequestType.DIRECT) {
                 clearTimeout(request.timeout)
                 if (response.status?.code === 200) {
-                    request.resolve(response.data)
+                    request.resolve(response.data || response)
                 } else {
                     request.reject(
-                        new Error(response.status.message || 'Request failed')
+                        new Error(response.status?.message || 'Request failed')
                     )
                 }
                 this.cleanup(clientId, client)
             } else {
                 // For broadcast, just resolve with data and keep subscription
-                request.resolve(response.data)
+                request.resolve(response.data || response)
             }
         }
     }

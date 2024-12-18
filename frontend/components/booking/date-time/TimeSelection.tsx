@@ -1,14 +1,15 @@
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { Info } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
+import { Info } from 'lucide-react'
+import { cn } from '@/lib/utils'
+import { TimeSlot } from '@/lib/appointmentUtils'
 
 interface TimeSelectionProps {
-    setSelectedTime: (date: Date) => void;
-    selectedTime: Date | null;
-    disabled?: boolean;
-    clinicId: string;
-    appointmentDuration: number;
-    availableTimes: string[]; // New prop to receive available times
+    setSelectedTime: (date: Date, appointmentId: string) => void
+    selectedTime: Date | null
+    disabled?: boolean
+    clinicId: string
+    appointmentDuration: number
+    availableTimes: TimeSlot[]
 }
 
 export default function TimeSelectionComponent({
@@ -26,33 +27,32 @@ export default function TimeSelectionComponent({
             </p>
             {availableTimes.length > 0 ? (
                 <ul className="grid grid-cols-3 gap-3 mt-5 text-center">
-                    {availableTimes.map((timeStr) => (
+                    {availableTimes.map(({ appointmentId, time }) => (
                         <li
-                            key={timeStr}
+                            key={appointmentId}
                             className={cn(
                                 'border rounded-md cursor-pointer py-2 px-10',
                                 selectedTime &&
                                     selectedTime.toLocaleTimeString([], {
                                         hour: '2-digit',
                                         minute: '2-digit'
-                                    }) === timeStr
+                                    }) === time
                                     ? 'bg-sky-200'
                                     : ''
                             )}
                             onClick={() => {
-                                if (disabled) return;
-                                // Convert timeStr like "09:00" to a Date object for selectedTime
-                                const [hours, minutes] = timeStr
+                                if (disabled) return
+                                const [hours, minutes] = time
                                     .split(':')
-                                    .map(Number);
+                                    .map(Number)
                                 const date = selectedTime
                                     ? new Date(selectedTime)
-                                    : new Date();
-                                date.setHours(hours, minutes, 0, 0);
-                                setSelectedTime(date);
+                                    : new Date()
+                                date.setHours(hours, minutes, 0, 0)
+                                setSelectedTime(date, appointmentId)
                             }}
                         >
-                            {timeStr}
+                            {time}
                         </li>
                     ))}
                 </ul>
@@ -66,5 +66,5 @@ export default function TimeSelectionComponent({
                 </Alert>
             )}
         </>
-    );
+    )
 }
