@@ -10,7 +10,6 @@ variables:
 stages:
   - build
   - test
-  - deploy
 
 build-auth-service:
   stage: build
@@ -51,25 +50,6 @@ build-clinic-service:
       - $clinic_service_path/dist
     expire_in: 1 hour
 
-# test-auth-service:
-#   stage: test
-#   tags:
-#     - docker
-#   services:
-#     - name: mongo:latest
-#       alias: mongo-auth
-#     - name: emqx/emqx:latest
-#       alias: mqtt-broker
-#   before_script:
-#     - ./$mock_data_path/authentication_db/init_authentication.sh
-#   script:
-#     - cd $auth_service_path
-#     - npm ci
-#     - npm run start
-#     - npm run test
-#   dependencies:
-#     - build-auth-service
-
 test-appointment-service:
   stage: test
   tags:
@@ -82,41 +62,16 @@ test-appointment-service:
     - name: emqx/emqx:latest
       alias: mqtt-broker
   before_script:
-    - docker cp $mock_data_path/appointment_db mongo-appointment:/docker-entrypoint-initdb.d/ # In theory, db should seeded in case no data is present
-    - apk add --no-cache mongodb-tools #! Will be removed in case seeding is successfully done
+    - apk add --no-cache mongodb-tools
+    - mongoimport --uri mongodb://mongo-appointment:27017/appointment_db --collection slots --file $mock_data_path/appointment_db/seed_appointment_data.json --jsonArray --upsert --upsertFields _id
   script:
-    - mongo mongo-appointment/appointment_db --eval 'db.slots.find().pretty()' #! Will be removed in case seeding is successfully done
     - cd $appointment_service_path
     - npm ci
-    - npm run start
+    - npm run start > app.log 2>&1 &
     - npm run test
+  artifacts:
+    paths:
+      - $appointment_service_path/app.log
+    expire_in: 1 hour
   dependencies:
     - build-appointment-service
-
-# test-clinic-service:
-#   stage: test
-#   tags:
-#     - docker
-#   needs:
-#     - build-clinic-service
-#   services:
-#     - name: mongo:latest
-#       alias: mongo-clinic
-#     - name: emqx/emqx:latest
-#       alias: mqtt-broker
-#   before_script:
-#     - ./$mock_data_path/clinic_db/init_clinic.sh
-#   script:
-#     - cd $clinic_service_path
-#     - npm ci
-#     - npm run start
-#     - npm run test
-#   dependencies:
-#     - build-clinic-service
-
-deploy:
-  stage: deploy
-  script: 
-    - npm run start
-  only:
-    - master
