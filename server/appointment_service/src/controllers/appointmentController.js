@@ -159,6 +159,7 @@ export const getAppointmentById = async (message) => {
         }
         return { status: { code: 200, message: 'Appointment retrieved successfully' }, data: slot };
     } catch (error) {
+        console.log(error);
         return { status: { code: 500, message: 'Error fetching slot details' } };
     }
 };

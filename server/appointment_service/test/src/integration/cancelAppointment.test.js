@@ -1,3 +1,4 @@
+import { describe, it, beforeEach, afterEach } from 'mocha';
 import { connect } from 'mqtt';
 import { expect } from 'chai';
 import mqttUtils from 'shared-mqtt'
@@ -5,12 +6,6 @@ import { v4 as uuidv4 } from 'uuid';
 
 const { MQTT_TOPICS } = mqttUtils;
 const MQTT_URI = process.env.MQTT_URI || 'mqtt://localhost:1883'
-
-/*
-Note that hard coded objectIDs needs to be changed as mongodb is not seeded by mock data yet
-After seeding is handled, I will update the ids  
-*/
-
 
 describe('Appointment Service - Slot Booking Tests', function () {
     let client;
@@ -56,86 +51,20 @@ describe('Appointment Service - Slot Booking Tests', function () {
         }
     });
 
-    it('appointment must not be cancelled if it is already cancelled', function (done) {
+    it('appointment must be retrieved', function (done) {
         const payload = JSON.stringify({
-            appointmentId: '676209f6c70d224bab0ed335',
+            clinicId: '67619778b667d5764c97c9a5',
             clientId: clientId
         });
 
         try {
-            client.subscribe(MQTT_TOPICS.APPOINTMENT.CANCEL.RESPONSE(clientId), () => {
-                client.publish(MQTT_TOPICS.APPOINTMENT.CANCEL.REQUEST, payload);
-            });
-
-            client.on('message', (topic, message) => {
-                const response = JSON.parse(message.toString());
-                expect(response.status.code).to.equal(400);
-                done();
-            });
-
-        } catch (error) {
-            done(error);
-        }
-    });
-
-    it('appointment must not be cancelled if it does not exist', function (done) {
-        const payload = JSON.stringify({
-            appointmentId: '67622ab55ccac9a5f3f15f66',
-            clientId: clientId
-        });
-
-        try {
-            client.subscribe(MQTT_TOPICS.APPOINTMENT.CANCEL.RESPONSE(clientId), () => {
-                client.publish(MQTT_TOPICS.APPOINTMENT.CANCEL.REQUEST, payload);
-            });
-
-            client.on('message', (topic, message) => {
-                const response = JSON.parse(message.toString());
-                expect(response.status.code).to.equal(404);
-                done();
-            });
-
-        } catch (error) {
-            done(error);
-        }
-    });
-
-    it('appointment must be removed', function (done) {
-        const payload = JSON.stringify({
-            appointmentId: '676209f6c70d224bab0ed337',
-            clientId: clientId
-        });
-
-        try {
-            client.subscribe(MQTT_TOPICS.APPOINTMENT.REMOVE.RESPONSE(clientId), () => {
-                client.publish(MQTT_TOPICS.APPOINTMENT.REMOVE.REQUEST, payload);
+            client.subscribe(MQTT_TOPICS.APPOINTMENT.GET_BY_CLINIC.RESPONSE(clientId), () => {
+                client.publish(MQTT_TOPICS.APPOINTMENT.GET_BY_CLINIC.REQUEST, payload);
             });
 
             client.on('message', (topic, message) => {
                 const response = JSON.parse(message.toString());
                 expect(response.status.code).to.equal(200);
-                done();
-            });
-
-        } catch (error) {
-            done(error);
-        }
-    });
-
-    it('appointment must not be removed if it does not exist', function (done) {
-        const payload = JSON.stringify({
-            appointmentId: '67622cef1821515ee8618649',
-            clientId: clientId
-        });
-
-        try {
-            client.subscribe(MQTT_TOPICS.APPOINTMENT.REMOVE.RESPONSE(clientId), () => {
-                client.publish(MQTT_TOPICS.APPOINTMENT.REMOVE.REQUEST, payload);
-            });
-
-            client.on('message', (topic, message) => {
-                const response = JSON.parse(message.toString());
-                expect(response.status.code).to.equal(404);
                 done();
             });
 

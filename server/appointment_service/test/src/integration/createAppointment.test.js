@@ -1,3 +1,4 @@
+import { describe, it, beforeEach, afterEach } from 'mocha';
 import { connect } from 'mqtt';
 import { expect } from 'chai';
 import mqttUtils from 'shared-mqtt'
@@ -67,7 +68,7 @@ describe('Appointment Service - Slot Creation Tests', function () {
     it('appointment slot should not be created if it already exists', function (done) {
         const startTime = '2025-10-07T09:00:00Z';
         const endTime = '2025-10-07T10:00:00Z';
-        
+
         const payload = JSON.stringify({
             clinicName: 'Test Clinic',
             clinicId: '67619778b667d5764c97c9a5',
@@ -150,5 +151,5 @@ describe('Appointment Service - Slot Creation Tests', function () {
             done(error);
         }
     });
-    
+
 });
