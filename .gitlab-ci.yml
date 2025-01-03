@@ -1,65 +1,118 @@
 image: node:20-alpine
 
+variables:
+  auth_service_path: "server/auth_service"
+  appointment_service_path: "server/appointment_service"
+  clinic_service_path: "server/clinic_service"
+  notification_service_path: "server/notification_service"
+  mock_data_path: "server/mock_data"
+
 stages:
-#  - build
+  - build
   - test
   - deploy
 
-# Comments will be removed in the final version, currently build stage linting causes some errors
-#build:
-#  stage: build
-#  tags: 
-#    - docker
-#  script:
-#    - cd server
-#    - npm ci
-#    - npm run build
-#  artifacts:
-#    paths:
-#      - server/node_modules # cache for future builds
-#      - server/dist
-#    expire_in: 1 hour
-
-#test:
-#  stage: test
-#  tags:
-#    - docker
-#  script:
-#    - cd server
-#    - npm run test
-
-# This stage is for integration tests that require the services to be running
-# Tests can be executed either by connecting to each service and using npm test in the service directory
-# Or execute apk nodejs npm && npm ci && npm test:integration here, as it will use mapped mqtt ports to connect to the broker
-# Ill go with the first option for now as we wont have to install dependencies for every service
-integration-test:
-  stage: test
-  image: docker:latest
-  services:
-    - name: docker:dind
-  tags:
+build-auth-service:
+  stage: build
+  tags: 
     - docker
   script:
-    # Create empty .env files for frontend and backend services
-    - touch ./server/appointment_service/.env ./server/clinic_service/.env ./frontend/.env
-    - docker-compose -f docker-compose.dev.yml up -d --build
-    # Connect to shell of each service and run integration tests, display it, create log file, copy it over to host and save it as artifact
-    # Appointment Service
-    - docker-compose exec appointment-service sh -c "cd /app && npm run test:integration > integration_test_output.log | tee integration_test_output.log"
-    - mkdir -p ./server/integration_test_report/appointment_service
-    - docker cp appointment-service:/app/integration_test_output.log ./server/integration_test_report/appointment_service/integration_test_output.log
-    # Clinic Service
-#    - docker-compose exec clinic-service sh -c "cd /app && npm run test:integration | tee integration_test_output.log"
-#    - mkdir -p ./server/integration_test_report/clinic_service
-#    - docker cp clinic-service:/app/integration_test_output.log ./server/integration_test_report/clinic_service/integration_test_output.log
-    # Clean up
-    - docker-compose -f docker-compose.dev.yml down
-
+    - cd $auth_service_path
+    - npm ci
+    - npm run build
   artifacts:
     paths:
-      - ./server/integration_test_report
+      - $auth_service_path/dist
     expire_in: 1 hour
 
+build-appointment-service:
+  stage: build
+  tags: 
+    - docker
+  script:
+    - cd $appointment_service_path
+    - npm ci
+    - npm run build
+  artifacts:
+    paths:
+      - $appointment_service_path/dist
+    expire_in: 1 hour
+
+build-clinic-service:
+  stage: build
+  tags: 
+    - docker
+  script:
+    - cd $clinic_service_path
+    - npm ci
+    - npm run build
+  artifacts:
+    paths:
+      - $clinic_service_path/dist
+    expire_in: 1 hour
+
+# test-auth-service:
+#   stage: test
+#   tags:
+#     - docker
+#   services:
+#     - name: mongo:latest
+#       alias: mongo-auth
+#     - name: emqx/emqx:latest
+#       alias: mqtt-broker
+#   before_script:
+#     - ./$mock_data_path/authentication_db/init_authentication.sh
+#   script:
+#     - cd $auth_service_path
+#     - npm ci
+#     - npm run start
+#     - npm run test
+#   dependencies:
+#     - build-auth-service
+
+test-appointment-service:
+  stage: test
+  tags:
+    - docker
+  needs:
+    - build-appointment-service
+  services:
+    - name: mongo:latest
+      alias: mongo-appointment
+    - name: emqx/emqx:latest
+      alias: mqtt-broker
+  before_script:
+    - docker cp $mock_data_path/appointment_db mongo-appointment:/docker-entrypoint-initdb.d/ # In theory, db should seeded in case no data is present
+    - apk add --no-cache mongodb-tools #! Will be removed in case seeding is successfully done
+  script:
+    - mongo mongo-appointment/appointment_db --eval 'db.slots.find().pretty()' #! Will be removed in case seeding is successfully done
+    - cd $appointment_service_path
+    - npm ci
+    - npm run start
+    - npm run test
+  dependencies:
+    - build-appointment-service
+
+# test-clinic-service:
+#   stage: test
+#   tags:
+#     - docker
+#   needs:
+#     - build-clinic-service
+#   services:
+#     - name: mongo:latest
+#       alias: mongo-clinic
+#     - name: emqx/emqx:latest
+#       alias: mqtt-broker
+#   before_script:
+#     - ./$mock_data_path/clinic_db/init_clinic.sh
+#   script:
+#     - cd $clinic_service_path
+#     - npm ci
+#     - npm run start
+#     - npm run test
+#   dependencies:
+#     - build-clinic-service
 
 deploy:
   stage: deploy
