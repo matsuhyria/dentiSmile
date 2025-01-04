@@ -6,6 +6,7 @@ variables:
   clinic_service_path: "server/clinic_service"
   notification_service_path: "server/notification_service"
   mock_data_path: "server/mock_data"
+  shared_module_path: "shared"
 
 stages:
   - build
@@ -64,6 +65,7 @@ test-appointment-service:
   before_script:
     - apk add --no-cache mongodb-tools
     - mongoimport --uri mongodb://mongo-appointment:27017/appointment_db --collection slots --file $mock_data_path/appointment_db/seed_appointment_data.json --jsonArray --upsert --upsertFields _id
+    - cd $shared_module_path/mqtt && npm ci && cd ../../
   script:
     - cd $appointment_service_path
     - npm ci
