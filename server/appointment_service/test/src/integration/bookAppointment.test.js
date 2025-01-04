@@ -1,19 +1,14 @@
 import { describe, it, beforeEach, afterEach } from 'mocha';
 import { connect } from 'mqtt';
 import { expect } from 'chai';
-import mqttUtils from 'shared-mqtt'
+import mqttUtils from 'shared-mqtt';
 import { v4 as uuidv4 } from 'uuid';
 
 const { MQTT_TOPICS } = mqttUtils;
 const MQTT_URI = process.env.MQTT_URI || 'mqtt://localhost:1883'
 
-/*
-Note that hard coded objectIDs needs to be changed as mongodb is not seeded by mock data yet
-After seeding is handled, I will update the ids  
-*/
-
-
 describe('Appointment Service - Slot Booking Tests', function () {
+    this.timeout(5000);
     let client;
     let clientId;
 
@@ -90,7 +85,7 @@ describe('Appointment Service - Slot Booking Tests', function () {
         try {
             client.subscribe(MQTT_TOPICS.APPOINTMENT.BOOK.RESPONSE(clientId), () => {
                 client.publish(MQTT_TOPICS.APPOINTMENT.BOOK.REQUEST, payload);
-            })
+            });
 
             client.on('message', (topic, message) => {
                 const response = JSON.parse(message.toString());

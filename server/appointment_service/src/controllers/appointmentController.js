@@ -128,8 +128,6 @@ export const getAppointmentsByClinic = async (message) => {
 
 export const getAppointmentsByDentist = async (message) => {
     try {
-        // Finds appointments for a specific dentist within the given timeframe
-        // Dentist, starting date and ending date will be passed in as query parameters
         const { dentistId, startingDate, endingDate } = JSON.parse(message);
 
         if (!dentistId || !startingDate || !endingDate) {

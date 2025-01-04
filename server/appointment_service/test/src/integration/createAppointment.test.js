@@ -8,6 +8,7 @@ const { MQTT_TOPICS } = mqttUtils;
 const MQTT_URI = process.env.MQTT_URI || 'mqtt://localhost:1883'
 
 describe('Appointment Service - Slot Creation Tests', function () {
+    this.timeout(5000);
     let client;
     let clientId;
 
@@ -30,16 +31,9 @@ describe('Appointment Service - Slot Creation Tests', function () {
     });
 
     it('appointment slot should be created', function (done) {
-        /*      const currentDate = new Date();
-                currentDate.setMinutes(0, 0, 0);
-        
-                const startTime = currentDate.toISOString().slice(0, 19) + 'Z';
-                const endTime = new Date(currentDate.setHours(currentDate.getHours() + 1)).toISOString().slice(0, 19) + 'Z';
-         */
         const startTime = '2028-01-01T09:00:00Z';
         const endTime = '2028-01-01T10:00:00Z';
-        // Mock appointment data
-        // Currently system does not check if the clinic or the dentist exists, but their ids must follow objectId syntax
+
         const payload = JSON.stringify({
             clinicName: 'Test Clinic',
             clinicId: '67619778b667d5764c97c9a5',
@@ -66,8 +60,8 @@ describe('Appointment Service - Slot Creation Tests', function () {
     });
 
     it('appointment slot should not be created if it already exists', function (done) {
-        const startTime = '2025-10-07T09:00:00Z';
-        const endTime = '2025-10-07T10:00:00Z';
+        const startTime = '2028-01-01T09:00:00Z';
+        const endTime = '2028-01-01T10:00:00Z';
 
         const payload = JSON.stringify({
             clinicName: 'Test Clinic',

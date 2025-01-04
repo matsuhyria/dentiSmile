@@ -7,7 +7,7 @@ import { v4 as uuidv4 } from 'uuid';
 const { MQTT_TOPICS } = mqttUtils;
 const MQTT_URI = process.env.MQTT_URI || 'mqtt://localhost:1883'
 
-describe('Appointment Service - Slot Cancelling Tests', function () {
+describe('Appointment Service - Slot Removing Tests', function () {
     this.timeout(5000);
     let client;
     let clientId;
@@ -29,15 +29,15 @@ describe('Appointment Service - Slot Cancelling Tests', function () {
         });
     });
 
-    it('appointment must be cancelled', function (done) {
+    it('appointment must be removed', function (done) {
         const payload = JSON.stringify({
-            appointmentId: '676209f6c70d224bab0ed321',
+            appointmentId: '676209f6c70d224bab0ed33e',
             clientId: clientId
         });
 
         try {
-            client.subscribe(MQTT_TOPICS.APPOINTMENT.CANCEL.RESPONSE(clientId), () => {
-                client.publish(MQTT_TOPICS.APPOINTMENT.CANCEL.REQUEST, payload);
+            client.subscribe(MQTT_TOPICS.APPOINTMENT.DELETE.RESPONSE(clientId), () => {
+                client.publish(MQTT_TOPICS.APPOINTMENT.DELETE.REQUEST, payload);
             });
 
             client.on('message', (topic, message) => {
@@ -51,42 +51,20 @@ describe('Appointment Service - Slot Cancelling Tests', function () {
         }
     });
 
-    it('appointment cancellation should handle appointment not found', function (done) {
+    it('appointment removal should handle appointment not found', function (done) {
         const payload = JSON.stringify({
-            appointmentId: '67797768f43cfb36e16719b8',
+            appointmentId: '67797ab5ec29e52091c6a3c3',
             clientId: clientId
         });
 
         try {
-            client.subscribe(MQTT_TOPICS.APPOINTMENT.CANCEL.RESPONSE(clientId), () => {
-                client.publish(MQTT_TOPICS.APPOINTMENT.CANCEL.REQUEST, payload);
+            client.subscribe(MQTT_TOPICS.APPOINTMENT.DELETE.RESPONSE(clientId), () => {
+                client.publish(MQTT_TOPICS.APPOINTMENT.DELETE.REQUEST, payload);
             });
 
             client.on('message', (topic, message) => {
                 const response = JSON.parse(message.toString());
                 expect(response.status.code).to.equal(404);
-                done();
-            });
-
-        } catch (error) {
-            done(error);
-        }
-    });
-
-    it('appointment cancellation should handle appointment already cancelled', function (done) {
-        const payload = JSON.stringify({
-            appointmentId: '676209f6c70d224bab0ed31e',
-            clientId: clientId
-        });
-
-        try {
-            client.subscribe(MQTT_TOPICS.APPOINTMENT.CANCEL.RESPONSE(clientId), () => {
-                client.publish(MQTT_TOPICS.APPOINTMENT.CANCEL.REQUEST, payload);
-            });
-
-            client.on('message', (topic, message) => {
-                const response = JSON.parse(message.toString());
-                expect(response.status.code).to.equal(400);
                 done();
             });
 
