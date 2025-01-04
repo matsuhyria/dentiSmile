@@ -74,6 +74,7 @@ test-appointment-service:
     - cd $appointment_service_path
     - npm ci
     - npm run start > app.log 2>&1 &
+    - sleep 3
     - npm run test:integration
   artifacts:
     paths:
