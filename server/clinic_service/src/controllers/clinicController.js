@@ -67,9 +67,13 @@ export const remove = async (message) => {
     try {
         const { _id } = JSON.parse(message)
 
-        await Clinic.findOneAndDelete({ _id })
+        const clinic = await Clinic.findOneAndDelete({ _id })
 
-        return { status: { code: 200, message: 'Clinic removed successfully' } }
+        if (!clinic) {
+            return { status: { code: 404, message: 'Clinic not found' } }
+        }
+
+        return { status: { code: 200, message: 'Clinic removed successfully' }, data: clinic }
     } catch (error) {
         console.error('Error removing clinic:', error)
         return { status: { code: 500, message: 'Internal server error' } }

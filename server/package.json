@@ -4,7 +4,7 @@
   "workspaces": [
     "appointment_service",
     "auth_service",
-    "dentist_service"
+    "clinic_service"
   ],
   "version": "1.0.0",
   "main": "index.js",

@@ -7,7 +7,9 @@
     "dev": "nodemon --env-file=.env ./src/app.js",
     "start": "node ./dist/app.js",
     "build": "npm run lint && mkdir -p dist && cp -r src/* dist/",
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "npm run test:integration",
+    "test:integration": "mocha test/src/integration/**/*.test.js",
+    "test:unit": "mocha test/src/unit/**/*.test.js",
     "lint": "eslint . --fix"
   },
   "keywords": [],
@@ -30,7 +32,9 @@
     "eslint": "^9.14.0",
     "globals": "^15.12.0",
     "mocha": "^10.8.2",
+    "mqtt": "^5.10.3",
     "nodemon": "^3.1.7",
-    "supertest": "^7.0.0"
+    "supertest": "^7.0.0",
+    "uuid": "^11.0.3"
   }
 }

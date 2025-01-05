@@ -1,36 +1,146 @@
 image: node:20-alpine
 
+variables:
+  auth_service_path: "server/auth_service"
+  appointment_service_path: "server/appointment_service"
+  clinic_service_path: "server/clinic_service"
+  notification_service_path: "server/notification_service"
+  mock_data_path: "server/mock_data"
+  shared_module_path: "shared"
+
 stages:
   - build
   - test
-  - deploy
 
-build:
+build-auth-service:
   stage: build
   tags: 
     - docker
   script:
-    - cd server
+    - cd $auth_service_path
     - npm ci
     - npm run build
   artifacts:
     paths:
-      - server/node_modules # cache for future builds
-      - server/dist
+      - $auth_service_path/dist
     expire_in: 1 hour
 
-test:
+build-appointment-service:
+  stage: build
+  tags: 
+    - docker
+  script:
+    - cd $appointment_service_path
+    - npm ci
+    - npm run build
+  artifacts:
+    paths:
+      - $appointment_service_path/dist
+    expire_in: 1 hour
+
+build-clinic-service:
+  stage: build
+  tags: 
+    - docker
+  script:
+    - cd $clinic_service_path
+    - npm ci
+    - npm run build
+  artifacts:
+    paths:
+      - $clinic_service_path/dist
+    expire_in: 1 hour
+
+test-appointment-service:
   stage: test
   tags:
     - docker
+  needs:
+    - build-appointment-service
+  services:
+    - name: mongo:latest
+      alias: mongo-appointment
+    - name: emqx/emqx:latest
+      alias: mqtt-broker
+  variables:
+    MQTT_URI: mqtt://mqtt-broker:1883
+    NODE_ENV: development
+    MONGODB_URI: mongodb://mongo-appointment/appointment_db
+  before_script:
+    - apk add --no-cache -q mongodb-tools
+    - mongoimport --uri $MONGODB_URI --collection slots --file $mock_data_path/appointment_db/seed_appointment_data.json --jsonArray --upsert --upsertFields _id
+    - cd $shared_module_path/mqtt && npm ci --silent && cd ../../
   script:
-    - cd server
+    - cd $appointment_service_path
+    - npm ci --silent
+    - npm run start > app.log 2>&1 &
+    - sleep 3
     - npm run test
+  artifacts:
+    paths:
+      - $appointment_service_path/app.log
+    expire_in: 1 hour
+  dependencies:
+    - build-appointment-service
 
+test-clinic-service:
+  stage: test
+  tags:
+    - docker
+  needs:
+    - build-clinic-service
+  services:
+    - name: mongo:latest
+      alias: mongo-clinic
+    - name: emqx/emqx:latest
+      alias: mqtt-broker
+  variables:
+    MQTT_URI: mqtt://mqtt-broker:1883
+    NODE_ENV: development
+    MONGODB_URI: mongodb://mongo-clinic/clinic_db
+  before_script:
+    - apk add --no-cache -q mongodb-tools
+    - mongoimport --uri $MONGODB_URI --collection clinics --file $mock_data_path/clinic_db/seed_clinic_data.json --jsonArray --upsert --upsertFields _id
+    - cd $shared_module_path/mqtt && npm ci --silent && cd ../../
+  script:
+    - cd $clinic_service_path
+    - npm ci --silent
+    - npm run start > app.log 2>&1 &
+    - sleep 3
+    - npm run test
+  artifacts:
+    paths:
+      - $clinic_service_path/app.log
+    expire_in: 1 hour
+  dependencies:
+    - build-clinic-service
 
-deploy:
-  stage: deploy
-  script: 
-    - npm run start
-  only:
-    - master
+test-auth-service:
+  stage: test
+  tags:
+    - docker
+  needs:
+    - build-auth-service
+  services:
+    - name: mongo:latest
+      alias: mongo-auth
+    - name: emqx/emqx:latest
+      alias: mqtt-broker
+  variables:
+    MQTT_URI: mqtt://mqtt-broker:1883
+    NODE_ENV: development
+    MONGODB_URI: mongodb://mongo-auth/auth_db
+  before_script:
+    - cd $shared_module_path/mqtt && npm ci --silent && cd ../../
+  script:
+    - cd $auth_service_path
+    - npm ci --silent
+    - npm run start > app.log 2>&1 &
+    - sleep 3
+    - npm run test
+  artifacts:
+    paths:
+      - $auth_service_path/app.log
+    expire_in: 1 hour
+  dependencies:
+    - build-auth-service

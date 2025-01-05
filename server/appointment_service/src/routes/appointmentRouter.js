@@ -1,6 +1,6 @@
 import { getAppointmentsByClinic, createAppointments, getAppointmentsByDentist, bookAppointment, getAppointmentById, cancelAppointment, removeAppointment, getAppointmentsByPatientId } from '../controllers/appointmentController.js';
 import mqttUtils from 'shared-mqtt'
-const { handleEndpoint, MQTT_TOPICS, subscribe, publish } = mqttUtils;
+const { handleEndpoint, MQTT_TOPICS, publish } = mqttUtils;
 
 export const publishAllNotifications = async (slots) => {
     const groupedByDay = [...new Set(slots.map(slot => {
