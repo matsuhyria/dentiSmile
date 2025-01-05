@@ -44,7 +44,7 @@ test:
     - npm run test
   artifacts:
     paths:
-      - coverage # Save code coverage reports
+      - coverage/* # Save code coverage reports
     expire_in: 1 hour
 
 deploy:
