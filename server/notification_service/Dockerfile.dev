@@ -1,0 +1,27 @@
+FROM node:22-alpine3.18
+
+# Set the working directory
+WORKDIR /app
+
+# Copy package.json files
+COPY server/notification_service/package*.json ./server/notification_service/
+COPY shared/mqtt/package*.json ./shared/mqtt/
+
+# Combine install commands and clean cache
+RUN cd ./server/notification_service && \
+    npm install && \
+    npm cache clean --force && \
+    npm install -g nodemon
+
+# Copy source code
+COPY server/notification_service ./server/notification_service
+COPY shared/mqtt ./shared/mqtt
+
+# Expose the port
+EXPOSE 6500
+
+# Set environment variable
+ENV NODE_ENV=development
+
+# Start the application
+CMD ["npm", "run", "dev", "--prefix", "server/notification_service"]

@@ -1,7 +1,9 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Button } from '@/components/ui/button'
+import { toast } from 'sonner'
 import Link from 'next/link'
 import useClinicAppointments from '@/hooks/useClinicAppointments'
 import { useBooking } from '@/hooks/useBooking'
@@ -9,6 +11,7 @@ import ReasonSelection from '@/components/booking/ReasonSelection'
 import DateTimeSelection from '@/components/booking/date-time/DateTimeSelection'
 import Confirmation from '@/components/booking/Confirmation'
 import { getAvailableReasons } from '@/lib/reasonStore'
+import { useRouter } from 'next/navigation'
 
 export default function BookAppointmentPage({
     params
@@ -24,6 +27,15 @@ export default function BookAppointmentPage({
     const [selectedDate, setSelectedDate] = useState<Date | null>(null)
     const [selectedTime, setSelectedTime] = useState<Date | null>(null)
     const [appointmentConfirmed, setAppointmentConfirmed] = useState(false)
+    const [selectedAppointmentId, setSelectedAppointmentId] =
+        useState<string>('')
+    const [result, setResult] = useState<{
+        success: boolean
+        error?: string
+        data?: any
+    }>({ success: true })
+
+    const router = useRouter()
 
     const { clinicName, monthlyAvailability, availableTimes } =
         useClinicAppointments({
@@ -34,6 +46,17 @@ export default function BookAppointmentPage({
 
     const { requestAppointment } = useBooking()
 
+    useEffect(() => {
+        if (appointmentConfirmed) {
+            toast('Appointment Confirmed!', {
+                description: `Your appointment has been successfully booked.`
+            })
+            router.replace('/')
+        }
+
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [appointmentConfirmed])
+
     const handleReasonSelect = (selectedReasonId: string) => {
         setReasonId(selectedReasonId)
         const reasons = getAvailableReasons()
@@ -42,22 +65,39 @@ export default function BookAppointmentPage({
         setCurrentStep('datetime')
     }
 
-    const handleDateTimeSelect = (date: Date, time: Date) => {
+    const handleDateTimeSelect = (
+        date: Date,
+        time: Date,
+        appointmentId: string
+    ) => {
         setSelectedDate(date)
         setSelectedTime(time)
+        setSelectedAppointmentId(appointmentId)
         setCurrentStep('confirmation')
     }
 
     const handleConfirm = async () => {
-        
-        if (!reasonId || !selectedDate || !selectedTime || !duration) return
+        if (
+            !reasonId ||
+            !selectedDate ||
+            !selectedTime ||
+            !selectedAppointmentId
+        )
+            return
 
-        const result = await requestAppointment({
-            appointmentId: 'selectedTime.id',
-            patientId: 'current-user-id'
-        })
+        const userId = localStorage.getItem('userId')
+        if (!userId) {
+            console.error('User ID not found')
+            return
+        }
+        const bookingResult = await requestAppointment(
+            selectedAppointmentId,
+            userId
+        )
 
-        if (result.success) {
+        setResult(bookingResult)
+
+        if (bookingResult.success && bookingResult.data) {
             setAppointmentConfirmed(true)
         }
     }
@@ -107,13 +147,12 @@ export default function BookAppointmentPage({
                     selectedTime={selectedTime}
                     onConfirm={handleConfirm}
                     appointmentDuration={duration || 30}
+                    disableButton={result.data}
                 />
-                {appointmentConfirmed && (
-                    <div className="mt-4 p-4 bg-green-100 text-green-800 rounded">
-                        <h3 className="text-lg font-semibold">
-                            Appointment Confirmed!
-                        </h3>
-                        <p>Your appointment has been successfully booked.</p>
+                {result.success === false && (
+                    <div className="mt-4 p-4 bg-red-100 text-red-800 rounded">
+                        <h3 className="text-lg font-semibold">Error</h3>
+                        <p>{result.error}</p>
                     </div>
                 )}
             </div>

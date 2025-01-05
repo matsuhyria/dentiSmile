@@ -4,10 +4,12 @@ import { Button } from '@/components/ui/button'
 import DateSelection from './DateSelection'
 import TimeSelection from './TimeSelection'
 import { Alert } from '@/components/ui/alert'
+import { TimeSlot } from '@/lib/appointmentUtils'
+import AppointmentSubscription from '@/components/notification/appointmentSubscription'
 
 interface DateTimeSelectionProps {
     onEdit: () => void
-    onSelect: (date: Date, time: Date) => void
+    onSelect: (date: Date, time: Date, appointmentId: string) => void
     isActive: boolean
     clinicId: string
     appointmentDuration: number
@@ -15,7 +17,7 @@ interface DateTimeSelectionProps {
     selectedTime: Date | null
     setSelectedDate: (date: Date | null) => void
     setSelectedTime: (time: Date | null) => void
-    availableTimes: string[]
+    availableTimes: TimeSlot[]
     monthlyAvailability: Record<string, number>
 }
 
@@ -35,12 +37,12 @@ export default function DateTimeSelection({
     // If we're not active and we don't have a fully selected date/time, don't render anything.
     if (!isActive && (!selectedDate || !selectedTime)) return null
 
-    const handleTimeSelected = (time: Date) => {
+    const handleTimeSelected = (time: Date, appointmentId: string) => {
         setSelectedTime(time)
         if (selectedDate && time) {
             const finalDateTime = new Date(selectedDate)
             finalDateTime.setHours(time.getHours(), time.getMinutes(), 0, 0)
-            onSelect(finalDateTime, time)
+            onSelect(finalDateTime, time, appointmentId)
         }
     }
 
@@ -70,11 +72,20 @@ export default function DateTimeSelection({
                 )}
 
                 {selectedDate && availableTimes.length === 0 && (
-                    <Alert className="mt-8 bg-sky-100">
-                        <p className="text-sm text-gray-600">
-                            No available times on this date.
-                        </p>
-                    </Alert>
+                    <>
+                        <Alert className="mt-8 bg-sky-100">
+                            <p className="text-sm text-gray-600">
+                                No available times on this date.
+                            </p>
+                        </Alert>
+                        <div className="mt-6">
+                            <AppointmentSubscription
+                                clinicId={clinicId}
+                                patientId={localStorage.getItem('userId')}
+                                date={selectedDate}
+                            />
+                        </div>
+                    </>
                 )}
             </div>
         )

@@ -1,71 +1,111 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { IBookingService } from './interfaces/IBookingService';
-import { MQTT_TOPICS } from './base/MQTTService';
+import { IBookingService } from './interfaces/IBookingService'
+import { MQTT_TOPICS } from './base/MQTTService'
+import { BaseBookingService } from './BaseBookingService'
+import {
+    RequestResponseManager,
+    RequestType
+} from '@/lib/RequestResponseManager'
+import { IAppointment } from './interfaces/IAppointment'
+import { IBooking } from './interfaces/IBooking'
 
 interface BookingResponse {
-    attemptId: string;
-    success: boolean;
-    error?: string;
-    data?: any;
+    appointmentId: string
+    dateTime: string
+    status: 'confirmed' | 'pending' | 'rejected'
+    [key: string]: any
 }
 
-export class BookingService implements IBookingService {
-    private client: any;
-    private bookingCallbacks = new Map<string, (result: BookingResponse) => void>();
+export class BookingService
+    extends BaseBookingService
+    implements IBookingService {
+    public async cancelBooking(
+        appointmentId: string,
+    ): Promise<{ error?: string; data?: Record<string, unknown> }> {
+        try {
+            const data = await this.requestManager.request(
+                MQTT_TOPICS.APPOINTMENT.CANCEL.REQUEST,
+                MQTT_TOPICS.APPOINTMENT.CANCEL.RESPONSE(''),
+                { appointmentId },
+                this.client,
+                RequestType.DIRECT
+            )
+            return { data }
+        } catch (error) {
+            throw new Error(`Failed to cancel booking: ${error.message}`)
+        }
+    }
+    protected requestManager: RequestResponseManager<any>
 
     constructor(client: any) {
+        super(client)
+        this.requestManager = new RequestResponseManager()
+
         if (!client || typeof client.on !== 'function') {
-            throw new Error('Invalid MQTT client provided');
-        }
-        this.client = client;
-        this.setupSubscriptions();
-    }
-
-    protected setupSubscriptions() {
-        try {
-            this.client.on('message', (topic: string, message: Buffer) => {
-                if (topic === MQTT_TOPICS.APPOINTMENT.BOOK.RESPONSE()) {
-                    const response = JSON.parse(message.toString()) as BookingResponse;
-                    const callback = this.bookingCallbacks.get(response.attemptId);
-                    if (callback) {
-                        callback(response);
-                        this.bookingCallbacks.delete(response.attemptId);
-                    }
-                }
-            });
-
-            this.client.subscribe(MQTT_TOPICS.APPOINTMENT.BOOK.RESPONSE(), (err) => {
-                if (err) {
-                    console.error('Failed to subscribe to booking response:', err);
-                }
-            });
-        } catch (error) {
-            console.error('Error setting up MQTT subscriptions:', error);
-            throw error;
+            throw new Error('Invalid MQTT client provided')
         }
     }
 
     public async requestAppointment(
-        clinicId: string,
-        reasonId: string,
-        date: string,
-        slot: string
-    ): Promise<{ error?: string; data?: any }> {
-        return new Promise((resolve) => {
-            const attemptId = Math.random().toString(36);
-            this.bookingCallbacks.set(attemptId, resolve);
+        appointmentId: string,
+        patientId: string
+    ): Promise<{ error?: string; data?: BookingResponse }> {
+        try {
+            const data = await this.requestManager.request(
+                MQTT_TOPICS.APPOINTMENT.BOOK.REQUEST,
+                MQTT_TOPICS.APPOINTMENT.BOOK.RESPONSE(''),
+                { appointmentId, patientId },
+                this.client,
+                RequestType.DIRECT
+            )
 
-            this.client.publish(MQTT_TOPICS.APPOINTMENT.BOOK.REQUEST, {
-                clinicId,
-                reasonId,
-                date,
-                slot,
-                attemptId
-            });
-        });
+            return {
+                data
+            }
+        } catch (error) {
+            return { error: `Failed to book appointment: ${error.message}` }
+        }
+    }
+
+    public async getBookings(
+        patientId: string
+    ): Promise<{ data: IBooking[] }> {
+        try {
+            const data = await this.requestManager.request(
+                MQTT_TOPICS.APPOINTMENT.PATIENT.RETRIEVE.REQUEST,
+                MQTT_TOPICS.APPOINTMENT.PATIENT.RETRIEVE.RESPONSE(''),
+                { patientId },
+                this.client,
+                RequestType.DIRECT
+            )
+            console.log('DATA', data);
+            return { data }
+        } catch (error) {
+            throw new Error(`Failed to retrieve bookings: ${error.message}`)
+        }
+    }
+
+    public async getBookingAppointments(
+        clinicId: string,
+        reasonId?: string,
+        date?: string
+    ): Promise<{ data: IAppointment[] }> {
+        try {
+            const data = await this.requestManager.request(
+                MQTT_TOPICS.APPOINTMENT.GET.REQUEST,
+                MQTT_TOPICS.APPOINTMENT.GET.RESPONSE,
+                { clinicId, reasonId, date },
+                this.client,
+                RequestType.DIRECT
+            )
+            console.log('DATA', data);
+            return { data }
+        } catch (error) {
+            throw new Error(`Failed to retrieve appointments: ${error.message}`)
+        }
     }
 
     public async disconnect(): Promise<void> {
-        return Promise.resolve();
+        return Promise.resolve()
     }
 }

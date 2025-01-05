@@ -2,24 +2,6 @@ version: '3.8'
 
 services:
     # Frontend Web Application
-    # client:
-    #     build:
-    #         context: .
-    #         dockerfile: client/Dockerfile
-    #     container_name: client
-    #     restart: unless-stopped
-    #     ports:
-    #         - '5173:5173'
-    #     volumes:
-    #         - ./client:/app/client
-    #         - /app/node_modules
-    #     environment:
-    #         - NODE_ENV=development
-    #         - NEXT_PUBLIC_API_URL=http://localhost:5000
-    #     depends_on:
-    #         - appointment-service
-
-    # Frontend Web Application
     frontend:
         build:
             context: .
@@ -27,7 +9,7 @@ services:
         container_name: frontend
         restart: unless-stopped
         ports:
-            - '3000:3000'
+            - '4000:3000'
         volumes:
             # Optimize volume mounts
             - ./frontend:/app/frontend:delegated
@@ -43,6 +25,7 @@ services:
         depends_on:
             - clinic-service
             - appointment-service
+            - auth-service
             - mqtt-broker
 
     # Clinic Service
@@ -99,6 +82,54 @@ services:
         networks:
             - network-cluster
 
+    # Auth Service
+    auth-service:
+        build:
+            context: .
+            dockerfile: server/auth_service/Dockerfile.dev
+        container_name: auth-service
+        restart: unless-stopped
+        ports:
+            - '4400:4400'
+        volumes:
+            - ./server/auth_service:/app/server/auth_service
+            - ./shared:/app/shared
+            - /app/server/auth_service/node_modules
+            - /app/shared/node_modules
+        env_file:
+            - ./server/auth_service/.env
+        environment:
+            - NODE_ENV=development
+        depends_on:
+            - mongo-auth
+            - mqtt-broker
+        networks:
+            - network-cluster
+
+    # Notification Service
+    notification-service:
+        build:
+            context: .
+            dockerfile: server/notification_service/Dockerfile.dev
+        container_name: notification-service
+        restart: unless-stopped
+        ports:
+            - '6500:6500'
+        volumes:
+            - ./server/notification_service:/app/server/notification_service
+            - ./shared:/app/shared
+            - /app/server/notification_service/node_modules
+            - /app/shared/node_modules
+        env_file:
+            - ./server/notification_service/.env
+        environment:
+            - NODE_ENV=development
+        depends_on:
+            - mongo-notification
+            - mqtt-broker
+        networks:
+            - network-cluster
+
     mqtt-broker:
         image: eclipse-mosquitto:2.0
         container_name: mqtt-broker
@@ -134,18 +165,29 @@ services:
         networks:
             - network-cluster
 
-    # mongo-auth:
-    #   image: mongo:latest
-    #   container_name: mongo-auth
-    #   ports:
-    #     - "27017:27017"
-    #   volumes:
-    #     - ./infrastructure/database/auth_data:/data/db
-    #   networks:
-    #     - network-cluster
+    mongo-auth:
+        image: mongo:latest
+        container_name: mongo-auth
+        ports:
+            - '27020:27017'
+        volumes:
+            - ./infrastructure/database/auth_data:/data/db
+        networks:
+            - network-cluster
+            
+    mongo-notification:
+        image: mongo:latest
+        container_name: mongo-notification
+        ports:
+            - '27021:27017'
+        volumes:
+            - ./infrastructure/database/notification_data:/data/db
+        networks:
+            - network-cluster
 
 volumes:
     frontend_node_modules:
 
 networks:
     network-cluster:
+        driver: bridge

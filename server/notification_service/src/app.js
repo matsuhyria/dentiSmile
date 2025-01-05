@@ -1,5 +1,6 @@
 import connectDB from './config/db.js';
 import mqttUtils from 'shared-mqtt';
+import { initializeRoutes } from './routes/notificationRoutes.js';
 
 const { connectMQTT } = mqttUtils;
 const PORT = process.env.PORT || 3001;
@@ -16,6 +17,7 @@ const startService = async () => {
     try {
         await connectDB(MONGODB_URI);
         await connectMQTT(MQTT_URI, MQTT_OPTIONS);
+        await initializeRoutes();
         console.log(`Service is running on port ${PORT}`);
     } catch (error) {
         console.error('Error starting the service:', error);

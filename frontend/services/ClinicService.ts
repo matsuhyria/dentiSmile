@@ -25,7 +25,7 @@ export class ClinicService extends BaseClinicService implements IClinicService {
         try {
             const data = await this.requestManager.request(
                 MQTT_TOPICS.CLINIC.RETRIEVE.MANY.REQUEST,
-                MQTT_TOPICS.CLINIC.RETRIEVE.MANY.RESPONSE(),
+                MQTT_TOPICS.CLINIC.RETRIEVE.MANY.RESPONSE(''),
                 {}, // Empty payload
                 this.client,
                 RequestType.BROADCAST

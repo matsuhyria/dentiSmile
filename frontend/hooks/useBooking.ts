@@ -1,67 +1,142 @@
-// hooks/useBooking.ts
-import { useState } from 'react';
-import { BookingService } from '@/services/BookingService';
-import { mockBookingService } from '@/services/mocks/mockBookingService';
-import { useMQTTService } from './useMQTTService';
+'use client'
+import { useState, useEffect } from 'react'
+import { BookingService } from '@/services/BookingService'
+import { IBooking } from '@/services/interfaces/IBooking'
+import MockBookingService from '@/services/mocks/mockBookingService'
+import { BookingResponse } from '@/services/interfaces/IBookingService'
+import { useMQTTService } from './useMQTTService'
 
-interface BookingRequest {
-    clinicId: string;
-    reasonId: string;
-    date: string;
-    slot: string;
+interface UseBookingReturn {
+    requestAppointment: (
+        appointmentId: string,
+        patientId: string
+    ) => Promise<{
+        success: boolean
+        data?: BookingResponse
+        error?: string
+    }>
+    cancelBooking: (
+        appointmentId: string,
+    ) => Promise<{
+        success: boolean
+        data?: BookingResponse
+        error?: string
+    }>
+    loading: boolean
+    error: Error | null
+    bookings: IBooking[];
 }
 
-interface BookingResponse {
-    success: boolean;
-    error?: string;
-    data?: {
-        appointmentId: string;
-        dateTime: string;
-        status: 'confirmed' | 'pending' | 'rejected';
-    };
-}
-
-export const useBooking = () => {
+export const useBooking = (): UseBookingReturn => {
     const { service: bookingService, error: serviceError } = useMQTTService(
         BookingService,
-        mockBookingService
-    );
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState<Error | null>(serviceError);
+        MockBookingService
+    )
+    const [loading, setLoading] = useState(false)
+    const [error, setError] = useState<Error | null>(serviceError)
+    const [bookings, setBookings] = useState<IBooking[]>([]);
+
+    useEffect(() => {
+        const fetchBookings = async () => {
+            const userId = localStorage.getItem('userId');
+
+            if (!userId) {
+                setError(new Error('UserId not found in local storage'));
+                return;
+            }
+
+            if (!bookingService) {
+                setError(new Error('Booking service not initialized'));
+                return;
+            }
+
+            setLoading(true);
+            try {
+                const response = await bookingService.getBookings(userId);
+                setBookings(response.data);
+                setError(null);
+            } catch (err) {
+                const errorMessage =
+                    err instanceof Error
+                        ? err.message
+                        : 'Failed to retrieve bookings';
+                setError(new Error(errorMessage));
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchBookings();
+    }, [bookingService]);
 
     const requestAppointment = async (
-        request: BookingRequest
-    ): Promise<BookingResponse> => {
+        appointmentId: string,
+        patientId: string
+    ) => {
         if (!bookingService) {
+            return { success: false, error: 'Booking service not initialized' }
+        }
+
+        setLoading(true)
+        try {
+            const response = await bookingService.requestAppointment(
+                appointmentId,
+                patientId
+            )
+
+            if (response.error) {
+                throw new Error(response.error)
+            }
+
+            return {
+                success: true,
+                data: response
+            }
+        } catch (err) {
+            const errorMessage =
+                err instanceof Error
+                    ? err.message
+                    : 'Failed to book appointment'
+            setError(new Error(errorMessage))
+            return {
+                success: false,
+                error: errorMessage
+            }
+        } finally {
+            setLoading(false)
+        }
+    }
+
+    const cancelBooking = async (appointmentId: string) => {
+        if (!bookingService) {
+            setError(new Error('Booking service not initialized'));
             return { success: false, error: 'Booking service not initialized' };
         }
 
         setLoading(true);
         try {
-            const response = await bookingService.requestAppointment(
-                request.clinicId,
-                request.reasonId,
-                request.date,
-                request.slot
-            );
+            const response = await bookingService.cancelBooking(appointmentId);
 
             if (response.error) {
                 throw new Error(response.error);
             }
 
+            // Optimistically remove the cancelled booking from the state
+            setBookings((prev) => prev.filter((b) => b._id !== appointmentId));
+
             return {
                 success: true,
-                data: response.data
+                data: response.data,
             };
         } catch (err) {
             const errorMessage =
                 err instanceof Error
                     ? err.message
-                    : 'Failed to book appointment';
+                    : 'Failed to cancel booking';
             setError(new Error(errorMessage));
             return {
                 success: false,
-                error: errorMessage
+                error: errorMessage,
             };
         } finally {
             setLoading(false);
@@ -70,7 +145,9 @@ export const useBooking = () => {
 
     return {
         requestAppointment,
+        cancelBooking,
+        bookings,
         loading,
         error
-    };
-};
+    }
+}

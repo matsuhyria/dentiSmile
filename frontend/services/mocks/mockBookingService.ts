@@ -1,34 +1,57 @@
-import { BookingService } from '../BookingService';
-import { IAppointment } from '../interfaces/IAppointment';
+import { BaseBookingService } from '../BaseBookingService'
+import { IAppointment } from '../interfaces/IAppointment'
+import { IBooking } from '../interfaces/IBooking'
+import { BookingResponse, IBookingService } from '../interfaces/IBookingService'
 
-export class mockBookingService extends BookingService {
+class MockBookingService extends BaseBookingService implements IBookingService {
+    constructor() {
+        super(null)
+    }
+
     async requestAppointment(
-        clinicId: string,
-        reasonId: string,
-        date: string,
-        slot: string
-    ): Promise<{ error?: string; data?: IAppointment }> {
-        // Simulate network delay
-        await new Promise((resolve) => setTimeout(resolve, 500));
+        appointmentId: string
+    ): Promise<{ data: BookingResponse }> {
+        await new Promise((resolve) => setTimeout(resolve, 500))
+        return {
+            data: {
+                appointmentId,
+                status: 'confirmed',
+                dateTime: new Date().toISOString()
+            }
+        }
+    }
+    public async cancelBooking(
+        bookingId: string
+    ): Promise<{ error?: string; data?: Record<string, unknown> }> {
+        await new Promise((resolve) => setTimeout(resolve, 500)) // Simulate network delay
+
+        if (!bookingId) {
+            return { error: 'Booking ID is required' }
+        }
 
         return {
             data: {
-                appointmentId: 'mock_appointment_123',
-                status: 'confirmed',
-                clinicId,
-                reasonId,
-                date,
-                slot
+                bookingId,
+                status: 'cancelled',
+                cancelledAt: new Date().toISOString()
             }
-        };
+        }
     }
 
-    async disconnect(): Promise<void> {
-        console.log('[MOCK] Disconnecting booking service');
-        return;
+    public getBookings(): Promise<{ data: IBooking[] }> {
+        throw new Error('Method not implemented.')
     }
 
-    protected setupSubscriptions(): void {
-        // No-op for mock service
+    public getBookingAppointments(): Promise<{
+        error?: string
+        data?: IAppointment[]
+    }> {
+        throw new Error('Method not implemented.')
+    }
+
+    public disconnect(): Promise<void> {
+        throw new Error('Method not implemented.')
     }
 }
+
+export default MockBookingService

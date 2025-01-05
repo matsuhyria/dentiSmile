@@ -1,15 +1,20 @@
 import { IAppointment } from '@/services/interfaces/IAppointment'
 
+export interface TimeSlot {
+    time: string
+    appointmentId: string
+}
+
 export interface TransformedAppointments {
     monthlyAvailability: Record<string, number>
-    availableTimesByDate: Record<string, string[]>
+    availableTimesByDate: Record<string, TimeSlot[]>
 }
 
 export const transformAppointments = (
     appointments: IAppointment[]
 ): TransformedAppointments => {
     const monthlyAvailability: Record<string, number> = {}
-    const availableTimesByDate: Record<string, string[]> = {}
+    const availableTimesByDate: Record<string, TimeSlot[]> = {}
 
     appointments.forEach((appointment) => {
         if (appointment.status === 'available') {
@@ -33,7 +38,10 @@ export const transformAppointments = (
             if (!availableTimesByDate[dateKey]) {
                 availableTimesByDate[dateKey] = []
             }
-            availableTimesByDate[dateKey].push(timeStr)
+            availableTimesByDate[dateKey].push({
+                appointmentId: appointment._id,
+                time: timeStr
+            })
         }
     })
 

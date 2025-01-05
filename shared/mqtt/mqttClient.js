@@ -53,7 +53,7 @@ export const subscribe = async (topic, callback, options = {}) => {
 
         client.on('message', (receivedTopic, message) => {
             if (receivedTopic === topic) {
-                callback(JSON.parse(message.toString()))
+                callback(JSON.parse(message.toString()));
             }
         })
     } catch (error) {
@@ -100,6 +100,14 @@ export const handleEndpoint = async (
 
         client.on('message', async (receivedTopic, message) => {
             if (receivedTopic === requestTopic) {
+                let parsedMessage;
+                try {
+                    parsedMessage = JSON.parse(message.toString());
+                } catch (parseError) {
+                    console.error(`Invalid JSON payload received: ${message.toString()}`, parseError);
+                    return;
+                }
+
                 const { clientId } = JSON.parse(message.toString())
                 const dynamicResponseTopic = responseTopic(clientId)
                 const response = await callback(message.toString())

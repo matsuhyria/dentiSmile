@@ -1,5 +1,6 @@
 import AppointmentSlot from '../models/appointmentSlot.js';
 import { generateSingleDaySlots, generateMultiDaySlots, isValidIsoDate } from '../utils/dateUtils.js';
+import { publishAllNotifications } from '../routes/appointmentRouter.js';
 
 
 export const bookAppointment = async (message) => {
@@ -63,6 +64,8 @@ export const createAppointments = async (message) => {
 
         await AppointmentSlot.insertMany(slots);
 
+        // don't need to await here
+        publishAllNotifications(slots);
         return { status: { code: 200, message: 'Appointment slots created successfully' } };
     } catch (error) {
         console.log(error);
@@ -159,5 +162,18 @@ export const getAppointmentById = async (message) => {
     } catch (error) {
         console.log(error);
         return { status: { code: 500, message: 'Error fetching slot details' } };
+    }
+};
+
+export const getAppointmentsByPatientId = async (message) => {
+    try {
+        const { patientId } = JSON.parse(message);
+        const slot = await AppointmentSlot.find({ patientId: patientId });
+        if (!slot) {
+            return { status: { code: 404, message: 'Appointments not found' } };
+        }
+        return { status: { code: 200, message: 'Appointments retrieved successfully' }, data: slot };
+    } catch (error) {
+        return { status: { code: 500, message: 'Error fetching appointments' } };
     }
 };
