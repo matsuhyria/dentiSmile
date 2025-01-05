@@ -5,6 +5,7 @@ import DateSelection from './DateSelection'
 import TimeSelection from './TimeSelection'
 import { Alert } from '@/components/ui/alert'
 import { TimeSlot } from '@/lib/appointmentUtils'
+import AppointmentSubscription from '@/components/notification/appointmentSubscription'
 
 interface DateTimeSelectionProps {
     onEdit: () => void
@@ -71,11 +72,20 @@ export default function DateTimeSelection({
                 )}
 
                 {selectedDate && availableTimes.length === 0 && (
-                    <Alert className="mt-8 bg-sky-100">
-                        <p className="text-sm text-gray-600">
-                            No available times on this date.
-                        </p>
-                    </Alert>
+                    <>
+                        <Alert className="mt-8 bg-sky-100">
+                            <p className="text-sm text-gray-600">
+                                No available times on this date.
+                            </p>
+                        </Alert>
+                        <div className="mt-6">
+                            <AppointmentSubscription
+                                clinicId={clinicId}
+                                patientId={localStorage.getItem('userId')}
+                                date={selectedDate}
+                            />
+                        </div>
+                    </>
                 )}
             </div>
         )
