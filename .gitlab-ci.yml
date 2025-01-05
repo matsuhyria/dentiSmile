@@ -40,7 +40,6 @@ test:
     - cd server
     - npm run test
 
-
 deploy:
   stage: deploy
   script: 
