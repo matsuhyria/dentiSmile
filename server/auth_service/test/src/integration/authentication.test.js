@@ -112,7 +112,7 @@ describe('Authentication Service Integration Tests', function () {
 
             client.on('message', (topic, message) => {
                 const response = JSON.parse(message.toString());
-                expect(response.status.code).to.equal(500);
+                expect(response.status.code).to.equal(400);
                 done();
             });
 
@@ -204,7 +204,7 @@ describe('Authentication Service Integration Tests', function () {
 
             client.on('message', (topic, message) => {
                 const response = JSON.parse(message.toString());
-                expect(response.status.code).to.equal(500);
+                expect(response.status.code).to.equal(400);
                 done();
             });
 

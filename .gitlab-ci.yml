@@ -135,7 +135,7 @@ test-auth-service:
   script:
     - cd $auth_service_path
     - npm ci --silent
-    - npm run start & #! > app.log 2>&1 &
+    - npm run start > app.log 2>&1 &
     - sleep 3
     - npm run test
   artifacts:

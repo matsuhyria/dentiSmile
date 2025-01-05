@@ -12,10 +12,6 @@ const MQTT_OPTIONS = {
     connectTimeout: 30 * 1000,
     clean: true
 }
-//! Del later
-console.log('Starting the service...');
-console.log('MQTT_URI:', MQTT_URI);
-console.log('MONGODB_URI:', MONGODB_URI);
 
 const startService = async () => {
     try {

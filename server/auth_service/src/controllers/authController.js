@@ -5,6 +5,11 @@ import { generateToken } from '../config/jwt.js';
 export const register = async (message) => {
     try {
         const { email, password, role } = JSON.parse(message);
+
+        if (!email || !password || !role) {
+            return { status: { code: 400, message: 'Missing fields' } };
+        }
+
         // to restrict dentists from registering
         if (role !== 'patient') {
             return { status: { code: 403, message: 'Invalid role' } };
@@ -31,6 +36,10 @@ export const register = async (message) => {
 export const login = async (message) => {
     try {
         const { email, password } = JSON.parse(message);
+
+        if (!email || !password) {
+            return { status: { code: 400, message: 'Missing fields' } };
+        }
 
         const user = await User.findOne({ email });
         if (!user) {
