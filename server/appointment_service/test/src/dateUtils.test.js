@@ -1,4 +1,4 @@
-import { generateSingleDaySlots, generateMultiDaySlots, isValidIsoDate } from '../../../src/utils/dateUtils.js';
+import { generateSingleDaySlots, generateMultiDaySlots, isValidIsoDate } from '../../src/utils/dateUtils.js';
 import { expect, assert } from 'chai';
 import { describe, it } from 'mocha';
 
