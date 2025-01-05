@@ -1,13 +1,8 @@
 import { useState } from "react";
 import { Bell } from "lucide-react";
-import useNotifications from "@/hooks/useNotifications";
-import mqtt from 'shared-mqtt';
-const { MQTT_TOPICS } = mqtt;
 
 function NotificationDropdown() {
     const [isOpen, setIsOpen] = useState(false);
-    const topic = MQTT_TOPICS.NOTIFICATION.APPOINTMENT.CREATE;
-    const notifications = useNotifications(topic);
 
 
     const toggleDropdown = () => {
@@ -29,7 +24,7 @@ function NotificationDropdown() {
                     <div className="p-4">
                         <h4 className="text-gray-800 font-semibold">Notifications</h4>
                     </div>
-                    <ul className="divide-y divide-gray-200">
+                    {/* <ul className="divide-y divide-gray-200">
                         {notifications.length > 0 ? (
                             notifications.map((notification) => (
                                 <li
@@ -42,7 +37,7 @@ function NotificationDropdown() {
                         ) : (
                             <li className="p-2 text-gray-500">No notifications available.</li>
                         )}
-                    </ul>
+                    </ul> */}
                     <div className="p-2 text-center text-blue-500 hover:underline cursor-pointer">
                         View All
                     </div>
