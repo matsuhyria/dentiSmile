@@ -37,8 +37,10 @@ test:
   tags:
     - docker
   script:
+    - echo "Starting tests in appointment_service"
     - cd server/appointment_service
     - npm ci
+    - echo "Running tests"
     - npm run test
   artifacts:
     paths:
