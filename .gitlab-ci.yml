@@ -9,7 +9,7 @@ stages:
 lint:
   stage: lint
   tags:
-    -docker
+    - docker
   script:
     - cd server
     - npm ci
