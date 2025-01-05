@@ -1,9 +1,22 @@
 image: node:20-alpine
 
 stages:
+  - lint
   - build
   - test
   - deploy
+
+lint:
+  stage: lint
+  tags:
+    -docker
+  script:
+    - cd server
+    - npm ci
+    - npm run lint
+  rules:
+    - changes:
+      - server/**/*.js
 
 build:
   stage: build
