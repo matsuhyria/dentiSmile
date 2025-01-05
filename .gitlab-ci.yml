@@ -37,8 +37,13 @@ test:
   tags:
     - docker
   script:
-    - cd server
+    - cd server/appointment_service
+    - npm ci
     - npm run test
+  artifacts:
+    paths:
+      - coverage # Save code coverage reports
+    expire_in: 1 hour
 
 deploy:
   stage: deploy
