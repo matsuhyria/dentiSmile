@@ -40,6 +40,8 @@ test:
     - echo "Starting tests in appointment_service"
     - cd server/appointment_service
     - npm ci
+    - cd shared/mqtt
+    - npm ci
     - echo "Running tests"
     - npm run test
   artifacts:
