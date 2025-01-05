@@ -1,52 +1,57 @@
-import { useState, useEffect } from 'react'
-import mqtt from 'shared-mqtt';
-import { MQTT_BROKER_URL } from '@/lib/constants';
-import { generateUniqueId } from '@/lib/utils';
+import { useState, useEffect, useCallback } from 'react';
+import { NotificationService } from '@/services/NotificationService';
+import { MQTTService } from '@/services/base/MQTTService';
+import { SubscriptionResponse } from '@/services/interfaces/INotificationService';
 
-const { connectMQTT, subscribe, unsubscribe } = mqtt;
-
-const useNotifications = (topic) => {
-    const [notifications, setNotifications] = useState([]);
+export function useNotification() {
+    const [notificationService, setNotificationService] = useState<NotificationService | null>(null)
+    const [isLoading, setIsLoading] = useState<boolean>(false);
+    const [error, setError] = useState<string | null>(null);
+    const [subscriptionResponse, setSubscriptionResponse] = useState<SubscriptionResponse | null>(null);
 
     useEffect(() => {
-        const handleNotification = (message) => {
-            const newNotification = {
-                id: generateUniqueId(),
-                message: message.notification,
-            };
-
-            setNotifications((prevNotifications) => {
-                const isDuplicate = prevNotifications.some(
-                    (notification) => notification.message === newNotification.message
-                );
-                if (isDuplicate) {
-                    return prevNotifications;
-                }
-                return [newNotification, ...prevNotifications];
-            });
-        };
-
-        const connectAndSubscribe = async () => {
+        const initNotificationService = async () => {
             try {
-                await connectMQTT(MQTT_BROKER_URL);
-
-                await subscribe(topic, handleNotification);
-                console.log(`useNotifications: Subscribed to topic: ${topic}`);
+                const client = await MQTTService.getClient()
+                const service = new NotificationService(client)
+                setNotificationService(service)
             } catch (error) {
-                console.error("Error connecting to MQTT or subscribing to topic:", error);
+                setError(`Failed to initialize notification service ${error}`);
             }
-        };
-        connectAndSubscribe();
+        }
+        initNotificationService()
+    }, []) // run once when component mounts
 
+    const subscribeToDate = async (clinicId: string, patientId: string, date: Date) => {
+        setIsLoading(true);
+        setError(null);
+
+        try {
+            const response = await notificationService.subscribeToDate(clinicId, patientId, date);
+            setSubscriptionResponse(response);
+        } catch (error) {
+            setError(`Error: ${error.message || 'An error occurred while subscribing to the date.'}`);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    useEffect(() => {
         return () => {
-            // (async () => {
-            //     // clean up to avoid memory leak
-            //     await unsubscribe(topic);
-            // })();
+            // TO-DO:Cleanup logic
+            console.log('Cleaning up NotificationService...');
         };
-    }, [topic]);
+    }, [notificationService]);
 
-    return notifications;
-};
+    const resetResponse = useCallback(() => {
+        setSubscriptionResponse(null);
+    }, []);
 
-export default useNotifications;
+    return {
+        isLoading,
+        error,
+        subscriptionResponse,
+        subscribeToDate,
+        resetResponse
+    };
+}
