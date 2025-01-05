@@ -4,7 +4,7 @@ import { initializeRoutes } from './routes/authRoutes.js';
 
 const { connectMQTT } = mqttUtils;
 const PORT = process.env.PORT || 3001;
-const MONGODB_URI = process.env.MONGODB_URI;
+const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/auth_db';
 const MQTT_URI = process.env.MQTT_URI;
 const MQTT_OPTIONS = {
     clientId: 'authenticationService',
@@ -12,6 +12,10 @@ const MQTT_OPTIONS = {
     connectTimeout: 30 * 1000,
     clean: true
 }
+//! Del later
+console.log('Starting the service...');
+console.log('MQTT_URI:', MQTT_URI);
+console.log('MONGODB_URI:', MONGODB_URI);
 
 const startService = async () => {
     try {
