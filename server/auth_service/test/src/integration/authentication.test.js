@@ -43,7 +43,12 @@ describe('Authentication Service Integration Tests', function () {
 
             client.on('message', (topic, message) => {
                 const response = JSON.parse(message.toString());
+                console.log(response);
                 expect(response.status.code).to.equal(200);
+                expect(response.data.token).to.exist;
+                expect(response.data.token).to.not.be.empty;
+                expect(response.data.userId).to.exist;
+                expect(response.data.userId).to.not.be.empty;
                 done();
             });
 
@@ -106,7 +111,7 @@ describe('Authentication Service Integration Tests', function () {
         });
 
         try {
-            client.subscribe(MQTT_TOPICS.AUTHENTICATION.REGISTER.RESPONSE(clientId), () => {    
+            client.subscribe(MQTT_TOPICS.AUTHENTICATION.REGISTER.RESPONSE(clientId), () => {
                 client.publish(MQTT_TOPICS.AUTHENTICATION.REGISTER.REQUEST, payload);
             });
 
@@ -136,8 +141,10 @@ describe('Authentication Service Integration Tests', function () {
             client.on('message', (topic, message) => {
                 const response = JSON.parse(message.toString());
                 expect(response.status.code).to.equal(200);
-                expect(response.token).to.exist;
-                expect(response.token).to.not.be.empty;
+                expect(response.data.token).to.exist;
+                expect(response.data.token).to.not.be.empty;
+                expect(response.data.userId).to.exist;
+                expect(response.data.userId).to.not.be.empty;
                 done();
             });
 
@@ -183,7 +190,7 @@ describe('Authentication Service Integration Tests', function () {
 
             client.on('message', (topic, message) => {
                 const response = JSON.parse(message.toString());
-                expect(response.status.code).to.equal(404);
+                expect(response.status.code).to.equal(400);
                 done();
             });
 
