@@ -102,6 +102,30 @@ services:
         networks:
             - network-cluster
 
+    # Notification Service
+    notification-service:
+        build:
+            context: .
+            dockerfile: server/notification_service/Dockerfile.dev
+        container_name: notification-service
+        restart: unless-stopped
+        ports:
+            - '6500:6500'
+        volumes:
+            - ./server/notification_service:/app/server/notification_service
+            - ./shared:/app/shared
+            - /app/server/notification_service/node_modules
+            - /app/shared/node_modules
+        env_file:
+            - ./server/notification_service/.env
+        environment:
+            - NODE_ENV=development
+        depends_on:
+            - mongo-notification
+            - mqtt-broker
+        networks:
+            - network-cluster
+
     mqtt-broker:
         image: eclipse-mosquitto:2.0
         container_name: mqtt-broker
@@ -142,9 +166,20 @@ services:
             - ./infrastructure/database/auth_data:/data/db
         networks:
             - network-cluster
+            
+    mongo-notification:
+        image: mongo:latest
+        container_name: mongo-notification
+        ports:
+            - '27021:27017'
+        volumes:
+            - ./infrastructure/database/notification_data:/data/db
+        networks:
+            - network-cluster
 
 volumes:
     frontend_node_modules:
 
 networks:
     network-cluster:
+        driver: bridge
