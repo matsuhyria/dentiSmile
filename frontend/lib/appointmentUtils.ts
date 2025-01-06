@@ -1,4 +1,5 @@
 import { IAppointment } from '@/services/interfaces/IAppointment'
+import { parseDateTime } from './dateUtils'
 
 export interface TimeSlot {
     time: string
@@ -17,24 +18,16 @@ export const transformAppointments = (
     const availableTimesByDate: Record<string, TimeSlot[]> = {}
 
     appointments.forEach((appointment) => {
-        if (appointment.status === 'available') {
-            // Get date in YYYY-MM-DD format
-            const dateKey = appointment.startTime.split('T')[0]
+        if (
+            appointment.status === 'available'
+        ) {
+            const { dateKey, timeStr } = parseDateTime(appointment.startTime)
 
             // Count available slots per date
             monthlyAvailability[dateKey] =
                 (monthlyAvailability[dateKey] || 0) + 1
 
             // Store available times for each date
-            const timeStr = new Date(appointment.startTime).toLocaleTimeString(
-                'en-US',
-                {
-                    hour: '2-digit',
-                    minute: '2-digit',
-                    hour12: false
-                }
-            )
-
             if (!availableTimesByDate[dateKey]) {
                 availableTimesByDate[dateKey] = []
             }
