@@ -3,6 +3,7 @@ import { IClinic } from '@/services/interfaces/IClinic'
 import { ClinicService } from '@/services/ClinicService'
 import mockClinicService from '@/services/mocks/mockClinicService'
 import { useMQTTService } from './useMQTTService'
+import { EventEmitter } from 'events'
 
 export const useClinics = () => {
     const { service: clinicService, error: serviceError } = useMQTTService(
@@ -17,22 +18,26 @@ export const useClinics = () => {
     useEffect(() => {
         if (!clinicService) return
 
-        const fetchClinics = async () => {
-            try {
-                const { data } = await clinicService.getClinics()
-                setClinics(data)
-            } catch (err) {
-                setError(
-                    err instanceof Error
-                        ? err
-                        : new Error('Failed to fetch clinics')
-                )
-            } finally {
-                setLoading(false)
-            }
+        setLoading(true)
+        const clinicsEmitter: EventEmitter = clinicService.getClinics()
+
+        const onData = (data: IClinic[]) => {
+            setClinics(data)
+            setLoading(false)
         }
 
-        fetchClinics()
+        const onError = (err: Error) => {
+            setError(err)
+            setLoading(false)
+        }
+
+        clinicsEmitter.on('data', onData)
+        clinicsEmitter.on('error', onError)
+
+        return () => {
+            clinicsEmitter.removeListener('data', onData)
+            clinicsEmitter.removeListener('error', onError)
+        }
     }, [clinicService])
 
     return { clinics, loading, error }
