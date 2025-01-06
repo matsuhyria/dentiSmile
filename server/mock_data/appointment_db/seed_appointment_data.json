@@ -1,0 +1,872 @@
+[{
+  "_id": {
+    "$oid": "676209f6c70d224bab0ed315"
+  },
+  "clinicName": "Downtown Dental Clinic",
+  "clinicId": {
+    "$oid": "5f50c31c1c9d440000a1a1a1"
+  },
+  "dentistId": {
+    "$oid": "5f50c31c1c9d440000b1b1b1"
+  },
+  "patientId": null,
+  "startTime": {
+    "$date": "2025-10-07T09:00:00.000Z"
+  },
+  "endTime": {
+    "$date": "2025-10-07T10:00:00.000Z"
+  },
+  "status": "available"
+},
+{
+  "_id": {
+    "$oid": "676209f6c70d224bab0ed316"
+  },
+  "clinicName": "Downtown Dental Clinic",
+  "clinicId": {
+    "$oid": "5f50c31c1c9d440000a1a1a1"
+  },
+  "dentistId": {
+    "$oid": "5f50c31c1c9d440000b1b1b1"
+  },
+  "patientId": null,
+  "startTime": {
+    "$date": "2025-10-07T10:00:00.000Z"
+  },
+  "endTime": {
+    "$date": "2025-10-07T11:00:00.000Z"
+  },
+  "status": "available"
+},
+{
+  "_id": {
+    "$oid": "676209f6c70d224bab0ed317"
+  },
+  "clinicName": "Downtown Dental Clinic",
+  "clinicId": {
+    "$oid": "5f50c31c1c9d440000a1a1a1"
+  },
+  "dentistId": {
+    "$oid": "5f50c31c1c9d440000b1b1b1"
+  },
+  "patientId": null,
+  "startTime": {
+    "$date": "2025-10-07T11:00:00.000Z"
+  },
+  "endTime": {
+    "$date": "2025-10-07T12:00:00.000Z"
+  },
+  "status": "available"
+},
+{
+  "_id": {
+    "$oid": "676209f6c70d224bab0ed318"
+  },
+  "clinicName": "Downtown Dental Clinic",
+  "clinicId": {
+    "$oid": "5f50c31c1c9d440000a1a1a1"
+  },
+  "dentistId": {
+    "$oid": "5f50c31c1c9d440000b1b1b1"
+  },
+  "patientId": {
+    "$oid": "5f50c31c1c9d440000c1c1c1"
+  },
+  "startTime": {
+    "$date": "2025-10-07T12:00:00.000Z"
+  },
+  "endTime": {
+    "$date": "2025-10-07T13:00:00.000Z"
+  },
+  "status": "booked"
+},
+{
+  "_id": {
+    "$oid": "676209f6c70d224bab0ed319"
+  },
+  "clinicName": "Downtown Dental Clinic",
+  "clinicId": {
+    "$oid": "5f50c31c1c9d440000a1a1a1"
+  },
+  "dentistId": {
+    "$oid": "5f50c31c1c9d440000b1b1b1"
+  },
+  "patientId": {
+    "$oid": "5f50c31c1c9d440000c1c1c2"
+  },
+  "startTime": {
+    "$date": "2025-10-07T13:00:00.000Z"
+  },
+  "endTime": {
+    "$date": "2025-10-07T14:00:00.000Z"
+  },
+  "status": "booked"
+},
+{
+  "_id": {
+    "$oid": "676209f6c70d224bab0ed31a"
+  },
+  "clinicName": "Downtown Dental Clinic",
+  "clinicId": {
+    "$oid": "5f50c31c1c9d440000a1a1a1"
+  },
+  "dentistId": {
+    "$oid": "5f50c31c1c9d440000b1b1b1"
+  },
+  "patientId": {
+    "$oid": "5f50c31c1c9d440000c1c1c3"
+  },
+  "startTime": {
+    "$date": "2025-10-07T14:00:00.000Z"
+  },
+  "endTime": {
+    "$date": "2025-10-07T15:00:00.000Z"
+  },
+  "status": "booked"
+},
+{
+  "_id": {
+    "$oid": "676209f6c70d224bab0ed31b"
+  },
+  "clinicName": "Downtown Dental Clinic",
+  "clinicId": {
+    "$oid": "5f50c31c1c9d440000a1a1a1"
+  },
+  "dentistId": {
+    "$oid": "5f50c31c1c9d440000b1b1b1"
+  },
+  "patientId": null,
+  "startTime": {
+    "$date": "2025-10-07T15:00:00.000Z"
+  },
+  "endTime": {
+    "$date": "2025-10-07T16:00:00.000Z"
+  },
+  "status": "canceled"
+},
+{
+  "_id": {
+    "$oid": "676209f6c70d224bab0ed31c"
+  },
+  "clinicName": "Downtown Dental Clinic",
+  "clinicId": {
+    "$oid": "5f50c31c1c9d440000a1a1a1"
+  },
+  "dentistId": {
+    "$oid": "5f50c31c1c9d440000b1b1b1"
+  },
+  "patientId": null,
+  "startTime": {
+    "$date": "2025-10-07T16:00:00.000Z"
+  },
+  "endTime": {
+    "$date": "2025-10-07T17:00:00.000Z"
+  },
+  "status": "canceled"
+},
+{
+  "_id": {
+    "$oid": "676209f6c70d224bab0ed31d"
+  },
+  "clinicName": "Downtown Dental Clinic",
+  "clinicId": {
+    "$oid": "5f50c31c1c9d440000a1a1a1"
+  },
+  "dentistId": {
+    "$oid": "5f50c31c1c9d440000b1b1b1"
+  },
+  "patientId": null,
+  "startTime": {
+    "$date": "2025-10-07T17:00:00.000Z"
+  },
+  "endTime": {
+    "$date": "2025-10-07T18:00:00.000Z"
+  },
+  "status": "canceled"
+},
+{
+  "_id": {
+    "$oid": "676209f6c70d224bab0ed31e"
+  },
+  "clinicName": "Downtown Dental Clinic",
+  "clinicId": {
+    "$oid": "5f50c31c1c9d440000a1a1a1"
+  },
+  "dentistId": {
+    "$oid": "5f50c31c1c9d440000b1b1b2"
+  },
+  "patientId": null,
+  "startTime": {
+    "$date": "2025-10-07T09:00:00.000Z"
+  },
+  "endTime": {
+    "$date": "2025-10-07T10:00:00.000Z"
+  },
+  "status": "available"
+},
+{
+  "_id": {
+    "$oid": "676209f6c70d224bab0ed31f"
+  },
+  "clinicName": "Downtown Dental Clinic",
+  "clinicId": {
+    "$oid": "5f50c31c1c9d440000a1a1a1"
+  },
+  "dentistId": {
+    "$oid": "5f50c31c1c9d440000b1b1b2"
+  },
+  "patientId": null,
+  "startTime": {
+    "$date": "2025-10-07T10:00:00.000Z"
+  },
+  "endTime": {
+    "$date": "2025-10-07T11:00:00.000Z"
+  },
+  "status": "available"
+},
+{
+  "_id": {
+    "$oid": "676209f6c70d224bab0ed320"
+  },
+  "clinicName": "Downtown Dental Clinic",
+  "clinicId": {
+    "$oid": "5f50c31c1c9d440000a1a1a1"
+  },
+  "dentistId": {
+    "$oid": "5f50c31c1c9d440000b1b1b2"
+  },
+  "patientId": null,
+  "startTime": {
+    "$date": "2025-10-07T11:00:00.000Z"
+  },
+  "endTime": {
+    "$date": "2025-10-07T12:00:00.000Z"
+  },
+  "status": "available"
+},
+{
+  "_id": {
+    "$oid": "676209f6c70d224bab0ed321"
+  },
+  "clinicName": "Downtown Dental Clinic",
+  "clinicId": {
+    "$oid": "5f50c31c1c9d440000a1a1a1"
+  },
+  "dentistId": {
+    "$oid": "5f50c31c1c9d440000b1b1b2"
+  },
+  "patientId": {
+    "$oid": "5f50c31c1c9d440000c1c1c4"
+  },
+  "startTime": {
+    "$date": "2025-10-07T12:00:00.000Z"
+  },
+  "endTime": {
+    "$date": "2025-10-07T13:00:00.000Z"
+  },
+  "status": "booked"
+},
+{
+  "_id": {
+    "$oid": "676209f6c70d224bab0ed322"
+  },
+  "clinicName": "Downtown Dental Clinic",
+  "clinicId": {
+    "$oid": "5f50c31c1c9d440000a1a1a1"
+  },
+  "dentistId": {
+    "$oid": "5f50c31c1c9d440000b1b1b2"
+  },
+  "patientId": {
+    "$oid": "5f50c31c1c9d440000c1c1c5"
+  },
+  "startTime": {
+    "$date": "2025-10-07T13:00:00.000Z"
+  },
+  "endTime": {
+    "$date": "2025-10-07T14:00:00.000Z"
+  },
+  "status": "booked"
+},
+{
+  "_id": {
+    "$oid": "676209f6c70d224bab0ed323"
+  },
+  "clinicName": "Downtown Dental Clinic",
+  "clinicId": {
+    "$oid": "5f50c31c1c9d440000a1a1a1"
+  },
+  "dentistId": {
+    "$oid": "5f50c31c1c9d440000b1b1b2"
+  },
+  "patientId": {
+    "$oid": "5f50c31c1c9d440000c1c1c6"
+  },
+  "startTime": {
+    "$date": "2025-10-07T14:00:00.000Z"
+  },
+  "endTime": {
+    "$date": "2025-10-07T15:00:00.000Z"
+  },
+  "status": "booked"
+},
+{
+  "_id": {
+    "$oid": "676209f6c70d224bab0ed324"
+  },
+  "clinicName": "Downtown Dental Clinic",
+  "clinicId": {
+    "$oid": "5f50c31c1c9d440000a1a1a1"
+  },
+  "dentistId": {
+    "$oid": "5f50c31c1c9d440000b1b1b2"
+  },
+  "patientId": null,
+  "startTime": {
+    "$date": "2025-10-07T15:00:00.000Z"
+  },
+  "endTime": {
+    "$date": "2025-10-07T16:00:00.000Z"
+  },
+  "status": "canceled"
+},
+{
+  "_id": {
+    "$oid": "676209f6c70d224bab0ed325"
+  },
+  "clinicName": "SmileCare Dental",
+  "clinicId": {
+    "$oid": "5f50c31c1c9d440000a2a2a2"
+  },
+  "dentistId": {
+    "$oid": "5f50c31c1c9d440000b2b2b1"
+  },
+  "patientId": null,
+  "startTime": {
+    "$date": "2025-10-08T09:00:00.000Z"
+  },
+  "endTime": {
+    "$date": "2025-10-08T10:00:00.000Z"
+  },
+  "status": "available"
+},
+{
+  "_id": {
+    "$oid": "676209f6c70d224bab0ed326"
+  },
+  "clinicName": "SmileCare Dental",
+  "clinicId": {
+    "$oid": "5f50c31c1c9d440000a2a2a2"
+  },
+  "dentistId": {
+    "$oid": "5f50c31c1c9d440000b2b2b1"
+  },
+  "patientId": null,
+  "startTime": {
+    "$date": "2025-10-08T10:00:00.000Z"
+  },
+  "endTime": {
+    "$date": "2025-10-08T11:00:00.000Z"
+  },
+  "status": "available"
+},
+{
+  "_id": {
+    "$oid": "676209f6c70d224bab0ed327"
+  },
+  "clinicName": "SmileCare Dental",
+  "clinicId": {
+    "$oid": "5f50c31c1c9d440000a2a2a2"
+  },
+  "dentistId": {
+    "$oid": "5f50c31c1c9d440000b2b2b1"
+  },
+  "patientId": null,
+  "startTime": {
+    "$date": "2025-10-08T11:00:00.000Z"
+  },
+  "endTime": {
+    "$date": "2025-10-08T12:00:00.000Z"
+  },
+  "status": "available"
+},
+{
+  "_id": {
+    "$oid": "676209f6c70d224bab0ed328"
+  },
+  "clinicName": "SmileCare Dental",
+  "clinicId": {
+    "$oid": "5f50c31c1c9d440000a2a2a2"
+  },
+  "dentistId": {
+    "$oid": "5f50c31c1c9d440000b2b2b1"
+  },
+  "patientId": {
+    "$oid": "5f50c31c1c9d440000c2c2c1"
+  },
+  "startTime": {
+    "$date": "2025-10-08T12:00:00.000Z"
+  },
+  "endTime": {
+    "$date": "2025-10-08T13:00:00.000Z"
+  },
+  "status": "booked"
+},
+{
+  "_id": {
+    "$oid": "676209f6c70d224bab0ed329"
+  },
+  "clinicName": "SmileCare Dental",
+  "clinicId": {
+    "$oid": "5f50c31c1c9d440000a2a2a2"
+  },
+  "dentistId": {
+    "$oid": "5f50c31c1c9d440000b2b2b1"
+  },
+  "patientId": {
+    "$oid": "5f50c31c1c9d440000c2c2c2"
+  },
+  "startTime": {
+    "$date": "2025-10-08T13:00:00.000Z"
+  },
+  "endTime": {
+    "$date": "2025-10-08T14:00:00.000Z"
+  },
+  "status": "booked"
+},
+{
+  "_id": {
+    "$oid": "676209f6c70d224bab0ed32a"
+  },
+  "clinicName": "SmileCare Dental",
+  "clinicId": {
+    "$oid": "5f50c31c1c9d440000a2a2a2"
+  },
+  "dentistId": {
+    "$oid": "5f50c31c1c9d440000b2b2b1"
+  },
+  "patientId": null,
+  "startTime": {
+    "$date": "2025-10-08T14:00:00.000Z"
+  },
+  "endTime": {
+    "$date": "2025-10-08T15:00:00.000Z"
+  },
+  "status": "canceled"
+},
+{
+  "_id": {
+    "$oid": "676209f6c70d224bab0ed32b"
+  },
+  "clinicName": "SmileCare Dental",
+  "clinicId": {
+    "$oid": "5f50c31c1c9d440000a2a2a2"
+  },
+  "dentistId": {
+    "$oid": "5f50c31c1c9d440000b2b2b2"
+  },
+  "patientId": null,
+  "startTime": {
+    "$date": "2025-10-08T09:00:00.000Z"
+  },
+  "endTime": {
+    "$date": "2025-10-08T10:00:00.000Z"
+  },
+  "status": "available"
+},
+{
+  "_id": {
+    "$oid": "676209f6c70d224bab0ed32c"
+  },
+  "clinicName": "SmileCare Dental",
+  "clinicId": {
+    "$oid": "5f50c31c1c9d440000a2a2a2"
+  },
+  "dentistId": {
+    "$oid": "5f50c31c1c9d440000b2b2b2"
+  },
+  "patientId": null,
+  "startTime": {
+    "$date": "2025-10-08T10:00:00.000Z"
+  },
+  "endTime": {
+    "$date": "2025-10-08T11:00:00.000Z"
+  },
+  "status": "available"
+},
+{
+  "_id": {
+    "$oid": "676209f6c70d224bab0ed32d"
+  },
+  "clinicName": "SmileCare Dental",
+  "clinicId": {
+    "$oid": "5f50c31c1c9d440000a2a2a2"
+  },
+  "dentistId": {
+    "$oid": "5f50c31c1c9d440000b2b2b2"
+  },
+  "patientId": {
+    "$oid": "5f50c31c1c9d440000c2c2c3"
+  },
+  "startTime": {
+    "$date": "2025-10-08T11:00:00.000Z"
+  },
+  "endTime": {
+    "$date": "2025-10-08T12:00:00.000Z"
+  },
+  "status": "booked"
+},
+{
+  "_id": {
+    "$oid": "676209f6c70d224bab0ed32e"
+  },
+  "clinicName": "SmileCare Dental",
+  "clinicId": {
+    "$oid": "5f50c31c1c9d440000a2a2a2"
+  },
+  "dentistId": {
+    "$oid": "5f50c31c1c9d440000b2b2b2"
+  },
+  "patientId": {
+    "$oid": "5f50c31c1c9d440000c2c2c4"
+  },
+  "startTime": {
+    "$date": "2025-10-08T12:00:00.000Z"
+  },
+  "endTime": {
+    "$date": "2025-10-08T13:00:00.000Z"
+  },
+  "status": "booked"
+},
+{
+  "_id": {
+    "$oid": "676209f6c70d224bab0ed32f"
+  },
+  "clinicName": "SmileCare Dental",
+  "clinicId": {
+    "$oid": "5f50c31c1c9d440000a2a2a2"
+  },
+  "dentistId": {
+    "$oid": "5f50c31c1c9d440000b2b2b2"
+  },
+  "patientId": null,
+  "startTime": {
+    "$date": "2025-10-08T13:00:00.000Z"
+  },
+  "endTime": {
+    "$date": "2025-10-08T14:00:00.000Z"
+  },
+  "status": "canceled"
+},
+{
+  "_id": {
+    "$oid": "676209f6c70d224bab0ed330"
+  },
+  "clinicName": "Happy Teeth Clinic",
+  "clinicId": {
+    "$oid": "5f50c31c1c9d440000a3a3a3"
+  },
+  "dentistId": {
+    "$oid": "5f50c31c1c9d440000b3b3b1"
+  },
+  "patientId": null,
+  "startTime": {
+    "$date": "2025-10-09T09:00:00.000Z"
+  },
+  "endTime": {
+    "$date": "2025-10-09T10:00:00.000Z"
+  },
+  "status": "available"
+},
+{
+  "_id": {
+    "$oid": "676209f6c70d224bab0ed331"
+  },
+  "clinicName": "Happy Teeth Clinic",
+  "clinicId": {
+    "$oid": "5f50c31c1c9d440000a3a3a3"
+  },
+  "dentistId": {
+    "$oid": "5f50c31c1c9d440000b3b3b1"
+  },
+  "patientId": null,
+  "startTime": {
+    "$date": "2025-10-09T10:00:00.000Z"
+  },
+  "endTime": {
+    "$date": "2025-10-09T11:00:00.000Z"
+  },
+  "status": "available"
+},
+{
+  "_id": {
+    "$oid": "676209f6c70d224bab0ed332"
+  },
+  "clinicName": "Happy Teeth Clinic",
+  "clinicId": {
+    "$oid": "5f50c31c1c9d440000a3a3a3"
+  },
+  "dentistId": {
+    "$oid": "5f50c31c1c9d440000b3b3b1"
+  },
+  "patientId": {
+    "$oid": "5f50c31c1c9d440000c3c3c1"
+  },
+  "startTime": {
+    "$date": "2025-10-09T11:00:00.000Z"
+  },
+  "endTime": {
+    "$date": "2025-10-09T12:00:00.000Z"
+  },
+  "status": "booked"
+},
+{
+  "_id": {
+    "$oid": "676209f6c70d224bab0ed333"
+  },
+  "clinicName": "Happy Teeth Clinic",
+  "clinicId": {
+    "$oid": "5f50c31c1c9d440000a3a3a3"
+  },
+  "dentistId": {
+    "$oid": "5f50c31c1c9d440000b3b3b1"
+  },
+  "patientId": {
+    "$oid": "5f50c31c1c9d440000c3c3c2"
+  },
+  "startTime": {
+    "$date": "2025-10-09T12:00:00.000Z"
+  },
+  "endTime": {
+    "$date": "2025-10-09T13:00:00.000Z"
+  },
+  "status": "booked"
+},
+{
+  "_id": {
+    "$oid": "676209f6c70d224bab0ed334"
+  },
+  "clinicName": "Happy Teeth Clinic",
+  "clinicId": {
+    "$oid": "5f50c31c1c9d440000a3a3a3"
+  },
+  "dentistId": {
+    "$oid": "5f50c31c1c9d440000b3b3b1"
+  },
+  "patientId": null,
+  "startTime": {
+    "$date": "2025-10-09T13:00:00.000Z"
+  },
+  "endTime": {
+    "$date": "2025-10-09T14:00:00.000Z"
+  },
+  "status": "canceled"
+},
+{
+  "_id": {
+    "$oid": "676209f6c70d224bab0ed335"
+  },
+  "clinicName": "Happy Teeth Clinic",
+  "clinicId": {
+    "$oid": "5f50c31c1c9d440000a3a3a3"
+  },
+  "dentistId": {
+    "$oid": "5f50c31c1c9d440000b3b3b2"
+  },
+  "patientId": null,
+  "startTime": {
+    "$date": "2025-10-09T09:00:00.000Z"
+  },
+  "endTime": {
+    "$date": "2025-10-09T10:00:00.000Z"
+  },
+  "status": "available"
+},
+{
+  "_id": {
+    "$oid": "676209f6c70d224bab0ed336"
+  },
+  "clinicName": "Happy Teeth Clinic",
+  "clinicId": {
+    "$oid": "5f50c31c1c9d440000a3a3a3"
+  },
+  "dentistId": {
+    "$oid": "5f50c31c1c9d440000b3b3b2"
+  },
+  "patientId": {
+    "$oid": "5f50c31c1c9d440000c3c3c3"
+  },
+  "startTime": {
+    "$date": "2025-10-09T10:00:00.000Z"
+  },
+  "endTime": {
+    "$date": "2025-10-09T11:00:00.000Z"
+  },
+  "status": "booked"
+},
+{
+  "_id": {
+    "$oid": "676209f6c70d224bab0ed337"
+  },
+  "clinicName": "Happy Teeth Clinic",
+  "clinicId": {
+    "$oid": "5f50c31c1c9d440000a3a3a3"
+  },
+  "dentistId": {
+    "$oid": "5f50c31c1c9d440000b3b3b2"
+  },
+  "patientId": {
+    "$oid": "5f50c31c1c9d440000c3c3c4"
+  },
+  "startTime": {
+    "$date": "2025-10-09T11:00:00.000Z"
+  },
+  "endTime": {
+    "$date": "2025-10-09T12:00:00.000Z"
+  },
+  "status": "booked"
+},
+{
+  "_id": {
+    "$oid": "676209f6c70d224bab0ed338"
+  },
+  "clinicName": "Happy Teeth Clinic",
+  "clinicId": {
+    "$oid": "5f50c31c1c9d440000a3a3a3"
+  },
+  "dentistId": {
+    "$oid": "5f50c31c1c9d440000b3b3b2"
+  },
+  "patientId": null,
+  "startTime": {
+    "$date": "2025-10-09T12:00:00.000Z"
+  },
+  "endTime": {
+    "$date": "2025-10-09T13:00:00.000Z"
+  },
+  "status": "canceled"
+},
+{
+  "_id": {
+    "$oid": "676209f6c70d224bab0ed339"
+  },
+  "clinicName": "Ocean Dental",
+  "clinicId": {
+    "$oid": "5f50c31c1c9d440000a4a4a4"
+  },
+  "dentistId": {
+    "$oid": "5f50c31c1c9d440000b4b4b1"
+  },
+  "patientId": null,
+  "startTime": {
+    "$date": "2025-10-10T09:00:00.000Z"
+  },
+  "endTime": {
+    "$date": "2025-10-10T10:00:00.000Z"
+  },
+  "status": "available"
+},
+{
+  "_id": {
+    "$oid": "676209f6c70d224bab0ed33a"
+  },
+  "clinicName": "Ocean Dental",
+  "clinicId": {
+    "$oid": "5f50c31c1c9d440000a4a4a4"
+  },
+  "dentistId": {
+    "$oid": "5f50c31c1c9d440000b4b4b1"
+  },
+  "patientId": {
+    "$oid": "5f50c31c1c9d440000c4c4c1"
+  },
+  "startTime": {
+    "$date": "2025-10-10T10:00:00.000Z"
+  },
+  "endTime": {
+    "$date": "2025-10-10T11:00:00.000Z"
+  },
+  "status": "booked"
+},
+{
+  "_id": {
+    "$oid": "676209f6c70d224bab0ed33b"
+  },
+  "clinicName": "Ocean Dental",
+  "clinicId": {
+    "$oid": "5f50c31c1c9d440000a4a4a4"
+  },
+  "dentistId": {
+    "$oid": "5f50c31c1c9d440000b4b4b1"
+  },
+  "patientId": null,
+  "startTime": {
+    "$date": "2025-10-10T11:00:00.000Z"
+  },
+  "endTime": {
+    "$date": "2025-10-10T12:00:00.000Z"
+  },
+  "status": "canceled"
+},
+{
+  "_id": {
+    "$oid": "676209f6c70d224bab0ed33c"
+  },
+  "clinicName": "Ocean Dental",
+  "clinicId": {
+    "$oid": "5f50c31c1c9d440000a4a4a4"
+  },
+  "dentistId": {
+    "$oid": "5f50c31c1c9d440000b4b4b2"
+  },
+  "patientId": null,
+  "startTime": {
+    "$date": "2025-10-10T09:00:00.000Z"
+  },
+  "endTime": {
+    "$date": "2025-10-10T10:00:00.000Z"
+  },
+  "status": "available"
+},
+{
+  "_id": {
+    "$oid": "676209f6c70d224bab0ed33d"
+  },
+  "clinicName": "Ocean Dental",
+  "clinicId": {
+    "$oid": "5f50c31c1c9d440000a4a4a4"
+  },
+  "dentistId": {
+    "$oid": "5f50c31c1c9d440000b4b4b2"
+  },
+  "patientId": {
+    "$oid": "5f50c31c1c9d440000c4c4c2"
+  },
+  "startTime": {
+    "$date": "2025-10-10T10:00:00.000Z"
+  },
+  "endTime": {
+    "$date": "2025-10-10T11:00:00.000Z"
+  },
+  "status": "booked"
+},
+{
+  "_id": {
+    "$oid": "676209f6c70d224bab0ed33e"
+  },
+  "clinicName": "Ocean Dental",
+  "clinicId": {
+    "$oid": "5f50c31c1c9d440000a4a4a4"
+  },
+  "dentistId": {
+    "$oid": "5f50c31c1c9d440000b4b4b2"
+  },
+  "patientId": null,
+  "startTime": {
+    "$date": "2025-10-10T11:00:00.000Z"
+  },
+  "endTime": {
+    "$date": "2025-10-10T12:00:00.000Z"
+  },
+  "status": "canceled"
+}]

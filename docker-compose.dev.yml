@@ -144,6 +144,7 @@ services:
             - '27018:27017'
         volumes:
             - ./infrastructure/database/clinic_data:/data/db
+            - ./server/mock_data/clinic_db:/docker-entrypoint-initdb.d
         networks:
             - network-cluster
 
@@ -154,6 +155,7 @@ services:
             - '27019:27017'
         volumes:
             - ./infrastructure/database/appointment_data:/data/db
+            - ./server/mock_data/appointment_db:/docker-entrypoint-initdb.d
         networks:
             - network-cluster
 
