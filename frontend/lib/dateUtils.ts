@@ -15,8 +15,7 @@ export const parseDateTime = (dateTimeStr: string | Date): ParsedDateTime => {
     const timeStr = d.toLocaleTimeString('en-SE', {
         hour: '2-digit',
         minute: '2-digit',
-        hour12: false,
-        timeZone: 'UTC'
+        hour12: false
     })
 
     return { dateKey, timeStr }

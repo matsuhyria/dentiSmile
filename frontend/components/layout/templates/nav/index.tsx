@@ -4,8 +4,6 @@ import Image from 'next/image'
 import { User } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import NotificationDropdown from '@/components/notification/notificationDropdown';
-import { redirect } from 'next/navigation'
-import { useState, useEffect } from 'react'
 
 export default function Nav() {
     const router = useRouter()
@@ -40,7 +38,6 @@ export default function Nav() {
                                 <NotificationDropdown />
                                 <Link
                                     href="/account"
-                                    //className="text-gray-600 hover:text-gray-900  rounded-md text-sm font-medium flex items-center"
                                     onClick={handleAccountClick}
                                     className="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium flex items-center"
                                 >
