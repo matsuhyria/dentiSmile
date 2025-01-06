@@ -14,9 +14,6 @@ RUN npm ci && \
 COPY frontend ./
 COPY shared/mqtt ../shared/mqtt
 
-# Set environment variables with defaults
-ENV NODE_ENV=development
-
 EXPOSE 3000
 
 CMD ["npm", "run", "dev"]
