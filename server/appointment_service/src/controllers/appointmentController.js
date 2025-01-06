@@ -1,7 +1,7 @@
 import AppointmentSlot from '../models/appointmentSlot.js';
 import { generateSingleDaySlots, generateMultiDaySlots, isValidIsoDate } from '../utils/dateUtils.js';
-import { publishAllNotifications } from '../routes/appointmentRouter.js';
-
+import mqttUtils from 'shared-mqtt'
+const { MQTT_TOPICS, publish } = mqttUtils;
 
 export const bookAppointment = async (message) => {
     try {
@@ -63,6 +63,9 @@ export const createAppointments = async (message) => {
         if (slots.length < 1) return { status: { code: 400, message: 'Appointment duration invalid' } };
 
         await AppointmentSlot.insertMany(slots);
+
+        // no need to await here 
+        notifyAvailableSlots(clinicId, clinicName, slots)
 
         return { status: { code: 200, message: 'Appointment slots created successfully' } };
     } catch (error) {
@@ -160,6 +163,7 @@ export const getAppointmentById = async (message) => {
         }
         return { status: { code: 200, message: 'Appointment retrieved successfully' }, data: slot };
     } catch (error) {
+        console.log(error);
         return { status: { code: 500, message: 'Error fetching slot details' } };
     }
 };
@@ -173,6 +177,20 @@ export const getAppointmentsByPatientId = async (message) => {
         }
         return { status: { code: 200, message: 'Appointments retrieved successfully' }, data: slot };
     } catch (error) {
+        console.log(error);
         return { status: { code: 500, message: 'Error fetching appointments' } };
     }
 };
+
+const notifyAvailableSlots = async (clinicId, clinicName, slots) => {
+    const groupedByDay = [...new Set(slots.map(slot => {
+        const startDate = new Date(slot.startTime);
+        return startDate.toISOString().split('T')[0];
+    }))];
+    const payload = { clinicId, clinicName, date: groupedByDay }
+    try {
+        await publish(MQTT_TOPICS.NOTIFICATION.AVAILABILITY.EVENT, payload);
+    } catch (error) {
+        console.log(error)
+    }
+}
