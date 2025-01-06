@@ -1,5 +1,5 @@
-import { bookAppointment } from '../../src/controllers/appointmentController.js';
-import AppointmentSlot from '../../src/models/appointmentSlot.js';
+import { bookAppointment } from '../../../src/controllers/appointmentController.js';
+import AppointmentSlot from '../../../src/models/appointmentSlot.js';
 
 import { expect } from 'chai';
 import sinon from 'sinon';

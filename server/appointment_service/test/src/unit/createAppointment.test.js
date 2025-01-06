@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 import sinon from 'sinon';
-import { createAppointments } from '../../src/controllers/appointmentController.js';
-import AppointmentSlot from '../../src/models/appointmentSlot.js';
+import { createAppointments } from '../../../src/controllers/appointmentController.js';
+import AppointmentSlot from '../../../src/models/appointmentSlot.js';
 import { describe, beforeEach, afterEach, it } from 'mocha';
 
 const isValidIsoDate = sinon.stub();
