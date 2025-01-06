@@ -19,7 +19,9 @@ export const transformAppointments = (
 
     appointments.forEach((appointment) => {
         if (
-            appointment.status === 'available'
+            appointment.status === 'available' ||
+            (appointment.status === 'locked' &&
+                appointment.patientId === localStorage.getItem('userId'))
         ) {
             const { dateKey, timeStr } = parseDateTime(appointment.startTime)
 
