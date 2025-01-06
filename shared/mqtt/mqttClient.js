@@ -108,7 +108,7 @@ export const handleEndpoint = async (
                     return;
                 }
 
-                const { clientId } = JSON.parse(message.toString())
+                const { clientId } = parsedMessage;
                 const dynamicResponseTopic = responseTopic(clientId)
                 const response = await callback(message.toString())
                 await publish(dynamicResponseTopic, response, options)

@@ -1,29 +1,6 @@
-import { getAppointmentsByClinic, createAppointments, getAppointmentsByDentist, bookAppointment, getAppointmentById, cancelAppointment, removeAppointment, getAppointmentsByPatientId } from '../controllers/appointmentController.js';
 import mqttUtils from 'shared-mqtt'
-const { handleEndpoint, MQTT_TOPICS, subscribe, publish } = mqttUtils;
-
-export const publishAllNotifications = async (slots) => {
-    const groupedByDay = [...new Set(slots.map(slot => {
-        const startDate = new Date(slot.startTime);
-        return startDate.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-    }))];
-
-    for (const day of groupedByDay) {
-        await publishNotification(day);
-    }
-};
-
-const publishNotification = async (day) => {
-    const notificationEvent = {
-        notification: `New appointment slots are now available on ${day}`
-    };
-
-    try {
-        await publish(MQTT_TOPICS.NOTIFICATION.APPOINTMENT.CREATE, notificationEvent);
-    } catch (error) {
-        console.error('Error publishing notification:', error);
-    }
-};
+import { getAppointmentsByClinic, createAppointments, getAppointmentsByDentist, bookAppointment, getAppointmentById, cancelAppointment, removeAppointment, getAppointmentsByPatientId } from '../controllers/appointmentController.js';
+const { handleEndpoint, MQTT_TOPICS } = mqttUtils;
 
 export const initializeRoutes = async () => {
     const { CREATE, RETRIEVE, BOOK, CANCEL, DELETE, CLINIC, PATIENT } = MQTT_TOPICS.APPOINTMENT;

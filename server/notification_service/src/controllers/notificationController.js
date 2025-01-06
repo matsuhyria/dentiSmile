@@ -1,105 +1,44 @@
-import DateSubscription from "../models/dateSubscription.js"
+import mqttUtils from 'shared-mqtt';
+import { getSubscriptionByClinicAndDate } from './subscriptionController.js';
+const { publish, MQTT_TOPICS } = mqttUtils;
 
-export const subscribeToDate = async (message) => {
+export const notifyAvailableSlots = async (message) => {
     try {
-        const { clinicId, patientId, date } = JSON.parse(message)
-
-        // TO-DO: add checks for id validation
-
-        const existingSubscription = await DateSubscription.findOne({ clinicId, date });
-
-        if (existingSubscription) {
-            if (existingSubscription.patientId.includes(patientId)) {
-                return {
-                    status: { code: 400, message: `A subscription for this patient already exists for this clinic` },
-                    data: existingSubscription
-                };
-            }
-
-            // If no conflicting patients found, append new one
-            existingSubscription.patientId.push(patientId);
-            await existingSubscription.save();
-            return {
-                status: { code: 200, message: 'Patients added to the existing subscription successfully' },
-                data: existingSubscription
-            };
-        }
-
-        const newSubscription = new DateSubscription({ clinicId, patientId, date })
-        await newSubscription.save()
-
-        return {
-            status: { code: 200, message: 'Subscription has been created successfully' },
-            data: newSubscription
+        // no need to JSON.parse here as the message comes from another service, not the frontend
+        const { clinicId, clinicName, dates } = message;
+        for (const date of dates) {
+            await handleAvailabilityEvent(clinicId, clinicName, date);
         }
     } catch (error) {
-        console.error('Error creating subscription:', error)
-        return { status: { code: 500, message: 'Internal server error' } }
+        console.error('Error sending notification', error)
     }
 }
 
-export const getSubscriptions = async (message) => {
+const handleAvailabilityEvent = async (clinicId, clinicName, date) => {
     try {
-        const { patientId } = JSON.parse(message)
+        const payload = { clinicId, date };
+        const subscription = await getSubscriptionByClinicAndDate(JSON.stringify(payload));
 
-        // TO-DO: add checks for id validation
+        // do nothing if nobody subscribed
+        if (!subscription.data || subscription.data.length === 0) return
 
-        const subscriptions = await DateSubscription.find({ patientId: { $in: [patientId] } });
-        if (subscriptions.length < 1) {
-            return {
-                status: { code: 404, message: 'No subscriptions found for this patient' }
-            };
+        const day = new Date(date).toLocaleDateString('en-US', { month: 'long', day: 'numeric' });
+        const notificationEvent = {
+            notification: `New appointment slots are now available on ${day} in ${clinicName}`
+        };
+
+        // only one subscription exists with provided 'clinicId' and 'date'
+        const subscriptionItem = subscription.data[0];
+        for (const patientId of subscriptionItem.patientId) {
+            try {
+                await publish(MQTT_TOPICS.NOTIFICATION.APPOINTMENT.CREATED(patientId), notificationEvent);
+            } catch (mqttPublishError) {
+                console.error(`Failed to send notification to patient ${patientId}:`, mqttPublishError);
+            }
         }
 
-        return {
-            status: { code: 200, message: 'Subscriptions retrieved successfully' },
-            data: subscriptions
-        };
     } catch (error) {
-        console.error('Error fetching subscription:', error)
-        return { status: { code: 500, message: 'Internal server error' } }
+        console.error('Error handling availability event:', error);
+        throw error
     }
 }
-
-export const removeSubscription = async (message) => {
-    try {
-        const { subscriptionId, patientId } = JSON.parse(message);
-
-        const subscription = await DateSubscription.findById(subscriptionId);
-
-        if (!subscription) {
-            return {
-                status: { code: 404, message: 'Subscription not found' }
-            };
-        }
-        if (patientId) {
-            const index = subscription.patientId.findIndex(id => id.toString() === patientId);
-
-            if (index !== -1) {
-                subscription.patientId.splice(index, 1);
-            }
-
-            if (subscription.patientId.length === 0) {
-                await subscription.deleteOne().exec();
-                return {
-                    status: { code: 200, message: 'Subscription removed as no patients remain' }
-                };
-            }
-
-            await subscription.save();
-            return {
-                status: { code: 200, message: 'Patient removed from subscription successfully' },
-                data: subscription
-            };
-        }
-
-        await subscription.deleteOne().exec();
-        return {
-            status: { code: 200, message: 'Subscription removed successfully' },
-            data: subscription
-        };
-    } catch (error) {
-        console.error('Error removing subscription:', error);
-        return { status: { code: 500, message: 'Internal server error' } };
-    }
-};

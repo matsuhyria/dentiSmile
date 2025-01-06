@@ -183,12 +183,12 @@ export const getAppointmentsByPatientId = async (message) => {
 };
 
 const notifyAvailableSlots = async (clinicId, clinicName, slots) => {
-    const groupedByDay = [...new Set(slots.map(slot => {
-        const startDate = new Date(slot.startTime);
-        return startDate.toISOString().split('T')[0];
-    }))];
-    const payload = { clinicId, clinicName, date: groupedByDay }
     try {
+        const groupedByDay = [...new Set(slots.map(slot => {
+            const startDate = new Date(slot.startTime);
+            return startDate.toISOString().split('T')[0];
+        }))];
+        const payload = { clinicId, clinicName, dates: groupedByDay }
         await publish(MQTT_TOPICS.NOTIFICATION.AVAILABILITY.EVENT, payload);
     } catch (error) {
         console.log(error)
