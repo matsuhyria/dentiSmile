@@ -1,10 +1,11 @@
 import { useState, useEffect, useCallback } from 'react';
-import { NotificationService } from '@/services/NotificationService';
+import { SubscriptionService } from '@/services/SubscriptionService';
 import { MQTTService } from '@/services/base/MQTTService';
-import { SubscriptionResponse } from '@/services/interfaces/INotificationService';
+import { SubscriptionResponse } from '@/services/interfaces/ISubscriptionService';
+import { ISubscriptionService } from '@/services/interfaces/ISubscriptionService';
 
-export function useNotification() {
-    const [notificationService, setNotificationService] = useState<NotificationService | null>(null)
+export function useSubscription() {
+    const [notificationService, setNotificationService] = useState<ISubscriptionService | null>(null)
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
     const [subscriptionResponse, setSubscriptionResponse] = useState<SubscriptionResponse | null>(null);
@@ -13,7 +14,7 @@ export function useNotification() {
         const initNotificationService = async () => {
             try {
                 const client = await MQTTService.getClient()
-                const service = new NotificationService(client)
+                const service = new SubscriptionService(client)
                 setNotificationService(service)
             } catch (error) {
                 setError(`Failed to initialize notification service ${error}`);
@@ -27,7 +28,7 @@ export function useNotification() {
         setError(null);
 
         try {
-            const response = await notificationService.subscribeToDate(clinicId, patientId, date);
+            const response = await notificationService.createSubscription(clinicId, patientId, date);
             setSubscriptionResponse(response);
         } catch (error) {
             setError(`Error: ${error.message || 'An error occurred while subscribing to the date.'}`);

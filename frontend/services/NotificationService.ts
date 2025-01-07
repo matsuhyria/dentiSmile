@@ -1,39 +1,33 @@
-import { MQTTService } from "./base/MQTTService";
-import { INotificationService, SubscriptionResponse } from "./interfaces/INotificationService";
-import { MQTT_TOPICS } from './base/MQTTService'
-import {
-    RequestResponseManager,
-    RequestType
-} from '@/lib/RequestResponseManager'
+import { MQTT_TOPICS } from "./base/MQTTService";
+import { subscribe, unsubscribe } from "shared-mqtt/mqttClient";
+import { INotificationService, Message } from "./interfaces/INotificationService";
 
-const { SUBSCRIPTION } = MQTT_TOPICS.NOTIFICATION
+const { APPOINTMENT } = MQTT_TOPICS.NOTIFICATION
 
 export class NotificationService implements INotificationService {
-    private client: MQTTService
-    private requestManager: RequestResponseManager<SubscriptionResponse>
+    private patientId: string
 
-    constructor(client: MQTTService) {
-        this.client = client
-        this.requestManager = new RequestResponseManager<SubscriptionResponse>()
+    constructor(patientId: string) {
+        this.patientId = patientId
     }
 
-    public async subscribeToDate(clinicId: string, patientId: string, date: Date): Promise<SubscriptionResponse> {
+    public async subscribeForAvailabilityNotifications(callback: (message: Message) => void): Promise<void> {
         try {
-            const responseTopic = SUBSCRIPTION.CREATE.RESPONSE('')
-
-            const response = await this.requestManager.request(
-                SUBSCRIPTION.CREATE.REQUEST,
-                responseTopic,
-                { clinicId, patientId, date },
-                this.client,
-                RequestType.DIRECT
-            )
-
-            return response
+            const topic = APPOINTMENT.CREATED(this.patientId);
+            await subscribe(topic, callback);
         } catch (error) {
             console.error(error)
             throw new Error(`Failed to subscribe: ${error.message}`)
         }
     }
 
+    public async unsubscribeFromAllNotifications() {
+        try {
+            const topic = APPOINTMENT.CREATED(this.patientId);
+            await unsubscribe(topic);
+        } catch (error) {
+            console.error(error)
+            throw new Error(`Failed to subscribe: ${error.message}`)
+        }
+    }
 }
