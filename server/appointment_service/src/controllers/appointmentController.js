@@ -81,7 +81,7 @@ export const cancelAppointment = async (message) => {
         const appointment = await AppointmentSlot.findById(appointmentId);
 
         if (!appointment) {
-            return { status: { code: 400, message: 'Appointment does not exist' } };
+            return { status: { code: 404, message: 'Appointment does not exist' } };
         }
 
         if (appointment.status === 'available' && appointment.patientId === null) {
@@ -132,8 +132,6 @@ export const getAppointmentsByClinic = async (message) => {
 
 export const getAppointmentsByDentist = async (message) => {
     try {
-        // Finds appointments for a specific dentist within the given timeframe
-        // Dentist, starting date and ending date will be passed in as query parameters
         const { dentistId, startingDate, endingDate } = JSON.parse(message);
 
         if (!dentistId || !startingDate || !endingDate) {
