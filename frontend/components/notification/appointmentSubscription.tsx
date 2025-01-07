@@ -1,8 +1,8 @@
-import { useNotification } from '@/hooks/useNotifications';
+import { useSubscription } from '@/hooks/useSubscription';
 import { useEffect } from 'react';
 
 const AppointmentSubscription = ({ clinicId, patientId, date }: { clinicId: string; patientId: string; date: Date; }) => {
-    const { isLoading, error, subscriptionResponse, subscribeToDate, resetResponse } = useNotification();
+    const { isLoading, error, subscriptionResponse, subscribeToDate, resetResponse } = useSubscription();
 
     const handleSubscribe = async () => {
         await subscribeToDate(clinicId, patientId, date);
