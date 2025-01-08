@@ -18,6 +18,7 @@ export const bookAppointment = async (message) => {
         slot.status = 'booked';
         slot.patientId = patientId;
         await slot.save();
+        notifyAppointmentBooked(slot.clinicId, slot.dentistId, slot.patientId, slot.startTime, slot.endTime);
 
         return { status: { code: 200, message: 'Appointment slot booked successfully' }, slot };
     } catch (error) {
@@ -187,8 +188,17 @@ const notifyAvailableSlots = async (clinicId, clinicName, slots) => {
             return startDate.toISOString().split('T')[0];
         }))];
         const payload = { clinicId, clinicName, dates: groupedByDay }
-        await publish(MQTT_TOPICS.NOTIFICATION.AVAILABILITY.EVENT, payload);
+        await publish(MQTT_TOPICS.NOTIFICATION.EVENT.AVAILABILITY, payload);
     } catch (error) {
-        console.log(error)
+        console.log('Error publishing event', error)
+    }
+}
+
+const notifyAppointmentBooked = async (clinicId, dentistId, patientId, startTime, endTime) => {
+    try {
+        const payload = { clinicId, dentistId, patientId, startTime, endTime };
+        await publish(MQTT_TOPICS.NOTIFICATION.EVENT.APPOINTMENT.BOOKED, payload);
+    } catch (error) {
+        console.log('Error publishing event', error)
     }
 }
