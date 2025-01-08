@@ -4,7 +4,7 @@ const { publish, MQTT_TOPICS } = mqttUtils;
 
 export const notifyAppointmentCanceled = async (message) => {
     try {
-        const { clinicId, clinicName, patientId, startTime, endTime } = message;
+        const { clinicName, patientId, dentistId, startTime, endTime } = message;
         const start = new Date(startTime).toLocaleString("en-US", {
             weekday: "long",
             month: "long",
@@ -24,7 +24,8 @@ export const notifyAppointmentCanceled = async (message) => {
             notification: `Your appointment at ${start} to ${end} in ${clinicName} has been canceled.`
         }
 
-        await publish(MQTT_TOPICS.NOTIFICATION.APPOINTMENT.CANCELED(patientId), notificationEvent);
+        await publish(MQTT_TOPICS.NOTIFICATION.APPOINTMENT.CANCELED(patientId), notificationEvent); // notify patient
+        await publish(MQTT_TOPICS.NOTIFICATION.APPOINTMENT.CANCELED(dentistId), notificationEvent); // notify dentist
 
     } catch (error) {
         console.error('Error sending notification', error)
