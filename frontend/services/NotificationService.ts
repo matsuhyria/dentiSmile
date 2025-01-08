@@ -21,6 +21,16 @@ export class NotificationService implements INotificationService {
         }
     }
 
+    public async subscribeForAppointmentCancellationNotifications(callback: (message: Message) => void): Promise<void> {
+        try {
+            const topic = APPOINTMENT.CANCELED(this.patientId);
+            await subscribe(topic, callback);
+        } catch (error) {
+            console.error(error)
+            throw new Error(`Failed to subscribe: ${error.message}`)
+        }
+    }
+
     public async unsubscribeFromAllNotifications() {
         try {
             const topic = APPOINTMENT.CREATED(this.patientId);
