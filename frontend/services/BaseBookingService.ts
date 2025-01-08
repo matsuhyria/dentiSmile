@@ -1,33 +1,39 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import { BookingResponse, IBookingService } from './interfaces/IBookingService'
-import { IBooking } from './interfaces/IBooking'
-import { IAppointment } from './interfaces/IAppointment'
+import { IBookingService } from './interfaces/IBookingService'
 import { RequestResponseManager } from '@/lib/RequestResponseManager'
+import { EventEmitter } from 'events'
+import { MqttClient } from 'mqtt'
 
 export abstract class BaseBookingService implements IBookingService {
-    protected client: any
-    protected requestManager: RequestResponseManager<any>
+    protected client: MqttClient
+    protected requestManager: RequestResponseManager<MqttClient>
 
-    constructor(client: any) {
+    constructor(client: MqttClient) {
         this.client = client
-        this.requestManager = new RequestResponseManager<any>()
+        this.requestManager = new RequestResponseManager<MqttClient>()
+
+        if (!client || typeof client.on !== 'function') {
+            throw new Error('Invalid MQTT client provided')
+        }
     }
+
     public abstract requestAppointment(
         appointmentId: string,
         patientId: string
-    ): Promise<{ error?: string; data?: BookingResponse }>
+    ): EventEmitter
+
     public abstract cancelBooking(
         bookingId: string
-    ): Promise<{ error?: string; data?: Record<string, unknown> }>
+    ): EventEmitter
+
     public abstract getBookings(
         patientId: string
-    ): Promise<{ data: IBooking[] }>
+    ): EventEmitter
 
     public abstract getBookingAppointments(
         clinicId: string,
         reasonId?: string,
         date?: string
-    ): Promise<{ error?: string; data?: IAppointment[] }>
+    ): EventEmitter
 
     public abstract disconnect(): Promise<void>
 }

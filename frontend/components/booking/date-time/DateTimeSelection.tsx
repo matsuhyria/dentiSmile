@@ -6,6 +6,7 @@ import TimeSelection from './TimeSelection'
 import { Alert } from '@/components/ui/alert'
 import { TimeSlot } from '@/lib/appointmentUtils'
 import AppointmentSubscription from '@/components/notification/appointmentSubscription'
+import { parseDateTime } from '@/lib/dateUtils'
 
 interface DateTimeSelectionProps {
     onEdit: () => void
@@ -76,38 +77,25 @@ export default function DateTimeSelection({
                         <Alert className="mt-8 bg-sky-100">
                             <p className="text-sm text-gray-600">
                                 No available times on this date.
-                            </p>
-                        </Alert>
-                        <div className="mt-6">
-                            <AppointmentSubscription
+                                <AppointmentSubscription
                                 clinicId={clinicId}
                                 patientId={localStorage.getItem('userId')}
                                 date={selectedDate}
                             />
-                        </div>
+                            </p>
+                        </Alert>
                     </>
                 )}
             </div>
         )
     }
 
-    // If we reach here, the step is not active and we have a selected date/time, so show a summary
     return (
         <div className="border p-4 border-b-0 py-2">
             <div className="flex justify-between items-center text-gray-600 text-sm">
                 <p>
-                    {selectedDate?.toLocaleDateString('en-US', {
-                        weekday: 'long',
-                        year: 'numeric',
-                        month: 'long',
-                        day: 'numeric'
-                    })}
-                    ,{' '}
-                    {selectedTime?.toLocaleTimeString('en-US', {
-                        hour: 'numeric',
-                        minute: '2-digit',
-                        hour12: false
-                    })}
+                    {parseDateTime(selectedDate).dateKey},{' '}
+                    {parseDateTime(selectedTime).dateKey}
                 </p>
                 <Button variant="ghost" onClick={onEdit}>
                     Edit

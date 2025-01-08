@@ -1,32 +1,48 @@
-import { useNotification } from '@/hooks/useNotifications';
-import { useEffect } from 'react';
+import useNotification from '@/hooks/useNotifications'
+import { useEffect } from 'react'
+import { Button } from '@/components/ui/button'
 
-const AppointmentSubscription = ({ clinicId, patientId, date }: { clinicId: string; patientId: string; date: Date; }) => {
-    const { isLoading, error, subscriptionResponse, subscribeToDate, resetResponse } = useNotification();
+const AppointmentSubscription = ({
+    clinicId,
+    patientId,
+    date
+}: {
+    clinicId: string
+    patientId: string
+    date: Date
+}) => {
+    const {
+        isLoading,
+        error,
+        subscriptionResponse,
+        subscribeToDate,
+        resetResponse
+    } = useNotification()
 
     const handleSubscribe = async () => {
-        await subscribeToDate(clinicId, patientId, date);
-    };
+        await subscribeToDate(clinicId, patientId, date)
+    }
 
     useEffect(() => {
-        resetResponse();
-    }, [clinicId, patientId, date, resetResponse]);
+        resetResponse()
+    }, [clinicId, patientId, date, resetResponse])
 
     return (
-        <div>
-            <h2>Subscribe to future appointments on this day</h2>
-            <button onClick={handleSubscribe} disabled={isLoading}>
+        <>
+            <Button
+                onClick={handleSubscribe}
+                disabled={isLoading}
+                variant="link"
+            >
                 {isLoading ? 'Subscribing...' : 'Subscribe'}
-            </button>
+            </Button>{' '}
+            to future appointments on this day.
+            <div>
+                {error && <div style={{ color: 'red' }}>{error}</div>}
+                {subscriptionResponse && <h3 className='text-green-700'>Subscription Successful!</h3>}
+            </div>
+        </>
+    )
+}
 
-            {error && <div style={{ color: 'red' }}>{error}</div>}
-            {subscriptionResponse && (
-                <div>
-                    <h3>Subscription Successful!</h3>
-                </div>
-            )}
-        </div>
-    );
-};
-
-export default AppointmentSubscription;
+export default AppointmentSubscription

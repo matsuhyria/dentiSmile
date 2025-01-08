@@ -1,13 +1,15 @@
-import { useState, useEffect, useCallback } from 'react';
-import { NotificationService } from '@/services/NotificationService';
-import { MQTTService } from '@/services/base/MQTTService';
-import { SubscriptionResponse } from '@/services/interfaces/INotificationService';
+import { useState, useEffect, useCallback } from 'react'
+import { NotificationService } from '@/services/NotificationService'
+import { MQTTService } from '@/services/base/MQTTService'
+import { SubscriptionResponse } from '@/services/interfaces/INotificationService'
 
-export function useNotification() {
-    const [notificationService, setNotificationService] = useState<NotificationService | null>(null)
-    const [isLoading, setIsLoading] = useState<boolean>(false);
-    const [error, setError] = useState<string | null>(null);
-    const [subscriptionResponse, setSubscriptionResponse] = useState<SubscriptionResponse | null>(null);
+const useNotification = () => {
+    const [notificationService, setNotificationService] =
+        useState<NotificationService | null>(null)
+    const [isLoading, setIsLoading] = useState<boolean>(false)
+    const [error, setError] = useState<string | null>(null)
+    const [subscriptionResponse, setSubscriptionResponse] =
+        useState<SubscriptionResponse | null>(null)
 
     useEffect(() => {
         const initNotificationService = async () => {
@@ -16,36 +18,49 @@ export function useNotification() {
                 const service = new NotificationService(client)
                 setNotificationService(service)
             } catch (error) {
-                setError(`Failed to initialize notification service ${error}`);
+                setError(`Failed to initialize notification service ${error}`)
             }
         }
         initNotificationService()
     }, []) // run once when component mounts
 
-    const subscribeToDate = async (clinicId: string, patientId: string, date: Date) => {
-        setIsLoading(true);
-        setError(null);
+    const subscribeToDate = async (
+        clinicId: string,
+        patientId: string,
+        date: Date
+    ) => {
+        setIsLoading(true)
+        setError(null)
 
         try {
-            const response = await notificationService.subscribeToDate(clinicId, patientId, date);
-            setSubscriptionResponse(response);
+            const response = await notificationService.subscribeToDate(
+                clinicId,
+                patientId,
+                date
+            )
+            setSubscriptionResponse(response)
         } catch (error) {
-            setError(`Error: ${error.message || 'An error occurred while subscribing to the date.'}`);
+            setError(
+                `Error: ${
+                    error.message ||
+                    'An error occurred while subscribing to the date.'
+                }`
+            )
         } finally {
-            setIsLoading(false);
+            setIsLoading(false)
         }
-    };
+    }
 
     useEffect(() => {
         return () => {
             // TO-DO:Cleanup logic
-            console.log('Cleaning up NotificationService...');
-        };
-    }, [notificationService]);
+            console.log('Cleaning up NotificationService...')
+        }
+    }, [notificationService])
 
     const resetResponse = useCallback(() => {
-        setSubscriptionResponse(null);
-    }, []);
+        setSubscriptionResponse(null)
+    }, [])
 
     return {
         isLoading,
@@ -53,5 +68,7 @@ export function useNotification() {
         subscriptionResponse,
         subscribeToDate,
         resetResponse
-    };
+    }
 }
+
+export default useNotification
