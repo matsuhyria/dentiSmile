@@ -2,9 +2,37 @@ import mqttUtils from 'shared-mqtt';
 import { getSubscriptionByClinicAndDate } from './subscriptionController.js';
 const { publish, MQTT_TOPICS } = mqttUtils;
 
+export const notifyAppointmentCanceled = async (message) => {
+    try {
+        const { clinicId, clinicName, patientId, startTime, endTime } = message;
+        const start = new Date(startTime).toLocaleString("en-US", {
+            weekday: "long",
+            month: "long",
+            day: "numeric",
+            year: "numeric",
+            hour: "numeric",
+            minute: "2-digit",
+            hour12: true
+        });
+
+        const end = new Date(endTime).toLocaleString("en-US", {
+            hour: "numeric",
+            minute: "2-digit",
+            hour12: true
+        });
+        const notificationEvent = {
+            notification: `Your appointment at ${start} to ${end} in ${clinicName} has been canceled.`
+        }
+
+        await publish(MQTT_TOPICS.NOTIFICATION.APPOINTMENT.CANCELED(patientId), notificationEvent);
+
+    } catch (error) {
+        console.error('Error sending notification', error)
+    }
+}
+
 export const notifyAvailableSlots = async (message) => {
     try {
-        // no need to JSON.parse here as the message comes from another service, not the frontend
         const { clinicId, clinicName, dates } = message;
         for (const date of dates) {
             await handleAvailabilityEvent(clinicId, clinicName, date);

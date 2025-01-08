@@ -89,9 +89,11 @@ export const cancelAppointment = async (message) => {
         }
 
         appointment.status = 'available';
+        const patient = appointment.patientId;
         appointment.patientId = null;
         await appointment.save();
 
+        notifyAppointmentCanceled(appointment.clinicId, appointment.clinicName, patient, appointment.startTime, appointment.endTime);
         return { status: { code: 200, message: 'Appointment cancelled successfully' }, data: appointment };
     } catch (error) {
         console.error(error);
@@ -187,7 +189,16 @@ const notifyAvailableSlots = async (clinicId, clinicName, slots) => {
             return startDate.toISOString().split('T')[0];
         }))];
         const payload = { clinicId, clinicName, dates: groupedByDay }
-        await publish(MQTT_TOPICS.NOTIFICATION.AVAILABILITY.EVENT, payload);
+        await publish(MQTT_TOPICS.NOTIFICATION.EVENT.AVAILABILITY, payload);
+    } catch (error) {
+        console.log(error)
+    }
+}
+
+const notifyAppointmentCanceled = async (clinicId, clinicName, patientId, startTime, endTime) => {
+    try {
+        const payload = { clinicId, clinicName, patientId, startTime, endTime };
+        await publish(MQTT_TOPICS.NOTIFICATION.EVENT.APPOINTMENT.CANCELED, payload);
     } catch (error) {
         console.log(error)
     }
