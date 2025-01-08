@@ -195,8 +195,6 @@ export const createAppointments = async (message) => {
         // no need to await here 
         notifyAvailableSlots(clinicId, clinicName, slots)
 
-        // don't need to await here
-        publishAllNotifications(slots)
         return {
             status: {
                 code: 200,
