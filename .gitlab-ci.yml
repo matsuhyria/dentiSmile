@@ -9,8 +9,21 @@ variables:
   shared_module_path: "shared"
 
 stages:
+  - lint
   - build
   - test
+
+lint:
+  stage: lint
+  tags:
+    - docker
+  script:
+    - cd server
+    - npm ci
+    - npm run lint
+  rules:
+    - changes:
+      - server/**/*.js
 
 build-auth-service:
   stage: build

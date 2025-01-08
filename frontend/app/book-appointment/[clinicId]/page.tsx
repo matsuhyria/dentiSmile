@@ -1,7 +1,7 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 'use client'
 
 import { useEffect, useState } from 'react'
+import { useParams, useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { toast } from 'sonner'
 import Link from 'next/link'
@@ -11,14 +11,9 @@ import ReasonSelection from '@/components/booking/ReasonSelection'
 import DateTimeSelection from '@/components/booking/date-time/DateTimeSelection'
 import Confirmation from '@/components/booking/Confirmation'
 import { getAvailableReasons } from '@/lib/reasonStore'
-import { useRouter } from 'next/navigation'
 
-export default function BookAppointmentPage({
-    params
-}: {
-    params: { clinicId: string }
-}) {
-    const { clinicId } = params
+export default function BookAppointmentPage() {
+    const { clinicId } = useParams() as { clinicId: string }
     const [currentStep, setCurrentStep] = useState<
         'reason' | 'datetime' | 'confirmation'
     >('reason')
@@ -32,23 +27,32 @@ export default function BookAppointmentPage({
     const [result, setResult] = useState<{
         success: boolean
         error?: string
-        data?: any
+        data?: {
+            appointmentId: string
+            status: string
+        }
     }>({ success: true })
 
     const router = useRouter()
 
-    const { clinicName, monthlyAvailability, availableTimes } =
-        useClinicAppointments({
-            clinicId,
-            reasonId,
-            selectedDate
-        })
+    const {
+        clinicName,
+        monthlyAvailability,
+        availableTimes,
+        lockAppointment,
+        unlockAppointment,
+        clearLock
+    } = useClinicAppointments({
+        clinicId,
+        reasonId,
+        selectedDate
+    })
 
     const { requestAppointment } = useBooking()
 
     useEffect(() => {
         if (appointmentConfirmed) {
-            toast('Appointment Confirmed!', {
+            toast.success('Appointment Confirmed!', {
                 description: `Your appointment has been successfully booked.`
             })
             router.replace('/')
@@ -65,11 +69,15 @@ export default function BookAppointmentPage({
         setCurrentStep('datetime')
     }
 
-    const handleDateTimeSelect = (
+    const handleDateTimeSelect = async (
         date: Date,
         time: Date,
         appointmentId: string
     ) => {
+        if (selectedAppointmentId) {
+            unlockAppointment(selectedAppointmentId)
+        }
+        lockAppointment(appointmentId, localStorage.getItem('userId') || '', clinicId)
         setSelectedDate(date)
         setSelectedTime(time)
         setSelectedAppointmentId(appointmentId)
@@ -98,6 +106,7 @@ export default function BookAppointmentPage({
         setResult(bookingResult)
 
         if (bookingResult.success && bookingResult.data) {
+            clearLock()
             setAppointmentConfirmed(true)
         }
     }
@@ -147,7 +156,7 @@ export default function BookAppointmentPage({
                     selectedTime={selectedTime}
                     onConfirm={handleConfirm}
                     appointmentDuration={duration || 30}
-                    disableButton={result.data}
+                    disableButton={!!result.data}
                 />
                 {result.success === false && (
                     <div className="mt-4 p-4 bg-red-100 text-red-800 rounded">

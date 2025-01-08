@@ -1,13 +1,16 @@
 import { useState, useEffect, useCallback } from 'react'
 import { AuthData, AuthService } from '@/services/AuthService'
-import { MQTTService } from '@/services/base/MQTTService'
 import { useRouter } from 'next/navigation'
+import { useMQTTService } from './useMQTTService'
 
 export const useAuth = () => {
     const router = useRouter()
-    const [authService, setAuthService] = useState<AuthService | null>(null)
+    const { service: authService, error: serviceError } = useMQTTService(
+        AuthService,
+        null // or a mock service if available
+    )
     const [loading, setLoading] = useState<boolean>(false)
-    const [error, setError] = useState<Error | null>(null)
+    const [error, setError] = useState<Error | null>(serviceError)
     const [authData, setAuthData] = useState<AuthData | null>(null)
 
     useEffect(() => {
@@ -18,30 +21,40 @@ export const useAuth = () => {
         }
     }, [authData, router])
 
-    useEffect(() => {
-        const initAuthService = async () => {
-            try {
-                const client = await MQTTService.getClient()
-                const service = new AuthService(client)
-                setAuthService(service)
-            } catch (error) {
-                setError(
-                    error instanceof Error
-                        ? error
-                        : new Error('Failed to initialize auth service')
-                )
-            }
-        }
-        initAuthService()
-    }, []) // run once when component mounts
-
     const register = useCallback(
         async (email: string, password: string) => {
             setLoading(true)
             setError(null)
 
+            if (!authService) {
+                setError(new Error('Auth service not initialized'))
+                setLoading(false)
+                return
+            }
+
             try {
-                const authData = await authService.register(email, password)
+                const authData = await new Promise<AuthData>((resolve, reject) => {
+                    const emitter = authService.register(email, password)
+
+                    const onData = (data: AuthData) => {
+                        resolve(data)
+                        cleanup()
+                    }
+
+                    const onError = (err: Error) => {
+                        reject(err)
+                        cleanup()
+                    }
+
+                    const cleanup = () => {
+                        emitter.removeListener('data', onData)
+                        emitter.removeListener('error', onError)
+                    }
+
+                    emitter.on('data', onData)
+                    emitter.on('error', onError)
+                })
+
                 if (authData?.token) {
                     setAuthData(authData)
                 }
@@ -68,8 +81,35 @@ export const useAuth = () => {
             setLoading(true)
             setError(null)
 
+            if (!authService) {
+                setError(new Error('Auth service not initialized'))
+                setLoading(false)
+                return
+            }
+
             try {
-                const authData = await authService.login(email, password)
+                const authData = await new Promise<AuthData>((resolve, reject) => {
+                    const emitter = authService.login(email, password)
+
+                    const onData = (data: AuthData) => {
+                        resolve(data)
+                        cleanup()
+                    }
+
+                    const onError = (err: Error) => {
+                        reject(err)
+                        cleanup()
+                    }
+
+                    const cleanup = () => {
+                        emitter.removeListener('data', onData)
+                        emitter.removeListener('error', onError)
+                    }
+
+                    emitter.on('data', onData)
+                    emitter.on('error', onError)
+                })
+
                 if (authData?.token) {
                     setAuthData(authData)
                 }
