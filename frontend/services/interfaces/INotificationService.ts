@@ -1,16 +1,8 @@
-export interface SubscriptionResponse {
-    status: {
-        code: number;
-        message: string;
-    };
-    data: {
-        clinicId: string;
-        patientId: string;
-        _id: string;
-        date: string;
-    };
+export interface Message {
+    notification: string;
 }
 
 export interface INotificationService {
-    subscribeToDate(clinicId: string, patientId: string, date: Date): Promise<SubscriptionResponse>;
+    subscribeForAvailabilityNotifications(callback: (message: Message) => void): Promise<void>
+    unsubscribeFromAllNotifications(): Promise<void>
 }

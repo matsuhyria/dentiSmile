@@ -1,14 +1,15 @@
 import { useState } from "react";
 import { Bell } from "lucide-react";
-import useNotifications from "@/hooks/useNotifications";
-import mqtt from 'shared-mqtt';
-const { MQTT_TOPICS } = mqtt;
+import { useNotification } from "@/hooks/useNotification";
 
-function NotificationDropdown() {
+const NotificationDropdown = ({ patientId }: { patientId: string; }) => {
     const [isOpen, setIsOpen] = useState(false);
-    const topic = MQTT_TOPICS.NOTIFICATION.APPOINTMENT.CREATE;
-    const notifications = useNotifications(topic);
-
+    const {
+        isLoading,
+        error,
+        notifications,
+        clearNotifications,
+    } = useNotification(patientId);
 
     const toggleDropdown = () => {
         setIsOpen((prev) => !prev);
@@ -30,21 +31,23 @@ function NotificationDropdown() {
                         <h4 className="text-gray-800 font-semibold">Notifications</h4>
                     </div>
                     <ul className="divide-y divide-gray-200">
+                        {isLoading && <p>Loading...</p>}
+                        {error && <p>Error: {error}</p>}
                         {notifications.length > 0 ? (
-                            notifications.map((notification) => (
+                            notifications.map((notification, index) => (
                                 <li
-                                    key={notification.id}
+                                    key={index}
                                     className="text-gray-800 p-2 hover:bg-gray-100 cursor-pointer"
                                 >
-                                    {notification.message}
+                                    {notification}
                                 </li>
                             ))
                         ) : (
-                            <li className="p-2 text-gray-500">No notifications available.</li>
+                            <li className="p-2 text-gray-500">Notification list is empty.</li>
                         )}
                     </ul>
                     <div className="p-2 text-center text-blue-500 hover:underline cursor-pointer">
-                        View All
+                        <button onClick={clearNotifications}>Clear notifications</button>
                     </div>
                 </div>
             )

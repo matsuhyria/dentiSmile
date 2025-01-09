@@ -35,7 +35,9 @@ export default function Nav() {
                                 </Link>
                             </div>
                             <div className="flex items-center">
-                                <NotificationDropdown />
+                                <NotificationDropdown
+                                    patientId={localStorage.getItem('userId')}
+                                />
                                 <Link
                                     href="/account"
                                     onClick={handleAccountClick}
