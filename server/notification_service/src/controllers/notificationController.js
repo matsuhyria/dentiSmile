@@ -2,6 +2,35 @@ import mqttUtils from 'shared-mqtt';
 import { getSubscriptionByClinicAndDate } from './subscriptionController.js';
 const { publish, MQTT_TOPICS } = mqttUtils;
 
+export const notifyAppointmentBooked = async (message) => {
+    try {
+        const { dentistId, startTime, endTime } = message;
+
+        const start = new Date(startTime).toLocaleString("en-US", {
+            weekday: "long",
+            month: "long",
+            day: "numeric",
+            year: "numeric",
+            hour: "numeric",
+            minute: "2-digit",
+            hour12: true
+        });
+
+        const end = new Date(endTime).toLocaleString("en-US", {
+            hour: "numeric",
+            minute: "2-digit",
+            hour12: true
+        });
+        const notificationEvent = {
+            notification: `You have a new appointment booked at ${start} to ${end}`
+        }
+        await publish(MQTT_TOPICS.NOTIFICATION.APPOINTMENT.BOOKED(dentistId), notificationEvent);
+
+    } catch (error) {
+        console.error('Error sending notification', error)
+    }
+}
+
 export const notifyAvailableSlots = async (message) => {
     try {
         // no need to JSON.parse here as the message comes from another service, not the frontend
@@ -33,7 +62,7 @@ const handleAvailabilityEvent = async (clinicId, clinicName, date) => {
             try {
                 await publish(MQTT_TOPICS.NOTIFICATION.APPOINTMENT.CREATED(patientId), notificationEvent);
             } catch (mqttPublishError) {
-                console.error(`Failed to send notification to patient ${patientId}:`, mqttPublishError);
+                console.error(`Failed to send notification to patient ${patientId}: `, mqttPublishError);
             }
         }
 

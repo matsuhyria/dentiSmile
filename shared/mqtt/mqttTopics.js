@@ -72,22 +72,22 @@ export const MQTT_TOPICS = {
                 RESPONSE: (clientId) => `notification/subscription/cancel/${clientId}`
             }
         },
-        AVAILABILITY: {
-            EVENT: 'notification/availability/event'
-        },
         APPOINTMENT: {
             CREATED: (clientId) => `notification/appointment/created/${clientId}`,
-            BOOK: {
-                REQUEST: (clientId) => `appointment/book/${clientId}`,
-                RESPONSE: (clientId) =>
-                    `notification/appointment/book/${clientId}`
-            },
+            BOOKED: (clientId) => `notification/appointment/booked/${clientId}`,
             CANCEL: {
                 REQUEST: (clientId) => `appointment/cancel/${clientId}`,
                 RESPONSE: (clientId) =>
                     `notification/appointment/cancel/${clientId}`
             }
-        }
+        },
+        EVENT: {
+            AVAILABILITY: 'notification/event/availability',
+            APPOINTMENT: {
+                BOOKED: 'notification/event/appointment/booked',
+                CANCELED: 'notification/event/appointment/canceled'
+            },
+        },
     },
     CLINIC: {
         CREATE: {
