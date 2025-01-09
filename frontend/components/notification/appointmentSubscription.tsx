@@ -1,32 +1,51 @@
-import { useSubscription } from '@/hooks/useSubscription';
-import { useEffect } from 'react';
+import { Button } from '../ui/button';
+import { useAppointmentSubscription } from '@/hooks/useAppointmentSubscription';
+import { useEffect, useState } from 'react';
 
 const AppointmentSubscription = ({ clinicId, patientId, date }: { clinicId: string; patientId: string; date: Date; }) => {
-    const { isLoading, error, subscriptionResponse, subscribeToDate, resetResponse } = useSubscription();
+    const { isLoading, error, subscribeToDate } = useAppointmentSubscription();
+    const [responseMessage, setResponseMessage] = useState<string | null>(null);
 
     const handleSubscribe = async () => {
-        await subscribeToDate(clinicId, patientId, date);
+        setResponseMessage(null);
+        const { success } = await subscribeToDate(clinicId, patientId, date)
+
+        if (success) {
+            setResponseMessage('Subscription successful!')
+        } else {
+            setResponseMessage('An error occured while subscribing!')
+        }
     };
 
     useEffect(() => {
-        resetResponse();
-    }, [clinicId, patientId, date, resetResponse]);
+        setResponseMessage(null);
+    }, [clinicId, patientId, date])
 
     return (
-        <div>
-            <h2>Subscribe to future appointments on this day</h2>
-            <button onClick={handleSubscribe} disabled={isLoading}>
-                {isLoading ? 'Subscribing...' : 'Subscribe'}
-            </button>
+        <>
+            <p className="text-gray-600">
+                <Button
+                    onClick={handleSubscribe}
+                    disabled={isLoading}
+                    variant="link"
+                >
+                    {isLoading ? 'Subscribing...' : 'Subscribe'}
+                </Button>
+                to future appointments on this day.
+            </p>
+            <div>
+                {responseMessage && (
+                    <div
+                        style={{
+                            color: error ? 'red' : 'green',
+                        }}
+                    >
+                        {responseMessage}
+                    </div>
+                )}
+            </div>
+        </>
+    )
+}
 
-            {error && <div style={{ color: 'red' }}>{error}</div>}
-            {subscriptionResponse && (
-                <div>
-                    <h3>Subscription Successful!</h3>
-                </div>
-            )}
-        </div>
-    );
-};
-
-export default AppointmentSubscription;
+export default AppointmentSubscription

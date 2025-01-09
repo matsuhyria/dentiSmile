@@ -40,7 +40,6 @@ export default function Nav() {
                                 />
                                 <Link
                                     href="/account"
-                                    //className="text-gray-600 hover:text-gray-900  rounded-md text-sm font-medium flex items-center"
                                     onClick={handleAccountClick}
                                     className="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium flex items-center"
                                 >

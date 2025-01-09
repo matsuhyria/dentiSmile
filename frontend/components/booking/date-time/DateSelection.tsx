@@ -2,6 +2,7 @@
 
 import Calendar, { TileDisabledFunc } from 'react-calendar'
 import './Calendar.css'
+import { parseDateTime } from '@/lib/dateUtils'
 
 interface DateSelectionProps {
     setSelectedDate: (date: Date | null) => void
@@ -29,12 +30,13 @@ export default function DateSelection({
     }
 
     function tileClassName({ date }: { date: Date }) {
-        const isoDate = date.toISOString().split('T')[0]
+        const { dateKey } = parseDateTime(date)
 
         // Highlight dates based on availability
-        if (monthlyAvailability[isoDate] && monthlyAvailability[isoDate] > 0) {
+        if (monthlyAvailability[dateKey] && monthlyAvailability[dateKey] > 0) {
             return 'bg-green-50 text-green-700'
         }
+
         return ''
     }
 

@@ -27,7 +27,7 @@ const appointmentSlot = new mongoose.Schema({
     },
     status: {
         type: String,
-        enum: ['available', 'booked', 'canceled'],
+        enum: ['available', 'booked', 'locked', 'canceled'],
         default: 'available'
     }
 });

@@ -1,5 +1,6 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import { generateUniqueId } from "./utils"
+import { MqttClient } from 'mqtt'
+import { generateUniqueId } from './utils'
+import { EventEmitter } from 'events'
 
 export enum RequestType {
     BROADCAST = 'broadcast',
@@ -7,10 +8,10 @@ export enum RequestType {
 }
 
 interface RequestResponse<T> {
-    resolve: (value: T) => void
-    reject: (error: Error) => void
+    emitter: EventEmitter
     timeout?: NodeJS.Timeout
     type: RequestType
+    data?: T
 }
 
 export class RequestResponseManager<T> {
@@ -18,113 +19,98 @@ export class RequestResponseManager<T> {
     private DEFAULT_TIMEOUT = 10000
     private broadcastSubscriptions = new Set<string>()
 
-    public async request(
+    public request(
         requestTopic: string,
         responseTopic: string,
         payload: any,
-        client: any,
+        client: MqttClient,
         type: RequestType = RequestType.DIRECT,
         timeout = this.DEFAULT_TIMEOUT
-    ): Promise<T> {
-        return new Promise((resolve, reject) => {
-            const clientId = generateUniqueId()
-            const requestPayload = { ...payload, clientId }
+    ): EventEmitter {
+        const clientId = generateUniqueId()
+        const emitter = new EventEmitter()
+        const requestPayload =
+            type === RequestType.DIRECT ? { ...payload, clientId } : payload
+        
+        const timeoutHandler =
+            type === RequestType.DIRECT
+                ? setTimeout(() => {
+                      this.cleanup(clientId, client)
+                      emitter.emit('error', new Error('Request timed out'))
+                  }, timeout)
+                : undefined
 
-            const timeoutHandler =
-                type === RequestType.DIRECT
-                    ? setTimeout(() => {
+        this.requests.set(clientId, {
+            emitter,
+            timeout: timeoutHandler,
+            type
+        })
+
+        const topicToSubscribe =
+            type === RequestType.BROADCAST
+                ? responseTopic
+                : responseTopic + clientId
+
+        if (
+            type === RequestType.BROADCAST &&
+            this.broadcastSubscriptions.has(topicToSubscribe)
+        ) {
+            client.publish(requestTopic, JSON.stringify(requestPayload))
+            return emitter
+        }
+
+        const messageHandler = (topic: string, message: Buffer) => {
+            if (topic !== topicToSubscribe) return
+
+            try {
+                const response = JSON.parse(message.toString())
+                if (type === RequestType.DIRECT) {
+                    if (response.status?.code === 200) {
+                        emitter.emit('data', response.data || response)
                         this.cleanup(clientId, client)
-                        reject(new Error('Request timed out'))
-                    }, timeout)
-                    : undefined
+                    } else {
+                        emitter.emit(
+                            'error',
+                            new Error(
+                                response.status?.message || 'Request failed'
+                            )
+                        )
+                        this.cleanup(clientId, client)
+                    }
+                } else {
+                    emitter.emit('data', response.data || response)
+                }
+            } catch {
+                emitter.emit('error', new Error('Invalid response format'))
+                if (type === RequestType.DIRECT) {
+                    this.cleanup(clientId, client)
+                }
+            }
+        }
 
-            // Store request details
-            this.requests.set(clientId, {
-                resolve,
-                reject,
-                timeout: timeoutHandler,
-                type
-            })
+        client.on('message', messageHandler)
 
-            // Handle subscription based on type
-
-            const topicToSubscribe =
-                type === RequestType.BROADCAST
-                    ? responseTopic
-                    : responseTopic + clientId
-
-            console.log('TOPIC:', topicToSubscribe);
-
-            if (
-                type === RequestType.BROADCAST &&
-                this.broadcastSubscriptions.has(topicToSubscribe)
-            ) {
-                // Already subscribed to broadcast topic
-                client.publish(requestTopic, JSON.stringify(requestPayload))
+        client.subscribe(topicToSubscribe, (err) => {
+            if (err) {
+                emitter.emit(
+                    'error',
+                    new Error(`Subscription error: ${err.message}`)
+                )
+                this.cleanup(clientId, client)
                 return
             }
 
-            client.subscribe(topicToSubscribe, (err: Error) => {
-                if (err) {
-                    this.cleanup(clientId, client)
-                    reject(new Error(`Subscription error: ${err.message}`))
-                    return
-                }
-
-                if (type === RequestType.BROADCAST) {
-                    this.broadcastSubscriptions.add(topicToSubscribe)
-                }
-
-                // Publish request
-                client.publish(requestTopic, JSON.stringify(requestPayload))
-            })
-
-            // Setup message handler
-            const messageHandler = (topic: string, message: Buffer) => {
-                try {
-                    const response = JSON.parse(message.toString())
-
-                    if (topic === topicToSubscribe) {
-                        this.handleResponse(clientId, response, client, type)
-                    }
-                } catch (error) {
-                    if (type === RequestType.DIRECT) {
-                        this.cleanup(clientId, client)
-                        reject(new Error('Invalid response format', error))
-                    }
-                }
+            if (type === RequestType.BROADCAST) {
+                this.broadcastSubscriptions.add(topicToSubscribe)
             }
 
-            client.on('message', messageHandler)
+            client.publish(requestTopic, JSON.stringify(requestPayload))
         })
+
+        return emitter
     }
 
-    private handleResponse(
-        clientId: string,
-        response: any,
-        client: any,
-        type: RequestType
-    ) {
-        const request = this.requests.get(clientId)
-        if (request) {
-            if (type === RequestType.DIRECT) {
-                clearTimeout(request.timeout)
-                if (response.status?.code === 200) {
-                    request.resolve(response.data || response)
-                } else {
-                    request.reject(
-                        new Error(response.status?.message || 'Request failed')
-                    )
-                }
-                this.cleanup(clientId, client)
-            } else {
-                // For broadcast, just resolve with data and keep subscription
-                request.resolve(response.data || response)
-            }
-        }
-    }
-
-    private cleanup(clientId: string, client: any) {
+    private cleanup(clientId: string, client: MqttClient) {
         const request = this.requests.get(clientId)
         if (request) {
             if (request.type === RequestType.DIRECT) {
@@ -135,7 +121,7 @@ export class RequestResponseManager<T> {
         }
     }
 
-    public unsubscribeAll(client: any) {
+    public unsubscribeAll(client: MqttClient) {
         // Clean up all subscriptions when component unmounts
         this.broadcastSubscriptions.forEach((topic) => {
             client.unsubscribe(topic)

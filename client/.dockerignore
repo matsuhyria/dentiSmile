@@ -1,8 +1,0 @@
-# Dependency directory
-node_modules
-
-# Built application directory
-dist
-
-# Environment files
-.env

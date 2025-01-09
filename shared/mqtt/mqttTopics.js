@@ -26,6 +26,14 @@ export const MQTT_TOPICS = {
             REQUEST: 'appointment/cancel',
             RESPONSE: (clientId) => `appointment/cancel/${clientId}`
         },
+        LOCK: {
+            REQUEST: 'appointment/lock',
+            RESPONSE: (clientId) => `appointment/clinic/retrieve/${clientId}`
+        },
+        UNLOCK: {
+            REQUEST: 'appointment/unlock',
+            RESPONSE: (clientId) => `appointment/clinic/retrieve/${clientId}`
+        },
         RETRIEVE: {
             ONE: {
                 REQUEST: 'appointment/retrieveOne',
@@ -34,7 +42,7 @@ export const MQTT_TOPICS = {
             MANY: {
                 REQUEST: 'appointment/retrieve',
                 RESPONSE: (clientId) => `appointment/retrieve/${clientId}`
-            },
+            }
         },
         CLINIC: {
             RETRIEVE: {

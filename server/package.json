@@ -13,7 +13,7 @@
     "dev": "nodemon --env-file=.env ./src/app.js",
     "start": "node ./dist/app.js",
     "build": "npm run lint && mkdir -p dist && cp -r src/* dist/",
-    "test": "mocha './test/src/**/*.test.js' --timeout 5000 --exit",
+    "test": "nyc mocha './test/src/**/*.test.js' --timeout 5000 --exit",
     "lint": "eslint . --fix"
   },
   "keywords": [],
@@ -38,6 +38,7 @@
     "globals": "^15.12.0",
     "mocha": "^10.8.2",
     "nodemon": "^3.1.7",
+    "nyc": "^17.1.0",
     "supertest": "^7.0.0"
   }
 }

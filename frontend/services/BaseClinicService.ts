@@ -1,8 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { IClinicService } from './interfaces/IClinicService'
-import { IClinic } from './interfaces/IClinic'
-import { IAppointment } from './interfaces/IAppointment'
 import { RequestResponseManager } from '@/lib/RequestResponseManager'
+import { EventEmitter } from 'events'
 
 export abstract class BaseClinicService implements IClinicService {
     protected client: any
@@ -11,15 +10,19 @@ export abstract class BaseClinicService implements IClinicService {
     constructor(client: any) {
         this.client = client
         this.requestManager = new RequestResponseManager<any>()
+
+        if (!client || typeof client.on !== 'function') {
+            throw new Error('Invalid MQTT client provided')
+        }
     }
 
-    public abstract getClinics(): Promise<{ data: IClinic[] }>
+    public abstract getClinics(): EventEmitter
 
     public abstract getClinicAppointments(
         clinicId: string,
         reasonId?: string,
         date?: string
-    ): Promise<{ error?: string; data?: IAppointment[] }>
+    ): EventEmitter
 
     public abstract disconnect(): Promise<void>
 }
