@@ -27,7 +27,7 @@ export const bookAppointment = async (message) => {
             }
         }
 
-        if (slot.status !== 'locked' && slot.patientId !== patientId || slot.status !== 'available') {
+        if (slot.status !== 'available' && (slot.status !== 'locked' && slot.patientId !== patientId)) {
             return {
                 status: {
                     code: 400,
