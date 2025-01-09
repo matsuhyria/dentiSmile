@@ -6,5 +6,5 @@ export interface IAppointment {
     patientId?: string
     startTime: string
     endTime: string
-    status: 'available' | 'booked'
+    status: 'available' | 'booked' | 'locked'
 }

@@ -5,6 +5,38 @@ const { publish, MQTT_TOPICS } = mqttUtils;
 export const notifyAppointmentCanceled = async (message) => {
     try {
         const { clinicName, patientId, dentistId, startTime, endTime } = message;
+
+        const start = new Date(startTime).toLocaleString("en-US", {
+            weekday: "long",
+            month: "long",
+            day: "numeric",
+            year: "numeric",
+            hour: "numeric",
+            minute: "2-digit",
+            hour12: true
+        });
+
+        const end = new Date(endTime).toLocaleString("en-US", {
+            hour: "numeric",
+            minute: "2-digit",
+            hour12: true
+        });
+
+        const notificationEvent = {
+            notification: `Your appointment at ${start} to ${end} in ${clinicName} has been canceled.`
+        }
+
+        await publish(MQTT_TOPICS.NOTIFICATION.APPOINTMENT.CANCELED(patientId), notificationEvent); // notify patient
+        await publish(MQTT_TOPICS.NOTIFICATION.APPOINTMENT.CANCELED(dentistId), notificationEvent); // notify dentist
+    } catch (error) {
+        console.error('Error sending notification', error)
+    }
+}
+
+export const notifyAppointmentBooked = async (message) => {
+    try {
+        const { dentistId, startTime, endTime } = message;
+
         const start = new Date(startTime).toLocaleString("en-US", {
             weekday: "long",
             month: "long",
@@ -21,12 +53,9 @@ export const notifyAppointmentCanceled = async (message) => {
             hour12: true
         });
         const notificationEvent = {
-            notification: `Your appointment at ${start} to ${end} in ${clinicName} has been canceled.`
+            notification: `You have a new appointment booked at ${start} to ${end}`
         }
-
-        await publish(MQTT_TOPICS.NOTIFICATION.APPOINTMENT.CANCELED(patientId), notificationEvent); // notify patient
-        await publish(MQTT_TOPICS.NOTIFICATION.APPOINTMENT.CANCELED(dentistId), notificationEvent); // notify dentist
-
+        await publish(MQTT_TOPICS.NOTIFICATION.APPOINTMENT.BOOKED(dentistId), notificationEvent); // notify dentist
     } catch (error) {
         console.error('Error sending notification', error)
     }
@@ -60,9 +89,9 @@ const handleAvailabilityEvent = async (clinicId, clinicName, date) => {
         const subscriptionItem = subscription.data[0];
         for (const patientId of subscriptionItem.patientId) {
             try {
-                await publish(MQTT_TOPICS.NOTIFICATION.APPOINTMENT.CREATED(patientId), notificationEvent);
+                await publish(MQTT_TOPICS.NOTIFICATION.APPOINTMENT.CREATED(patientId), notificationEvent); // notify patient
             } catch (mqttPublishError) {
-                console.error(`Failed to send notification to patient ${patientId}:`, mqttPublishError);
+                console.error(`Failed to send notification to patient ${patientId}: `, mqttPublishError);
             }
         }
 

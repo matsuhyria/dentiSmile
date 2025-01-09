@@ -26,6 +26,14 @@ export const MQTT_TOPICS = {
             REQUEST: 'appointment/cancel',
             RESPONSE: (clientId) => `appointment/cancel/${clientId}`
         },
+        LOCK: {
+            REQUEST: 'appointment/lock',
+            RESPONSE: (clientId) => `appointment/clinic/retrieve/${clientId}`
+        },
+        UNLOCK: {
+            REQUEST: 'appointment/unlock',
+            RESPONSE: (clientId) => `appointment/clinic/retrieve/${clientId}`
+        },
         RETRIEVE: {
             ONE: {
                 REQUEST: 'appointment/retrieveOne',
@@ -34,7 +42,7 @@ export const MQTT_TOPICS = {
             MANY: {
                 REQUEST: 'appointment/retrieve',
                 RESPONSE: (clientId) => `appointment/retrieve/${clientId}`
-            },
+            }
         },
         CLINIC: {
             RETRIEVE: {
@@ -64,21 +72,18 @@ export const MQTT_TOPICS = {
                 RESPONSE: (clientId) => `notification/subscription/cancel/${clientId}`
             }
         },
+        APPOINTMENT: {
+            CREATED: (clientId) => `notification/appointment/created/${clientId}`,
+            BOOKED: (clientId) => `notification/appointment/booked/${clientId}`,
+            CANCELED: (clientId) => `notification/appointment/canceled/${clientId}`
+        },
         EVENT: {
             AVAILABILITY: 'notification/event/availability',
             APPOINTMENT: {
+                BOOKED: 'notification/event/appointment/booked',
                 CANCELED: 'notification/event/appointment/canceled'
-            }
-        },
-        APPOINTMENT: {
-            CREATED: (clientId) => `notification/appointment/created/${clientId}`,
-            BOOK: {
-                REQUEST: (clientId) => `appointment/book/${clientId}`,
-                RESPONSE: (clientId) =>
-                    `notification/appointment/book/${clientId}`
             },
-            CANCELED: (clientId) => `notification/appointment/canceled/${clientId}`
-        }
+        },
     },
     CLINIC: {
         CREATE: {

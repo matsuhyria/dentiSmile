@@ -5,7 +5,7 @@ import { initializeRoutes } from './routes/clinicRoutes.js';
 const { connectMQTT } = mqttUtils;
 const PORT = process.env.PORT || 3001;
 const MONGODB_URI = process.env.MONGODB_URI || "mongodb+srv://max:1234@dentistappointment.s95us.mongodb.net/?retryWrites=true&w=majority&appName=DentistAppointment";
-const MQTT_URI = process.env.MQTT_URI || "ws://localhost:8080";
+const MQTT_URI = process.env.MQTT_URI || "ws://localhost:1883";
 const MQTT_OPTIONS = {
     clientId: 'clinic_service',
     reconnectPeriod: 2000,

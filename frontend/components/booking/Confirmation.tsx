@@ -1,4 +1,5 @@
 import { Button } from '@/components/ui/button'
+import { parseDateTime } from '@/lib/dateUtils'
 
 interface ConfirmationProps {
     isActive: boolean
@@ -34,12 +35,7 @@ function Confirmation({
                     <strong>Date:</strong> {selectedDate?.toLocaleDateString()}
                 </p>
                 <p>
-                    <strong>Time:</strong>{' '}
-                    {selectedTime?.toLocaleTimeString('en-US', {
-                        hour: 'numeric',
-                        minute: '2-digit',
-                        hour12: false
-                    })}
+                    <strong>Time:</strong> {parseDateTime(selectedTime).timeStr}
                 </p>
                 <p>
                     <strong>Duration:</strong>{' '}

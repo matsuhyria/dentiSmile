@@ -5,6 +5,7 @@ import { IBooking } from '@/services/interfaces/IBooking'
 import MockBookingService from '@/services/mocks/mockBookingService'
 import { BookingResponse } from '@/services/interfaces/IBookingService'
 import { useMQTTService } from './useMQTTService'
+import { EventEmitter } from 'events'
 
 interface UseBookingReturn {
     requestAppointment: (
@@ -32,12 +33,12 @@ export const useBooking = (): UseBookingReturn => {
         BookingService,
         MockBookingService
     )
+    const [bookings, setBookings] = useState<IBooking[]>([]);
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState<Error | null>(serviceError)
-    const [bookings, setBookings] = useState<IBooking[]>([]);
 
     useEffect(() => {
-        const fetchBookings = async () => {
+        const fetchBookings = () => {
             const userId = localStorage.getItem('userId');
 
             if (!userId) {
@@ -51,18 +52,21 @@ export const useBooking = (): UseBookingReturn => {
             }
 
             setLoading(true);
-            try {
-                const response = await bookingService.getBookings(userId);
-                setBookings(response.data);
-                setError(null);
-            } catch (err) {
-                const errorMessage =
-                    err instanceof Error
-                        ? err.message
-                        : 'Failed to retrieve bookings';
-                setError(new Error(errorMessage));
-            } finally {
-                setLoading(false);
+            const bookingsEmitter = bookingService.getBookings(userId);
+            
+            bookingsEmitter.on('data', (data: IBooking[]) => {
+                setBookings(data)
+                setError(null)
+                setLoading(false)
+            });
+
+            bookingsEmitter.on('error', (err: Error) => {
+                setError(err)
+                setLoading(false)
+            });
+
+            return () => {
+                bookingsEmitter.removeAllListeners()
             }
         };
 
@@ -78,33 +82,31 @@ export const useBooking = (): UseBookingReturn => {
         }
 
         setLoading(true)
-        try {
-            const response = await bookingService.requestAppointment(
-                appointmentId,
-                patientId
-            )
+        return new Promise<{
+            success: boolean
+            data?: BookingResponse
+            error?: string
+        }>((resolve) => {
+            const emitter = bookingService.requestAppointment(appointmentId, patientId)
 
-            if (response.error) {
-                throw new Error(response.error)
+            const onData = (data: BookingResponse) => {
+                resolve({ success: true, data })
+                setLoading(false)
+                emitter.removeListener('error', onError)
+                emitter.removeListener('data', onData)
             }
 
-            return {
-                success: true,
-                data: response
+            const onError = (err: Error) => {
+                resolve({ success: false, error: err.message })
+                setError(err)
+                setLoading(false)
+                emitter.removeListener('error', onError)
+                emitter.removeListener('data', onData)
             }
-        } catch (err) {
-            const errorMessage =
-                err instanceof Error
-                    ? err.message
-                    : 'Failed to book appointment'
-            setError(new Error(errorMessage))
-            return {
-                success: false,
-                error: errorMessage
-            }
-        } finally {
-            setLoading(false)
-        }
+
+            emitter.once('data', onData)
+            emitter.once('error', onError)
+        })
     }
 
     const cancelBooking = async (appointmentId: string) => {
@@ -114,33 +116,32 @@ export const useBooking = (): UseBookingReturn => {
         }
 
         setLoading(true);
-        try {
-            const response = await bookingService.cancelBooking(appointmentId);
+        return new Promise<{
+            success: boolean
+            data?: BookingResponse
+            error?: string
+        }>((resolve) => {
+            const emitter = bookingService.cancelBooking(appointmentId)
 
-            if (response.error) {
-                throw new Error(response.error);
+            const onData = (data: BookingResponse) => {
+                setBookings((prev) => prev.filter((b) => b._id !== appointmentId));
+                resolve({ success: true, data });
+                setLoading(false);
+                emitter.removeListener('error', onError);
+                emitter.removeListener('data', onData);
             }
 
-            // Optimistically remove the cancelled booking from the state
-            setBookings((prev) => prev.filter((b) => b._id !== appointmentId));
+            const onError = (err: Error) => {
+                resolve({ success: false, error: err.message });
+                setError(err);
+                setLoading(false);
+                emitter.removeListener('error', onError);
+                emitter.removeListener('data', onData);
+            }
 
-            return {
-                success: true,
-                data: response.data,
-            };
-        } catch (err) {
-            const errorMessage =
-                err instanceof Error
-                    ? err.message
-                    : 'Failed to cancel booking';
-            setError(new Error(errorMessage));
-            return {
-                success: false,
-                error: errorMessage,
-            };
-        } finally {
-            setLoading(false);
-        }
+            emitter.once('data', onData);
+            emitter.once('error', onError);
+        })
     };
 
     return {

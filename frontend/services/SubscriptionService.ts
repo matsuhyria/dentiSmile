@@ -1,39 +1,37 @@
-import { MQTTService } from "./base/MQTTService";
-import { ISubscriptionService, SubscriptionResponse } from "./interfaces/ISubscriptionService";
+import { MqttClient } from 'mqtt'
+import { ISubscriptionService } from "./interfaces/ISubscriptionService";
 import { MQTT_TOPICS } from './base/MQTTService'
 import {
     RequestResponseManager,
     RequestType
 } from '@/lib/RequestResponseManager'
+import EventEmitter from 'events';
 
 const { SUBSCRIPTION } = MQTT_TOPICS.NOTIFICATION
 
 export class SubscriptionService implements ISubscriptionService {
-    private client: MQTTService
-    private requestManager: RequestResponseManager<SubscriptionResponse>
+    private client: MqttClient
+    private requestManager: RequestResponseManager<MqttClient>
 
-    constructor(client: MQTTService) {
+    constructor(client: MqttClient) {
         this.client = client
-        this.requestManager = new RequestResponseManager<SubscriptionResponse>()
+        this.requestManager = new RequestResponseManager()
     }
 
-    public async createSubscription(clinicId: string, patientId: string, date: Date): Promise<SubscriptionResponse> {
+    public createSubscription(clinicId: string, patientId: string, date: Date): EventEmitter {
         try {
             const responseTopic = SUBSCRIPTION.CREATE.RESPONSE('')
 
-            const response = await this.requestManager.request(
+            return this.requestManager.request(
                 SUBSCRIPTION.CREATE.REQUEST,
                 responseTopic,
                 { clinicId, patientId, date },
                 this.client,
                 RequestType.DIRECT
             )
-
-            return response
         } catch (error) {
             console.error(error)
             throw new Error(`Failed to create a subscription: ${error.message}`)
         }
     }
-
 }

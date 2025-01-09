@@ -42,7 +42,7 @@ export function AppointmentsTable({
         try {
             const result = await onCancel(cancellingId);
             if (result.success) {
-                toast.message('Appointment Cancelled', {
+                toast.success('Appointment Cancelled', {
                     description: result.message || 'The appointment was successfully cancelled.'
                 });
             } else {
