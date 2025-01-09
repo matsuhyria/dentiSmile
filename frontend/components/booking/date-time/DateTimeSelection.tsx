@@ -77,12 +77,12 @@ export default function DateTimeSelection({
                         <Alert className="mt-8 bg-sky-100">
                             <p className="text-sm text-gray-600">
                                 No available times on this date.
-                                <AppointmentSubscription
+                            </p>
+                            <AppointmentSubscription
                                 clinicId={clinicId}
                                 patientId={localStorage.getItem('userId')}
                                 date={selectedDate}
                             />
-                            </p>
                         </Alert>
                     </>
                 )}

@@ -1,16 +1,5 @@
-export interface SubscriptionResponse {
-    status: {
-        code: number;
-        message: string;
-    };
-    data: {
-        clinicId: string;
-        patientId: string;
-        _id: string;
-        date: string;
-    };
-}
+import EventEmitter from "events";
 
 export interface ISubscriptionService {
-    createSubscription(clinicId: string, patientId: string, date: Date): Promise<SubscriptionResponse>;
+    createSubscription(clinicId: string, patientId: string, date: Date): EventEmitter;
 }
