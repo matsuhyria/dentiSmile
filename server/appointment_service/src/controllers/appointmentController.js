@@ -235,9 +235,11 @@ export const cancelAppointment = async (message) => {
         }
 
         appointment.status = 'available'
+        const patient = appointment.patientId;
         appointment.patientId = null
         await appointment.save()
 
+        notifyAppointmentCanceled(appointment.clinicName, patient, appointment.dentistId, appointment.startTime, appointment.endTime);
         return {
             status: {
                 code: 200,
@@ -377,6 +379,15 @@ const notifyAvailableSlots = async (clinicId, clinicName, slots) => {
         }))];
         const payload = { clinicId, clinicName, dates: groupedByDay }
         await publish(MQTT_TOPICS.NOTIFICATION.EVENT.AVAILABILITY, payload);
+    } catch (error) {
+        console.log('Error publishing event', error)
+    }
+}
+
+const notifyAppointmentCanceled = async (clinicName, patientId, dentistId, startTime, endTime) => {
+    try {
+        const payload = { clinicName, patientId, dentistId, startTime, endTime };
+        await publish(MQTT_TOPICS.NOTIFICATION.EVENT.APPOINTMENT.CANCELED, payload);
     } catch (error) {
         console.log('Error publishing event', error)
     }

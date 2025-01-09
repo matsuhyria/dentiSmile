@@ -30,6 +30,7 @@ export function useNotification(patientId: string) {
                 try {
                     await MQTTService.getClient();
                     await notificationService.subscribeForAvailabilityNotifications(handleNewNotification);
+                    await notificationService.subscribeForAppointmentCancellationNotifications(handleNewNotification);
                 } catch (error) {
                     setError(`Error subscribing to notifications: ${error.message}`);
                 } finally {
