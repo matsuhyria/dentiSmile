@@ -1,4 +1,7 @@
 import DateSubscription from "../models/dateSubscription.js"
+import { MQTT_TOPICS } from "shared-mqtt/mqttTopics.js";
+import { publish, subscribe, unsubscribe } from "shared-mqtt/mqttClient.js";
+import { generateUniqueId } from "../utils/notificationUtils.js";
 
 export const subscribeToDate = async (message) => {
     try {
@@ -6,8 +9,15 @@ export const subscribeToDate = async (message) => {
 
         const timestamp = new Date(date).toISOString().split('T')[0];
 
-        // TO-DO: add checks for id validation
+        const clinicExists = await validateClinic(clinicId);
+        if (!clinicExists) {
+            return {
+                status: { code: 400, message: `Clinic not found` },
+                data: existingSubscription
+            };
+        }
 
+        // TO-DO: authorization
         const existingSubscription = await DateSubscription.findOne({ clinicId, date: timestamp });
 
         if (existingSubscription) {
@@ -127,4 +137,39 @@ export const removeSubscription = async (message) => {
         console.error('Error removing subscription:', error);
         return { status: { code: 500, message: 'Internal server error' } };
     }
+};
+
+export const validateClinic = async (clinicId) => {
+    const clientId = generateUniqueId();
+    const payload = { _id: clinicId, clientId };
+    const requestTopic = MQTT_TOPICS.CLINIC.RETRIEVE.ONE.REQUEST;
+    const responseTopic = MQTT_TOPICS.CLINIC.RETRIEVE.ONE.RESPONSE(clientId);
+
+    return new Promise(async (resolve, reject) => {
+        let timeout;
+
+        try {
+            await subscribe(responseTopic, async (response) => {
+                clearTimeout(timeout);
+
+                await unsubscribe(responseTopic);
+
+                if (response.data && response.data._id === clinicId) {
+                    resolve(true);
+                } else {
+                    resolve(false);
+                }
+            });
+
+            await publish(requestTopic, payload);
+
+            timeout = setTimeout(async () => {
+                await unsubscribe(responseTopic);
+                resolve(false);
+            }, 5000);
+        } catch (error) {
+            console.error('Error validating the clinic:', error);
+            reject(false);
+        }
+    });
 };
