@@ -1,9 +1,12 @@
-export interface Message {
+import { EventEmitter } from 'events'
+
+export interface NotificationMessage {
     notification: string;
+    type: 'availability' | 'cancellation';
+    timestamp: Date;
 }
 
 export interface INotificationService {
-    subscribeForAvailabilityNotifications(callback: (message: Message) => void): Promise<void>
-    subscribeForAppointmentCancellationNotifications(callback: (message: Message) => void): Promise<void>
-    unsubscribeFromAllNotifications(): Promise<void>
+    subscribeToNotifications(): EventEmitter;
+    disconnect(): Promise<void>;
 }

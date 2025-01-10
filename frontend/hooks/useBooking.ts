@@ -44,7 +44,6 @@ export const useBooking = (): UseBookingReturn => {
             }
 
             if (!bookingService) {
-                setError(new Error('Booking service not initialized'))
                 return
             }
 
