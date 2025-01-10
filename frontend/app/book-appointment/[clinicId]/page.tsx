@@ -55,7 +55,7 @@ export default function BookAppointmentPage() {
             toast.success('Appointment Confirmed!', {
                 description: `Your appointment has been successfully booked.`
             })
-            router.replace('/')
+            router.replace('/account')
         }
 
         // eslint-disable-next-line react-hooks/exhaustive-deps

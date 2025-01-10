@@ -32,7 +32,7 @@ function Confirmation({
                     <strong>Reason:</strong> {reason}
                 </p>
                 <p>
-                    <strong>Date:</strong> {selectedDate?.toLocaleDateString()}
+                    <strong>Date:</strong> {parseDateTime(selectedDate).dateKey}
                 </p>
                 <p>
                     <strong>Time:</strong> {parseDateTime(selectedTime).timeStr}
