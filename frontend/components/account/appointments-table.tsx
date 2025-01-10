@@ -12,108 +12,103 @@ import {
 } from '@/components/ui/table'
 import { Button } from '@/components/ui/button'
 import { toast } from 'sonner'
-
-interface Appointment {
-    id: string
-    date: string
-    time: string
-    service: string
-}
+import { IAppointment } from '@/services/interfaces/IAppointment'
+import { parseDateTime } from '@/lib/dateUtils'
+import {
+    AlertDialog,
+    AlertDialogTrigger,
+    AlertDialogContent,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogCancel,
+    AlertDialogAction
+} from '@/components/ui/alert-dialog'
 
 interface AppointmentsTableProps {
-    appointments: Appointment[]
+    appointments: IAppointment[]
     onCancel: (id: string) => Promise<{ success: boolean; message?: string }>
 }
 
 export function AppointmentsTable({
-    appointments: initialAppointments,
+    appointments,
     onCancel
 }: AppointmentsTableProps) {
-    const [showConfirmation, setShowConfirmation] = useState(false);
-    const [appointments, setAppointments] = useState(initialAppointments)
     const [cancellingId, setCancellingId] = useState<string | null>(null)
-
-    const confirmCancel = (id: string) => {
-        setCancellingId(id);
-        setShowConfirmation(true);
-    }
 
     const handleConfirm = async () => {
         try {
-            const result = await onCancel(cancellingId);
+            const result = await onCancel(cancellingId)
             if (result.success) {
                 toast.success('Appointment Cancelled', {
-                    description: result.message || 'The appointment was successfully cancelled.'
-                });
+                    description:
+                        result.message ||
+                        'The appointment was successfully cancelled.'
+                })
             } else {
-                throw new Error(result.message || 'Cancellation failed.');
+                throw new Error(result.message || 'Cancellation failed.')
             }
         } catch (error) {
-            toast.error('Failed to cancel appointment. Please try again.');
+            toast.error('Failed to cancel appointment. Please try again.')
         } finally {
-            setCancellingId(null);
+            setCancellingId(null)
         }
-    };
+    }
 
-    const handleCancelConfirmation = () => {
-        setShowConfirmation(false);
-        setCancellingId(null);
-    };
 
     return (
         <>
-            <Table>
-                <TableHeader>
-                    <TableRow>
-                        <TableHead>Date</TableHead>
-                        <TableHead>Time</TableHead>
-                        <TableHead>Service</TableHead>
-                        <TableHead>Action</TableHead>
-                    </TableRow>
-                </TableHeader>
-                <TableBody>
-                    {appointments.map((appointment) => (
-                        <TableRow key={appointment.id}>
-                            <TableCell>{appointment.date}</TableCell>
-                            <TableCell>{appointment.time}</TableCell>
-                            <TableCell>{appointment.service}</TableCell>
-                            <TableCell>
-                                <Button
-                                    variant="destructive"
-                                    size="sm"
-                                    onClick={() => confirmCancel(appointment.id)}
-                                    disabled={cancellingId === appointment.id}
-                                >
-                                    {cancellingId === appointment.id
-                                        ? 'Cancelling...'
-                                        : 'Cancel'}
-                                </Button>
-                            </TableCell>
+            <AlertDialog>
+                <Table>
+                    <TableHeader>
+                        <TableRow>
+                            <TableHead>Date</TableHead>
+                            <TableHead>Time</TableHead>
+                            <TableHead>Service</TableHead>
+                            <TableHead>Action</TableHead>
                         </TableRow>
-                    ))}
-                </TableBody>
-            </Table>
-            {showConfirmation && (
-                <div className="confirmation-popup">
-                    <div className="popup-content">
-                        <p>Are you sure you want to cancel this appointment?</p>
-                        <div className="popup-actions">
-                            <Button
-                                variant="destructive"
-                                onClick={handleConfirm}
-                            >
-                                Yes, Cancel
-                            </Button>
-                            <Button
-                                variant="secondary"
-                                onClick={handleCancelConfirmation}
-                            >
-                                No, Go Back
-                            </Button>
-                        </div>
-                    </div>
-                </div>
-            )}
+                    </TableHeader>
+                    <TableBody>
+                        {appointments.map((appointment) => {
+                            const { dateKey, timeStr } = parseDateTime(
+                                appointment.startTime
+                            )
+                            return (
+                                <TableRow key={appointment._id}>
+                                    <TableCell>{dateKey}</TableCell>
+                                    <TableCell>{timeStr}</TableCell>
+                                    <TableCell>
+                                        {appointment.clinicName}
+                                    </TableCell>
+                                    <TableCell>
+                                        <AlertDialogTrigger onClick={() => setCancellingId(appointment._id)} className="text-red-500 border border-red-500 rounded px-2 py-1">
+                                            Cancel Appointment
+                                        </AlertDialogTrigger>
+                                    </TableCell>
+                                </TableRow>
+                            )
+                        })}
+                    </TableBody>
+                </Table>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>
+                            Are you sure you want to cancel this appointment?
+                        </AlertDialogTitle>
+                        <AlertDialogDescription>
+                            This action cannot be undone. This will action will
+                            cancel your appointment.
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel>Abort</AlertDialogCancel>
+                        <AlertDialogAction onClick={handleConfirm}>
+                            Confirm
+                        </AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
         </>
-    );
+    )
 }

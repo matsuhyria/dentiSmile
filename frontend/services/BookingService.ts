@@ -37,11 +37,11 @@ export class BookingService
         )
     }
 
-    public cancelBooking(bookingId: string): EventEmitter {
+    public cancelBooking(appointmentId: string): EventEmitter {
         return this.requestManager.request(
             MQTT_TOPICS.APPOINTMENT.CANCEL.REQUEST,
             MQTT_TOPICS.APPOINTMENT.CANCEL.RESPONSE(''),
-            { bookingId },
+            { appointmentId },
             this.client,
             RequestType.DIRECT
         )
