@@ -5,7 +5,6 @@ import { IBooking } from '@/services/interfaces/IBooking'
 import MockBookingService from '@/services/mocks/mockBookingService'
 import { BookingResponse } from '@/services/interfaces/IBookingService'
 import { useMQTTService } from './useMQTTService'
-import { EventEmitter } from 'events'
 
 interface UseBookingReturn {
     requestAppointment: (
@@ -47,13 +46,13 @@ export const useBooking = (): UseBookingReturn => {
             }
 
             if (!bookingService) {
-                setError(new Error('Booking service not initialized'));
-                return;
+                return
             }
 
-            setLoading(true);
-            const bookingsEmitter = bookingService.getBookings(userId);
-            
+            setLoading(true)
+
+            const bookingsEmitter = bookingService.getBookings(userId)
+
             bookingsEmitter.on('data', (data: IBooking[]) => {
                 setBookings(data)
                 setError(null)

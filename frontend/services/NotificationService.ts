@@ -1,43 +1,65 @@
-import { MQTT_TOPICS } from "./base/MQTTService";
-import { subscribe, unsubscribe } from "shared-mqtt/mqttClient";
-import { INotificationService, Message } from "./interfaces/INotificationService";
+import { MQTT_TOPICS } from './base/MQTTService'
+import { BaseNotificationService } from './base/BaseNotificationService'
+import { RequestType } from '@/lib/RequestResponseManager'
+import { MqttClient } from 'mqtt'
+import { EventEmitter } from 'events'
 
 const { APPOINTMENT } = MQTT_TOPICS.NOTIFICATION
 
-export class NotificationService implements INotificationService {
-    private patientId: string
+export class NotificationService extends BaseNotificationService {
+    private patientId: string | null = null
 
-    constructor(patientId: string) {
+    constructor(client: MqttClient) {
+        super(client)
+    }
+
+    public setPatientId(patientId: string) {
         this.patientId = patientId
     }
 
-    public async subscribeForAvailabilityNotifications(callback: (message: Message) => void): Promise<void> {
-        try {
-            const topic = APPOINTMENT.CREATED(this.patientId);
-            await subscribe(topic, callback);
-        } catch (error) {
-            console.error(error)
-            throw new Error(`Failed to subscribe: ${error.message}`)
+    public subscribeToNotifications(): EventEmitter {
+        if (!this.patientId) {
+            throw new Error(
+                'PatientId must be set before subscribing to notifications'
+            )
         }
-    }
 
-    public async subscribeForAppointmentCancellationNotifications(callback: (message: Message) => void): Promise<void> {
-        try {
-            const topic = APPOINTMENT.CANCELED(this.patientId);
-            await subscribe(topic, callback);
-        } catch (error) {
-            console.error(error)
-            throw new Error(`Failed to subscribe: ${error.message}`)
-        }
-    }
+        const emitter = new EventEmitter()
 
-    public async unsubscribeFromAllNotifications() {
-        try {
-            const topic = APPOINTMENT.CREATED(this.patientId);
-            await unsubscribe(topic);
-        } catch (error) {
-            console.error(error)
-            throw new Error(`Failed to subscribe: ${error.message}`)
-        }
+        // Subscribe to availability notifications
+        const availabilityEmitter = this.requestManager.request(
+            APPOINTMENT.CREATED(this.patientId),
+            APPOINTMENT.CREATED(this.patientId),
+            {},
+            this.client,
+            RequestType.BROADCAST
+        )
+
+        // Subscribe to cancellation notifications
+        const cancellationEmitter = this.requestManager.request(
+            APPOINTMENT.CANCELED(this.patientId),
+            APPOINTMENT.CANCELED(this.patientId),
+            {},
+            this.client,
+            RequestType.BROADCAST
+        )
+
+        availabilityEmitter.on('data', (message) => {
+            emitter.emit('message', {
+                ...message,
+                type: 'Availability',
+                timestamp: new Date()
+            })
+        })
+
+        cancellationEmitter.on('data', (message) => {
+            emitter.emit('message', {
+                ...message,
+                type: 'Cancellation',
+                timestamp: new Date()
+            })
+        })
+
+        return emitter
     }
 }

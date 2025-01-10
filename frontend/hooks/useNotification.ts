@@ -1,62 +1,64 @@
-import { useState, useEffect, useCallback } from 'react';
-import { NotificationService } from '@/services/NotificationService';
-import { INotificationService, Message } from '@/services/interfaces/INotificationService';
-import { MQTTService } from '@/services/base/MQTTService';
+import { useState, useEffect } from 'react'
+import { NotificationService } from '@/services/NotificationService'
+import { NotificationMessage } from '@/services/interfaces/INotificationService'
+import { useMQTTService } from './useMQTTService'
+import mockNotificationService from '@/services/mocks/mockNotificationService'
+import { toast } from 'sonner'
+import { parseDateTime } from '@/lib/dateUtils'
 
 export function useNotification(patientId: string) {
-    const [notificationService, setNotificationService] = useState<INotificationService | null>(null);
-    const [isLoading, setIsLoading] = useState<boolean>(false);
-    const [error, setError] = useState<string | null>(null);
-    const [notifications, setNotifications] = useState<string[]>([]);
+    const { service: notificationService, error: serviceError } =
+        useMQTTService(NotificationService, mockNotificationService)
+
+    const [loading, setLoading] = useState<boolean>(true)
+    const [error, setError] = useState<Error | null>(serviceError)
 
     useEffect(() => {
-        const service = new NotificationService(patientId);
-        setNotificationService(service);
-    }, [patientId]); // recreate if patientId changes
+        if (!notificationService) return
 
-    useEffect(() => {
-        if (notificationService) {
-            const handleNewNotification = (message: Message) => {
-                setNotifications((prevNotifications) => [
-                    ...prevNotifications,
-                    message.notification
-                ]);
-            };
-
-            const subscribeToNotifications = async () => {
-                setIsLoading(true);
-                setError(null);
-
-                try {
-                    await MQTTService.getClient();
-                    await notificationService.subscribeForAvailabilityNotifications(handleNewNotification);
-                    await notificationService.subscribeForAppointmentCancellationNotifications(handleNewNotification);
-                } catch (error) {
-                    setError(`Error subscribing to notifications: ${error.message}`);
-                } finally {
-                    setIsLoading(false);
-                }
-            };
-
-            subscribeToNotifications();
-
-            return () => {
-                if (notificationService) {
-                    notificationService.unsubscribeFromAllNotifications();
-                    console.log('Cleaning up notification service')
-                }
-            };
+        if (notificationService instanceof NotificationService) {
+            notificationService.setPatientId(patientId)
         }
-    }, [notificationService]);
 
-    const clearNotifications = useCallback(() => {
-        setNotifications([]);
-    }, []);
+        setLoading(true)
+        const notificationsEmitter =
+            notificationService.subscribeToNotifications()
+
+        const onMessage = ({
+            notification,
+            timestamp,
+            type
+        }: NotificationMessage) => {
+            if (notification) {
+                toast.info(type, {
+                    description: notification,
+                    descriptionClassName: '!text-white',
+                    action: {
+                        label: parseDateTime(timestamp).timeStr,
+                        onClick: undefined,
+                    }
+                })
+            }
+
+            setLoading(false)
+        }
+
+        const onError = (err: Error) => {
+            setError(err)
+            setLoading(false)
+        }
+
+        notificationsEmitter.on('message', onMessage)
+        notificationsEmitter.on('error', onError)
+
+        return () => {
+            notificationsEmitter.removeAllListeners()
+            notificationService.disconnect()
+        }
+    }, [notificationService, patientId])
 
     return {
-        isLoading,
-        error,
-        notifications,
-        clearNotifications,
-    };
+        loading,
+        error
+    }
 }
