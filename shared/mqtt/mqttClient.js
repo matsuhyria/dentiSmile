@@ -70,7 +70,7 @@ export const subscribeShared = async (
 ) => {
     if (!client) throw new Error('MQTT client not connected')
     try {
-        const sharedTopic = `$shared/${groupName}/${topic}`
+        const sharedTopic = `$share/${groupName}/${topic}`
         await client.subscribeAsync(sharedTopic, options)
         console.log(`Subscribed to shared topic "${sharedTopic}"`)
 
