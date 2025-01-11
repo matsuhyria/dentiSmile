@@ -14,10 +14,10 @@ interface DateTimeSelectionProps {
     isActive: boolean
     clinicId: string
     appointmentDuration: number
-    selectedDate: Date | null
-    selectedTime: Date | null
-    setSelectedDate: (date: Date | null) => void
-    setSelectedTime: (time: Date | null) => void
+    selectedDate?: Date
+    selectedTime?: Date
+    setSelectedDate: (date?: Date) => void
+    setSelectedTime: (time?: Date) => void
     availableTimes: TimeSlot[]
     monthlyAvailability: Record<string, number>
 }
@@ -78,10 +78,9 @@ export default function DateTimeSelection({
                             <p className="text-sm text-gray-600">
                                 No available times on this date.
                                 <AppointmentSubscription
-                                clinicId={clinicId}
-                                patientId={localStorage.getItem('userId')}
-                                date={selectedDate}
-                            />
+                                    clinicId={clinicId}
+                                    date={selectedDate}
+                                />
                             </p>
                         </Alert>
                     </>

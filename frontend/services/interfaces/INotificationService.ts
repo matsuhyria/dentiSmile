@@ -1,16 +1,12 @@
-export interface SubscriptionResponse {
-    status: {
-        code: number;
-        message: string;
-    };
-    data: {
-        clinicId: string;
-        patientId: string;
-        _id: string;
-        date: string;
-    };
+import { EventEmitter } from 'events'
+
+export interface NotificationMessage {
+    notification: string;
+    type: 'availability' | 'cancellation';
+    timestamp: Date;
 }
 
 export interface INotificationService {
-    subscribeToDate(clinicId: string, patientId: string, date: Date): Promise<SubscriptionResponse>;
+    subscribeToNotifications(): EventEmitter;
+    disconnect(): Promise<void>;
 }

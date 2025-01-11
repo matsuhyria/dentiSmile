@@ -6,7 +6,7 @@ import { parseDateTime } from '@/lib/dateUtils'
 
 interface TimeSelectionProps {
     setSelectedTime: (date: Date, appointmentId: string) => void
-    selectedTime: Date | null
+    selectedTime?: Date
     disabled?: boolean
     clinicId: string
     appointmentDuration: number
@@ -48,7 +48,6 @@ export default function TimeSelectionComponent({
                                 )}
                                 onClick={() => {
                                     if (disabled) return
-                                    console.log('selectedTime', selectedTime);
 
                                     const [hours, minutes] = time
                                         .split(':')

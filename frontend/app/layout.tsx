@@ -18,7 +18,12 @@ export default function RootLayout({
                 <div className="grid grid-rows-[60px_1fr_0px] justify-items-center min-h-screen">
                     <Nav />
                     {children}
-                    <Toaster richColors closeButton duration={Infinity} />
+                    <Toaster
+                        richColors
+                        closeButton
+                        expand
+                        duration={Infinity}
+                    />
                 </div>
             </body>
         </html>

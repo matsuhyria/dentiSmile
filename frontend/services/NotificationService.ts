@@ -1,39 +1,65 @@
-import { MQTTService } from "./base/MQTTService";
-import { INotificationService, SubscriptionResponse } from "./interfaces/INotificationService";
 import { MQTT_TOPICS } from './base/MQTTService'
-import {
-    RequestResponseManager,
-    RequestType
-} from '@/lib/RequestResponseManager'
+import { BaseNotificationService } from './base/BaseNotificationService'
+import { RequestType } from '@/lib/RequestResponseManager'
+import { MqttClient } from 'mqtt'
+import { EventEmitter } from 'events'
 
-const { SUBSCRIPTION } = MQTT_TOPICS.NOTIFICATION
+const { APPOINTMENT } = MQTT_TOPICS.NOTIFICATION
 
-export class NotificationService implements INotificationService {
-    private client: MQTTService
-    private requestManager: RequestResponseManager<SubscriptionResponse>
+export class NotificationService extends BaseNotificationService {
+    private patientId: string | null = null
 
-    constructor(client: MQTTService) {
-        this.client = client
-        this.requestManager = new RequestResponseManager<SubscriptionResponse>()
+    constructor(client: MqttClient) {
+        super(client)
     }
 
-    public async subscribeToDate(clinicId: string, patientId: string, date: Date): Promise<SubscriptionResponse> {
-        try {
-            const responseTopic = SUBSCRIPTION.CREATE.RESPONSE('')
+    public setPatientId(patientId: string) {
+        this.patientId = patientId
+    }
 
-            const response = await this.requestManager.request(
-                SUBSCRIPTION.CREATE.REQUEST,
-                responseTopic,
-                { clinicId, patientId, date },
-                this.client,
-                RequestType.DIRECT
+    public subscribeToNotifications(): EventEmitter {
+        if (!this.patientId) {
+            throw new Error(
+                'PatientId must be set before subscribing to notifications'
             )
-
-            return response
-        } catch (error) {
-            console.error(error)
-            throw new Error(`Failed to subscribe: ${error.message}`)
         }
-    }
 
+        const emitter = new EventEmitter()
+
+        // Subscribe to availability notifications
+        const availabilityEmitter = this.requestManager.request(
+            APPOINTMENT.CREATED(this.patientId),
+            APPOINTMENT.CREATED(this.patientId),
+            {},
+            this.client,
+            RequestType.BROADCAST
+        )
+
+        // Subscribe to cancellation notifications
+        const cancellationEmitter = this.requestManager.request(
+            APPOINTMENT.CANCELED(this.patientId),
+            APPOINTMENT.CANCELED(this.patientId),
+            {},
+            this.client,
+            RequestType.BROADCAST
+        )
+
+        availabilityEmitter.on('data', (message) => {
+            emitter.emit('message', {
+                ...message,
+                type: 'Availability',
+                timestamp: new Date()
+            })
+        })
+
+        cancellationEmitter.on('data', (message) => {
+            emitter.emit('message', {
+                ...message,
+                type: 'Cancellation',
+                timestamp: new Date()
+            })
+        })
+
+        return emitter
+    }
 }

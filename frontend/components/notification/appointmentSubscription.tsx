@@ -1,31 +1,40 @@
-import useNotification from '@/hooks/useNotifications'
-import { useEffect } from 'react'
-import { Button } from '@/components/ui/button'
+import { Button } from '../ui/button'
+import { useAppointmentSubscription } from '@/hooks/useAppointmentSubscription'
+import { toast } from 'sonner'
 
 const AppointmentSubscription = ({
     clinicId,
-    patientId,
     date
 }: {
     clinicId: string
-    patientId: string
     date: Date
 }) => {
-    const {
-        isLoading,
-        error,
-        subscriptionResponse,
-        subscribeToDate,
-        resetResponse
-    } = useNotification()
+    const { isLoading, subscribeToDate } = useAppointmentSubscription()
 
     const handleSubscribe = async () => {
-        await subscribeToDate(clinicId, patientId, date)
-    }
+        const patientId = localStorage.getItem('userId')
 
-    useEffect(() => {
-        resetResponse()
-    }, [clinicId, patientId, date, resetResponse])
+        if (!patientId) {
+            toast.info('Please log in to subscribe.')
+            return
+        }
+        const { success, error } = await subscribeToDate(
+            clinicId,
+            patientId,
+            date
+        )
+
+        if (success) {
+            toast.success('Successful Subscription!', {
+                description:
+                    "You'll get notified once there's any available appointment on this day"
+            })
+        } else if (error) {
+            toast.warning('Failed Subscription!', {
+                description: error
+            })
+        }
+    }
 
     return (
         <>
@@ -33,14 +42,11 @@ const AppointmentSubscription = ({
                 onClick={handleSubscribe}
                 disabled={isLoading}
                 variant="link"
+                className="px-1 font-bold"
             >
                 {isLoading ? 'Subscribing...' : 'Subscribe'}
-            </Button>{' '}
+            </Button>
             to future appointments on this day.
-            <div>
-                {error && <div style={{ color: 'red' }}>{error}</div>}
-                {subscriptionResponse && <h3 className='text-green-700'>Subscription Successful!</h3>}
-            </div>
         </>
     )
 }

@@ -60,32 +60,30 @@ export const MQTT_TOPICS = {
     NOTIFICATION: {
         SUBSCRIPTION: {
             CREATE: {
-                REQUEST: 'notification/appointment/subscription/create',
-                RESPONSE: (clientId) => `notification/appointment/subscription/create/${clientId}`
+                REQUEST: 'notification/subscription/create',
+                RESPONSE: (clientId) => `notification/subscription/create/${clientId}`
             },
             RETRIEVE: {
-                REQUEST: 'notification/appointment/subscription/retrieve',
-                RESPONSE: (clientId) => `notification/appointment/subscription/retrieve/${clientId}`
+                REQUEST: 'notification/subscription/retrieve',
+                RESPONSE: (clientId) => `notification/subscription/retrieve/${clientId}`
             },
             CANCEL: {
-                REQUEST: 'notification/appointment/subscription/cancel',
-                RESPONSE: (clientId) => `notification/appointment/subscription/cancel/${clientId}`
+                REQUEST: 'notification/subscription/cancel',
+                RESPONSE: (clientId) => `notification/subscription/cancel/${clientId}`
             }
         },
-        DATE: (clinic, date) => `notification/${clinic}/${date}`,
         APPOINTMENT: {
-            CREATE: 'notification/appointment/create',
-            BOOK: {
-                REQUEST: (clientId) => `appointment/book/${clientId}`,
-                RESPONSE: (clientId) =>
-                    `notification/appointment/book/${clientId}`
+            CREATED: (clientId) => `notification/appointment/created/${clientId}`,
+            BOOKED: (clientId) => `notification/appointment/booked/${clientId}`,
+            CANCELED: (clientId) => `notification/appointment/canceled/${clientId}`
+        },
+        EVENT: {
+            AVAILABILITY: 'notification/event/availability',
+            APPOINTMENT: {
+                BOOKED: 'notification/event/appointment/booked',
+                CANCELED: 'notification/event/appointment/canceled'
             },
-            CANCEL: {
-                REQUEST: (clientId) => `appointment/cancel/${clientId}`,
-                RESPONSE: (clientId) =>
-                    `notification/appointment/cancel/${clientId}`
-            }
-        }
+        },
     },
     CLINIC: {
         CREATE: {

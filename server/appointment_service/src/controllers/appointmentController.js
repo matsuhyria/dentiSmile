@@ -1,10 +1,11 @@
+import mqttUtils from 'shared-mqtt'
+const { MQTT_TOPICS, publish } = mqttUtils;
 import AppointmentSlot from '../models/appointmentSlot.js'
 import {
     generateSingleDaySlots,
     generateMultiDaySlots,
     isValidIsoDate
 } from '../utils/dateUtils.js'
-import { publishAllNotifications } from '../routes/appointmentRouter.js'
 
 const LOCK_TIMEOUT = 5 * 60 * 1000; // 5 minutes in milliseconds
 const lockTimeouts = new Map();
@@ -12,7 +13,7 @@ const lockTimeouts = new Map();
 export const bookAppointment = async (message) => {
     try {
         const { patientId, appointmentId } = JSON.parse(message)
-        
+
         // Clear timeout if it exists
         if (lockTimeouts.has(appointmentId)) {
             clearTimeout(lockTimeouts.get(appointmentId));
@@ -26,7 +27,7 @@ export const bookAppointment = async (message) => {
             }
         }
 
-        if (slot.status !== 'locked' && slot.patientId !== patientId || slot.status !== 'available') {
+        if (slot.status !== 'available' && (slot.status !== 'locked' && slot.patientId !== patientId)) {
             return {
                 status: {
                     code: 400,
@@ -35,9 +36,10 @@ export const bookAppointment = async (message) => {
             }
         }
 
-        slot.status = 'booked'
-        slot.patientId = patientId
-        await slot.save()
+        slot.status = 'booked';
+        slot.patientId = patientId;
+        await slot.save();
+        notifyAppointmentBooked(slot.dentistId, slot.startTime, slot.endTime);
 
         return {
             status: {
@@ -100,7 +102,7 @@ export const lockAppointment = async (message) => {
 export const unlockAppointment = async (message) => {
     try {
         const { appointmentId } = JSON.parse(message)
-        
+
         // Clear timeout if it exists
         if (lockTimeouts.has(appointmentId)) {
             clearTimeout(lockTimeouts.get(appointmentId));
@@ -111,7 +113,7 @@ export const unlockAppointment = async (message) => {
         if (!slot) {
             return { status: { code: 404, message: 'Appointment not found' } }
         }
-        
+
         if (slot.status === 'locked') {
             slot.status = 'available'
             slot.patientId = null
@@ -191,8 +193,9 @@ export const createAppointments = async (message) => {
 
         await AppointmentSlot.insertMany(slots)
 
-        // don't need to await here
-        publishAllNotifications(slots)
+        // no need to await here 
+        notifyAvailableSlots(clinicId, clinicName, slots)
+
         return {
             status: {
                 code: 200,
@@ -232,9 +235,11 @@ export const cancelAppointment = async (message) => {
         }
 
         appointment.status = 'available'
+        const patient = appointment.patientId;
         appointment.patientId = null
         await appointment.save()
 
+        notifyAppointmentCanceled(appointment.clinicName, patient, appointment.dentistId, appointment.startTime, appointment.endTime);
         return {
             status: {
                 code: 200,
@@ -361,6 +366,38 @@ export const getAppointmentsByPatientId = async (message) => {
             data: slot
         }
     } catch (error) {
-        return { status: { code: 500, message: 'Error fetching appointments' } }
+        console.log(error);
+        return { status: { code: 500, message: 'Error fetching appointments' } };
+    }
+};
+
+const notifyAvailableSlots = async (clinicId, clinicName, slots) => {
+    try {
+        const groupedByDay = [...new Set(slots.map(slot => {
+            const startDate = new Date(slot.startTime);
+            return startDate.toISOString().split('T')[0];
+        }))];
+        const payload = { clinicId, clinicName, dates: groupedByDay }
+        await publish(MQTT_TOPICS.NOTIFICATION.EVENT.AVAILABILITY, payload);
+    } catch (error) {
+        console.log('Error publishing event', error)
+    }
+}
+
+const notifyAppointmentCanceled = async (clinicName, patientId, dentistId, startTime, endTime) => {
+    try {
+        const payload = { clinicName, patientId, dentistId, startTime, endTime };
+        await publish(MQTT_TOPICS.NOTIFICATION.EVENT.APPOINTMENT.CANCELED, payload);
+    } catch (error) {
+        console.log('Error publishing event', error)
+    }
+}
+
+const notifyAppointmentBooked = async (dentistId, startTime, endTime) => {
+    try {
+        const payload = { dentistId, startTime, endTime };
+        await publish(MQTT_TOPICS.NOTIFICATION.EVENT.APPOINTMENT.BOOKED, payload);
+    } catch (error) {
+        console.log('Error publishing event', error)
     }
 }

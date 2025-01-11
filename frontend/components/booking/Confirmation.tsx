@@ -4,8 +4,8 @@ import { parseDateTime } from '@/lib/dateUtils'
 interface ConfirmationProps {
     isActive: boolean
     reason: string
-    selectedDate: Date | null
-    selectedTime: Date | null
+    selectedDate?: Date
+    selectedTime?: Date
     appointmentDuration: number
     onConfirm: () => void
     disableButton: boolean
@@ -32,7 +32,7 @@ function Confirmation({
                     <strong>Reason:</strong> {reason}
                 </p>
                 <p>
-                    <strong>Date:</strong> {selectedDate?.toLocaleDateString()}
+                    <strong>Date:</strong> {parseDateTime(selectedDate).dateKey}
                 </p>
                 <p>
                     <strong>Time:</strong> {parseDateTime(selectedTime).timeStr}

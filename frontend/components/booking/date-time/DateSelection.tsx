@@ -5,8 +5,8 @@ import './Calendar.css'
 import { parseDateTime } from '@/lib/dateUtils'
 
 interface DateSelectionProps {
-    setSelectedDate: (date: Date | null) => void
-    selectedDate: Date | null
+    setSelectedDate: (date: Date) => void
+    selectedDate?: Date
     disabled?: boolean
     clinicId: string
     monthlyAvailability: Record<string, number>
@@ -21,8 +21,8 @@ export default function DateSelection({
     const isTileDisabled: TileDisabledFunc = ({ date }) => {
         const day = date.getDay()
 
-        // Disable if it's a weekend
-        if (day === 0 || day === 6) {
+        // Disable if it's a weekend or today
+        if (day === 0 || day === 6 || date <= new Date()) {
             return true
         }
 

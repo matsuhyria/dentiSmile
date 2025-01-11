@@ -1,19 +1,8 @@
-'use client'
 import Link from 'next/link'
 import Image from 'next/image'
-import { User } from 'lucide-react'
-import { useRouter } from 'next/navigation'
-import NotificationDropdown from '@/components/notification/notificationDropdown';
+import AccountButton from './AccountButton'
 
 export default function Nav() {
-    const router = useRouter()
-
-    const handleAccountClick = (e: React.MouseEvent) => {
-        e.preventDefault()
-        const token = localStorage.getItem('authToken')
-        router.push(token ? '/account' : '/register')
-    }
-
     return (
         <div className="sticky top-0 inset-x-0 z-50 group w-full">
             <header className="relative h-16 mx-auto border-b duration-200 bg-white border-ui-border-base">
@@ -35,14 +24,7 @@ export default function Nav() {
                                 </Link>
                             </div>
                             <div className="flex items-center">
-                                <NotificationDropdown />
-                                <Link
-                                    href="/account"
-                                    onClick={handleAccountClick}
-                                    className="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium flex items-center"
-                                >
-                                    <User size={24} />
-                                </Link>
+                                <AccountButton />
                             </div>
                         </div>
                     </div>
