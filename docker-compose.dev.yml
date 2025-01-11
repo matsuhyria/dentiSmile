@@ -237,12 +237,15 @@ services:
         ports:
             - '1884:1883'
             - '9001:9001'
+            - '5001:5001'
         networks:
             - network-cluster
         depends_on:
             - mqtt-broker
             - mqtt-broker2
             - mqtt-broker3
+            - appointment_service
+            - appointment_service-2
         restart: always
 
 volumes:
