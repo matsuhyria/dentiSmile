@@ -158,6 +158,10 @@ services:
         ports:
             - '1885:1883'
             - '9002:9001'
+        ulimits:
+            nofile:
+                soft: 65536
+                hard: 65536
         networks:
             - network-cluster
         restart: always
@@ -170,6 +174,10 @@ services:
         ports:
             - '2883:1883'
             - '2901:9001'
+        ulimits:
+            nofile:
+                soft: 65536
+                hard: 65536
         networks:
             - network-cluster
         restart: always
@@ -182,6 +190,10 @@ services:
         ports:
             - '3883:1883'
             - '3901:9001'
+        ulimits:
+            nofile:
+                soft: 65536
+                hard: 65536
         networks:
             - network-cluster
         restart: always
