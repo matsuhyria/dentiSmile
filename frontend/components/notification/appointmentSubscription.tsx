@@ -44,7 +44,7 @@ const AppointmentSubscription = ({
                 variant="link"
                 className="px-1 font-bold"
             >
-                {isLoading ? 'Subscribing...' : 'Subscribe'}
+                Subscribe
             </Button>
             to future appointments on this day.
         </>
