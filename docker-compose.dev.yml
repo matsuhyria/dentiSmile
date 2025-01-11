@@ -76,6 +76,14 @@ services:
         networks:
             - network-cluster
 
+    #second instance of appointment-service to load-balance incoming requests
+    appointment-service-2:
+        build:
+            context: .
+            dockerfile: server/appointment_service/Dockerfile.dev
+        container_name: appointment_service-2
+        restart: unless-stopped
+
     # Auth Service
     auth-service:
         build:
