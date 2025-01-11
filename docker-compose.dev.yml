@@ -93,8 +93,11 @@ services:
             - ./server/appointment_service/.env
         environment:
             - NODE_ENV=development
+            #to differ between instances
+            - INSTANCE=2
         depends_on:
             - mongo-appointment
+            - mqtt-broker
         networks:
             - network-cluster
 
