@@ -131,8 +131,8 @@ services:
         volumes:
             - ./infrastructure/mqtt-broker/config:/mosquitto/config
         ports:
-            - '1883:1883'
-            - '9001:9001'
+            - '1885:1883'
+            - '9002:9001'
         networks:
             - network-cluster
         restart: always
@@ -208,9 +208,10 @@ services:
         image: haproxy:2.6
         container_name: mqtt-broker-lb
         volumes:
-            - ./infrastructure/haproxy/haproxy.cfg:usr/local/etc/haproxy/haproxy.cfg
+            - ./infrastructure/haproxy/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg
         ports:
             - '1884:1883'
+            - '9001:9001'
         networks:
             - network-cluster
         depends_on:
