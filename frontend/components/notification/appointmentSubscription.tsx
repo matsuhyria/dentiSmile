@@ -4,18 +4,22 @@ import { useEffect, useState } from 'react'
 
 const AppointmentSubscription = ({
     clinicId,
-    patientId,
     date
 }: {
     clinicId: string
-    patientId: string
     date: Date
 }) => {
     const { isLoading, error, subscribeToDate } = useAppointmentSubscription()
     const [responseMessage, setResponseMessage] = useState<string | null>(null)
 
     const handleSubscribe = async () => {
+        const patientId = localStorage.getItem('userId')
+
         setResponseMessage(null)
+        if (!patientId) {
+            setResponseMessage('Please log in to subscribe.')
+            return
+        }
         const { success } = await subscribeToDate(clinicId, patientId, date)
 
         if (success) {
@@ -27,7 +31,7 @@ const AppointmentSubscription = ({
 
     useEffect(() => {
         setResponseMessage(null)
-    }, [clinicId, patientId, date])
+    }, [clinicId, date])
 
     return (
         <>
@@ -35,7 +39,7 @@ const AppointmentSubscription = ({
                 onClick={handleSubscribe}
                 disabled={isLoading}
                 variant="link"
-                className='px-1 font-bold'
+                className="px-1 font-bold"
             >
                 {isLoading ? 'Subscribing...' : 'Subscribe'}
             </Button>
