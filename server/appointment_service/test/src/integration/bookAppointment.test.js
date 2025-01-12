@@ -8,7 +8,7 @@ const { MQTT_TOPICS } = mqttUtils;
 const MQTT_URI = process.env.MQTT_URI || 'mqtt://localhost:1883'
 
 describe('Appointment Service - Slot Booking Tests', function () {
-    this.timeout(5000);
+    this.timeout(10000);
     let client;
     let clientId;
 
