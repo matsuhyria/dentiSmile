@@ -279,31 +279,18 @@ export const getAppointmentsByClinic = async (message) => {
     try {
         const { clinicId } = JSON.parse(message)
 
-        const cachedAppointments = await getAppointmentFromCache(clinicId);
-
-        if (cachedAppointments) {
-            return {
-                status: {
-                    code: 200,
-                    message: 'Appointments retrieved successfully'
-                },
-                data: JSON.parse(cachedAppointments) // Parse cached JSON string back to object
-            };
-        }
-
         const appointments = await AppointmentSlot.find({ clinicId })
 
         if (appointments.length < 1) {
             return { status: { code: 404, message: 'Appointments not found' } }
         }
 
+        // cache appointments for the next 96 hours for this clinic
         const now = new Date();
         const cutoffTime = new Date(now.getTime() + 96 * 60 * 60 * 1000); // 96 hours from now
-
         const upcomingAppointments = appointments.filter(appointment =>
             new Date(appointment.startTime) >= now && new Date(appointment.startTime) <= cutoffTime
         );
-
         await cacheAppointments(clinicId, upcomingAppointments);
 
         return {
@@ -313,9 +300,30 @@ export const getAppointmentsByClinic = async (message) => {
             },
             data: appointments
         }
-    } catch (error) {
-        console.log(error)
-        return { status: { code: 500, message: 'Error fetching appointments' } }
+    } catch (dbError) {
+        try {
+            const cachedAppointments = await getAppointmentFromCache(clinicId);
+
+            if (cachedAppointments) {
+                return {
+                    status: {
+                        code: 200,
+                        message: 'Appointments retrieved successfully from cache'
+                    },
+                    data: JSON.parse(cachedAppointments) // Parse cached JSON string back to object
+                };
+            }
+
+            return {
+                status: {
+                    code: 500,
+                    message: 'Database failure and no cached data available'
+                }
+            };
+        } catch (cacheError) {
+            console.error(cacheError);
+            return { status: { code: 500, message: 'Error fetching appointments' } }
+        }
     }
 }
 

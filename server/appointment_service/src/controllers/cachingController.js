@@ -8,13 +8,11 @@ export const cacheAppointments = async (clinicId, appointmentsData) => {
         EX: EXPIRE_IN,
         NX: true // cache if not exists yet
     });
-    console.log('Appointment cached, id:', clinicId);
 }
 
 export const getAppointmentFromCache = async (clinicId) => {
     const key = `appointment:${clinicId}`;
     const appointment = await redisClient.get(key);
-    console.log('Retrieving appointments from cache', appointment);
     return appointment;
 }
 
