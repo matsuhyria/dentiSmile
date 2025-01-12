@@ -74,31 +74,6 @@ services:
         networks:
             - network-cluster
 
-    # second instance of appointment-service to load-balance incoming requests
-    appointment-service-2:
-        build:
-            context: .
-            dockerfile: server/appointment_service/Dockerfile.dev
-        container_name: appointment-service-2
-        restart: unless-stopped
-        # ContainerPort mapping to 1st appointment service
-        volumes:
-            - ./server/appointment_service:/app/server/appointment_service
-            - ./shared:/app/shared
-            - /app/server/appointment_service/node_modules
-            - /app/shared/node_modules
-        env_file:
-            - ./server/appointment_service/.env
-        environment:
-            - NODE_ENV=development
-            #to differ between instances
-            - INSTANCE=2
-        depends_on:
-            - mongo-appointment
-            - mqtt-broker-lb
-        networks:
-            - network-cluster
-
     # Auth Service
     auth-service:
         build:
