@@ -105,7 +105,7 @@ export const MQTT_TOPICS = {
             },
             MANY: {
                 REQUEST: 'clinic/retrieve/request',
-                RESPONSE: (clientId) => `clinic/retrieve/${clientId}`
+                RESPONSE: (clientId) => `clinic/retrieve`
             }
         },
         ADD_DENTIST: {

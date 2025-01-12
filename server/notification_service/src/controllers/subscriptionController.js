@@ -12,7 +12,6 @@ export const subscribeToDate = async (message) => {
         if (!clinicExists) {
             return {
                 status: { code: 400, message: `Clinic not found` },
-                data: existingSubscription
             };
         }
 
@@ -80,7 +79,6 @@ export const getSubscriptionByClinicAndDate = async (message) => {
         if (!clinicExists) {
             return {
                 status: { code: 400, message: `Clinic not found` },
-                data: existingSubscription
             };
         }
 
