@@ -1,7 +1,6 @@
 import DateSubscription from "../models/dateSubscription.js"
 import { MQTT_TOPICS } from "shared-mqtt/mqttTopics.js";
-import { publish, subscribe, unsubscribe } from "shared-mqtt/mqttClient.js";
-import { generateUniqueId } from "../utils/notificationUtils.js";
+import { validateEntity } from "shared-mqtt/mqttClient.js";
 
 export const subscribeToDate = async (message) => {
     try {
@@ -54,7 +53,7 @@ export const getSubscriptionsByPatient = async (message) => {
     try {
         const { patientId } = JSON.parse(message)
 
-        // TO-DO: add checks for id validation
+        // TO-DO: authorization
 
         const subscriptions = await DateSubscription.find({ patientId: { $in: [patientId] } });
         if (subscriptions.length < 1) {
@@ -77,7 +76,15 @@ export const getSubscriptionByClinicAndDate = async (message) => {
     try {
         const { clinicId, date } = JSON.parse(message)
 
-        // TO-DO: add checks for id validation
+        const clinicExists = await validateClinic(clinicId);
+        if (!clinicExists) {
+            return {
+                status: { code: 400, message: `Clinic not found` },
+                data: existingSubscription
+            };
+        }
+
+        // TO-DO: authorization
 
         const subscriptions = await DateSubscription.find({ clinicId, date });
         if (subscriptions.length < 1) {
@@ -99,6 +106,8 @@ export const getSubscriptionByClinicAndDate = async (message) => {
 export const removeSubscription = async (message) => {
     try {
         const { subscriptionId, patientId } = JSON.parse(message);
+
+        // TODO: authorization
 
         const subscription = await DateSubscription.findById(subscriptionId);
 
@@ -140,36 +149,10 @@ export const removeSubscription = async (message) => {
 };
 
 export const validateClinic = async (clinicId) => {
-    const clientId = generateUniqueId();
-    const payload = { _id: clinicId, clientId };
-    const requestTopic = MQTT_TOPICS.CLINIC.RETRIEVE.ONE.REQUEST;
-    const responseTopic = MQTT_TOPICS.CLINIC.RETRIEVE.ONE.RESPONSE(clientId);
-
-    return new Promise(async (resolve, reject) => {
-        let timeout;
-
-        try {
-            await subscribe(responseTopic, async (response) => {
-                clearTimeout(timeout);
-
-                await unsubscribe(responseTopic);
-
-                if (response.data && response.data._id === clinicId) {
-                    resolve(true);
-                } else {
-                    resolve(false);
-                }
-            });
-
-            await publish(requestTopic, payload);
-
-            timeout = setTimeout(async () => {
-                await unsubscribe(responseTopic);
-                resolve(false);
-            }, 5000);
-        } catch (error) {
-            console.error('Error validating the clinic:', error);
-            reject(false);
-        }
+    return validateEntity({
+        requestTopic: MQTT_TOPICS.CLINIC.RETRIEVE.ONE.REQUEST,
+        responseTopicGenerator: (clientId) => MQTT_TOPICS.CLINIC.RETRIEVE.ONE.RESPONSE(clientId),
+        payload: { _id: clinicId },
+        validateResponse: (response, { _id }) => response.data && response.data._id === _id
     });
 };
