@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import MapContainer from './MapContainer'
+import MapWrapper from './MapWrapper'
 import MarkerWithPopup from './MarkerWithPopup'
 import { IClinic } from '../../services/interfaces/IClinic'
 import { useGeolocation } from '@/hooks/useGeolocation'
@@ -15,7 +15,7 @@ const Map = ({ clinics }: MapProps) => {
     const { position: center, zoom } = useGeolocation()
 
     return (
-        <MapContainer center={center} zoom={zoom}>
+        <MapWrapper center={center} zoom={zoom}>
             {clinics?.map((clinic) => (
                 <MarkerWithPopup
                     key={clinic._id}
@@ -30,7 +30,7 @@ const Map = ({ clinics }: MapProps) => {
                     onClose={() => setActiveMarker(null)}
                 />
             ))}
-        </MapContainer>
+        </MapWrapper>
     )
 }
 
