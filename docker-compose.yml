@@ -27,7 +27,7 @@ services:
             - clinic-service
             - appointment-service
             - auth-service
-            - mqtt-broker
+            - mqtt-broker-lb
 
     # Clinic Service
     clinic-service:
@@ -51,7 +51,7 @@ services:
             - CHOKIDAR_USEPOLLING=true
         depends_on:
             - mongo-clinic
-            - mqtt-broker
+            - mqtt-broker-lb
         networks:
             - network-cluster
 
@@ -77,7 +77,8 @@ services:
             - CHOKIDAR_USEPOLLING=true
         depends_on:
             - mongo-appointment
-            - mqtt-broker
+            - mqtt-broker-lb
+            - redis_appointment
         networks:
             - network-cluster
 
@@ -102,7 +103,7 @@ services:
             - CHOKIDAR_USEPOLLING=true
         depends_on:
             - mongo-auth
-            - mqtt-broker
+            - mqtt-broker-lb
         networks:
             - network-cluster
 
@@ -126,7 +127,7 @@ services:
             - NODE_ENV=development
         depends_on:
             - mongo-notification
-            - mqtt-broker
+            - mqtt-broker-lb
         networks:
             - network-cluster
 
@@ -138,8 +139,61 @@ services:
         ports:
             - '1883:1883'
             - '9001:9001'
+        ulimits:
+            nofile:
+                soft: 65536
+                hard: 65536
         networks:
             - network-cluster
+        restart: always
+
+    mqtt-broker2:
+        image: eclipse-mosquitto:2.0
+        container_name: mqtt-broker2
+        volumes:
+            - ./infrastructure/mqtt-broker/config:/mosquitto/config
+        ports:
+            - '2883:1883'
+            - '9002:9001'
+        ulimits:
+            nofile:
+                soft: 65536
+                hard: 65536
+        networks:
+            - network-cluster
+        restart: always
+
+    mqtt-broker3:
+        image: eclipse-mosquitto:2.0
+        container_name: mqtt-broker3
+        volumes:
+            - ./infrastructure/mqtt-broker/config:/mosquitto/config
+        ports:
+            - '3883:1883'
+            - '9003:9001'
+        ulimits:
+            nofile:
+                soft: 65536
+                hard: 65536
+        networks:
+            - network-cluster
+        restart: always
+
+    mqtt-broker-lb:
+        image: haproxy:2.6
+        container_name: mqtt-broker-lb
+        volumes:
+            - ./infrastructure/haproxy/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg
+        ports:
+            - '1884:1883'
+            - '9004:9001'
+            - '5001:5001'
+        networks:
+            - network-cluster
+        depends_on:
+            - mqtt-broker
+            - mqtt-broker2
+            - mqtt-broker3
         restart: always
 
     mongo-clinic:
@@ -181,6 +235,16 @@ services:
             - '27021:27017'
         volumes:
             - ./infrastructure/database/notification_data:/data/db
+        networks:
+            - network-cluster
+
+    redis_appointment:
+        image: redis:latest
+        container_name: redis_appointment
+        ports:
+            - '27022:6379'
+        volumes:
+            - ./infrastructure/caching/appointment_data:/data
         networks:
             - network-cluster
 
