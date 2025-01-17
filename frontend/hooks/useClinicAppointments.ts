@@ -78,8 +78,8 @@ export const useClinicAppointments = ({
         if (!clinicService || !clinicId) return
 
         setLoading(true)
-        const appointmentsEmitter: EventEmitter =
-            clinicService.getClinicAppointments(
+        const appointmentsEmitter: EventEmitter = 
+            clinicService.subscribeToClinicAppointments(
                 clinicId,
                 reasonId || '',
                 date || ''
@@ -97,6 +97,13 @@ export const useClinicAppointments = ({
 
         appointmentsEmitter.on('data', onData)
         appointmentsEmitter.on('error', onError)
+
+        // Make initial request to get appointments
+        clinicService.getClinicAppointments(
+            clinicId,
+            reasonId || '',
+            date || ''
+        )
 
         return () => {
             appointmentsEmitter.removeListener('data', onData)

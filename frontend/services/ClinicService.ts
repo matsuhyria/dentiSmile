@@ -30,6 +30,13 @@ export class ClinicService extends BaseClinicService implements IClinicService {
         )
     }
 
+    public subscribeToClinicUpdates(): EventEmitter {
+        return this.requestManager.subscribeOnly(
+            MQTT_TOPICS.CLINIC.RETRIEVE.MANY.RESPONSE(''),
+            this.client
+        )
+    }
+
     public getClinicAppointments(
         clinicId: string,
         reasonId: string,
@@ -41,6 +48,17 @@ export class ClinicService extends BaseClinicService implements IClinicService {
             { clinicId, reasonId, date, clientId: clinicId },
             this.client,
             RequestType.BROADCAST
+        )
+    }
+
+    public subscribeToClinicAppointments(
+        clinicId: string,
+        reasonId: string,
+        date: string
+    ): EventEmitter {
+        return this.requestManager.subscribeOnly(
+            MQTT_TOPICS.APPOINTMENT.CLINIC.RETRIEVE.RESPONSE(clinicId),
+            this.client
         )
     }
 

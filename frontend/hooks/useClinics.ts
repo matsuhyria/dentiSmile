@@ -19,7 +19,7 @@ export const useClinics = () => {
         if (!clinicService) return
 
         setLoading(true)
-        const clinicsEmitter: EventEmitter = clinicService.getClinics()
+        const clinicsEmitter: EventEmitter = clinicService.subscribeToClinicUpdates()
 
         const onData = (data: IClinic[]) => {
             setClinics(data)
@@ -33,6 +33,9 @@ export const useClinics = () => {
 
         clinicsEmitter.on('data', onData)
         clinicsEmitter.on('error', onError)
+
+        // Make initial request to get clinics
+        clinicService.getClinics();
 
         return () => {
             clinicsEmitter.removeListener('data', onData)
