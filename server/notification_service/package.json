@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "nodemon --env-file=.env ./src/app.js",
     "start": "node --env-file=.env ./src/app.js",
+    "build": "mkdir -p dist && cp -r src dist/",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
