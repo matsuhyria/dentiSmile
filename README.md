@@ -1,4 +1,4 @@
-# DentiSmile (Group-7)
+# DentiSmile
 
 ### Description
 
